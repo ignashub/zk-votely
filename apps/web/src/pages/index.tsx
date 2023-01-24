@@ -133,18 +133,18 @@ const Home: NextPage = () => {
     'http://localhost:8000/plonk/votecheck/no_vote_check/verification_key.json';
 
   const { config: yesVoteConfig } = usePrepareContractWrite({
-    address: '0xf88081640879E12586fA484791203a64e22Aea06',
+    address: '0x090494f3c0e5ef54D25Faac8b881A29D04A6E82f',
     abi: VoteYesVerifierAbi,
-    functionName: 'verifyYesProof',
+    functionName: 'verifyProof',
     args: [voteProofSC1, voteProofSC2],
   });
 
   const { write: voteYesWrite } = useContractWrite(yesVoteConfig);
 
   const { config: noVoteConfig } = usePrepareContractWrite({
-    address: '0x197FF0b2aaa050E20Bfc148b6DF97f726DfcEF2c',
+    address: '0xd0EC3784eF33060483b00939Ea499307d9D7072c',
     abi: VoteNoVerifierAbi,
-    functionName: 'verifyNoProof',
+    functionName: 'verifyProof',
     args: [voteProofSC1, voteProofSC2],
   });
 

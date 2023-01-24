@@ -12,7 +12,7 @@ export const VoteNoVerifierAbi = [
         type: 'uint256[]',
       },
     ],
-    name: 'verifyNoProof',
+    name: 'verifyProof',
     outputs: [
       {
         internalType: 'bool',
