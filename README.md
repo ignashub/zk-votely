@@ -1,6 +1,6 @@
 # About
 
-This is a Proof of Concept project which uses Zero-Knowledge Proofs to verify whenever a person voted yes or no without revealing it. The project also consists of simple arithmetic [circuit](https://docs.circom.io/getting-started/writing-circuits/) example. It also involves scripts for managing [Trusted setup](https://blog.pantherprotocol.io/a-guide-to-understanding-trusted-setups/) phase faster.
+This is a Proof of Concept project which uses Zero-Knowledge Proofs to verify whether a person voted yes or no without revealing it. The project also consists of simple arithmetic [circuit](https://docs.circom.io/getting-started/writing-circuits/) example. It also involves scripts for managing [Trusted setup](https://blog.pantherprotocol.io/a-guide-to-understanding-trusted-setups/) phase faster.
 
 # Zero-Knowledge Proofs template
 
@@ -23,11 +23,11 @@ You need several dependencies in your system to run [circom](https://github.com/
 
 ### Installing Circom
 
-If you want follow official [Circom](https://docs.circom.io/getting-started/installation/#installing-circom) installation, follow [this](https://docs.circom.io/getting-started/installation/#installing-circom).
+If you want to follow official [Circom](https://docs.circom.io/getting-started/installation/#installing-circom) installation, follow [this](https://docs.circom.io/getting-started/installation/#installing-circom).
 
-Make a new directory anywhere in your system.
+Make a new directory anywhere in your system. You need to do so because Circom is a compiler which is needed to be installed on your system and it's not part of the project.
 
-Then install from sources, clone the [circom](https://github.com/iden3/circom) repository:
+Then install from sources, and clone the [circom](https://github.com/iden3/circom) repository:
 
 ```
 git clone https://github.com/iden3/circom.git
@@ -51,7 +51,7 @@ cargo install --path circom
 $ yarn install
 ```
 
-After this, all dependencies should be installed but just incase you can also install [snarkJS](https://github.com/iden3/snarkjs) library:
+After this, all dependencies should be installed but just in case you can also install [snarkJS](https://github.com/iden3/snarkjs) library:
 
 ### Installing Snarkjs
 
@@ -65,8 +65,8 @@ npm install -g snarkjs
 
 ### Running Scripts
 
-Before running the application it is needed to run [snarkJS](https://github.com/iden3/snarkjs) scripts. These scripts were made to speed up process of generating [circom](https://github.com/iden3/circom) circuits and doing [Trusted setup](https://blog.hermez.io/hermez-zero-knowledge-proofs/) phase.
-To know how each circuit is generated, you can see the execute files inside the scripts folder.
+Before running the application it is needed to run [snarkJS](https://github.com/iden3/snarkjs) scripts. These scripts were made to speed up the process of generating [circom](https://github.com/iden3/circom) circuits and doing [Trusted setup](https://blog.hermez.io/hermez-zero-knowledge-proofs/) phase.
+To know how each circuit is generated, you can see the executed files inside the scripts folder.
 
 To run the scripts go inside the scripts folder:
 
@@ -74,7 +74,7 @@ To run the scripts go inside the scripts folder:
 $ cd apps/zkproof/scripts
 ```
 
-Run this command per script:
+And then run these commands to make your scripts into executables:
 
 ```
 chmod u+x execute_groth16_circuit_example.sh
@@ -86,7 +86,7 @@ chmod u+x execute_vote_no_circuit.sh
 chmod u+x execute_vote_yes_circuit.sh
 ```
 
-And after that, you can always run this per script:
+And after that, you will always be able to execute the scripts:
 
 ```
 ./execute_groth16_circuit_example.sh
@@ -100,7 +100,7 @@ And after that, you can always run this per script:
 
 ## Starting the project
 
-To start the project you need to start back-end which serves files needed for generating proofs:
+To start the project you need to start the back-end which serves files needed for generating proofs:
 
 ```
 $ cd apps/zkproof/file-server
@@ -108,7 +108,7 @@ $ cd apps/zkproof/file-server
 $ node index.js
 ```
 
-Then you can start the front-end:
+Then you can start the front end:
 
 ```
 $ yarn dev
@@ -131,7 +131,7 @@ This circuit is very simple and it is easy to reverse engineer the private signa
 learning cases:
 
 - Prover enters private signal B.
-- Public signals are already given. (In this case you enter them through front-end, but it could be hard-coded).
+- Public signals are already given. (In this case, you enter them through the front-end, but it could be hard-coded).
 - Intermediary signal D is calculated.
 - Signal D is summed up with signal C to get OUT signal which has to be 18.
 
@@ -150,7 +150,7 @@ template Example () {
    signal d; //Intermediate signal.
    signal output out; //Output of the signal.
 
-   // The logic or a ‘constraint’ which a private signal has to satisfy.
+   // The logic or a ‘constraint’ that a private signal has to satisfy.
    d <== a * b;
    out <== c + d;
    out === 18;
@@ -159,20 +159,20 @@ template Example () {
 component main { public [ a, c ] } = Example();
 ```
 
-So, in short what this circuit does - it takes 2 public and 1 private signal. Then it does the constraints and sees
+So, in short, what this circuit does is. It takes 2 public and 1 private signal. Then it does the constraints and sees
 if it is equal to 18.
 
-What Prover and Verifier sees can be visualized through these diagrams:
+What Prover and Verifier see can be visualized through these diagrams:
 
 ![alt text](https://github.com/ignashub/web3-template/blob/main/apps/zkproof/diagrams/prover_verifier_views.png?raw=true)
 
-- Prover knows everything about the circuit. All public, private signals, constraints, output.
-- Verifier knows all the public signals, constraints, and the output value.
+- Prover knows everything about the circuit. All public, and private signals, constraints, and output.
+- Verifier knows all the public signals, constraints, and output value.
 
-To continue, let's look into our Yes and No vote circuits. The idea behind these circuits is to identify whenever a
+To continue, let's look into our Yes and No vote circuits. The idea behind these circuits is to identify whether a
 user voted Yes or No.
 
-Yes vote circuit:
+User votes Yes circuit:
 
 ```javascript
 pragma circom 2.0.0;
@@ -182,18 +182,18 @@ template YesBinaryCount () {
     signal output out; // Output of the circuit
     var number=0; // Counter
 
-    // Counting how many bits does a String has
+    // Counting how many bits a String has
     for (var i = 0; i < vote; i++) {
         number+=1;
     }
     out <-- number; // Assigning counter to output
-    out === 21; // Constraint: Yes string should have length of 21 bits
+    out === 21; // Constraint: Yes string should have a length of 21 bits
 }
 
 component main = YesBinaryCount();
 ```
 
-No vote circuit:
+User votes No circuit:
 
 ```javascript
 pragma circom 2.0.0;
@@ -203,18 +203,18 @@ template NoBinaryCount () {
     signal output out; // Output of the circuit
     var number=0; // Counter
 
-    // Counting how many bits does a String has
+    // Counting how many bits a String has
     for (var i = 0; i < vote; i++) {
         number+=1;
     }
     out <-- number; // Assigning counter to output
-    out === 14; // Constraint: No string should have length of 14 bits
+    out === 14; // Constraint: No string should have a length of 14 bits
 }
 
 component main = NoBinaryCount();
 ```
 
-These circuits work very simple. They just take the binary length of Yes (101100111001011110011) or No (10011101101111) string and calculate whenever the length is correct to the circuits output 21 or 14.
+These circuits work very simple. They just take the binary length of the Yes (101100111001011110011) or No (10011101101111) string and calculate whenever the length is correct to the circuits output 21 or 14.
 
 To carry on, here is the representation of circuits in diagrams:
 
@@ -233,20 +233,20 @@ To do so, a diagram was drawn:
 
 ![alt text](https://github.com/ignashub/web3-template/blob/main/apps/zkproof/diagrams/circom_snarkjs_flow.png?raw=true)
 
-This particular example uses yes_vote_check circuit. But for explanation reasons we will just call it circuit because this logic is applicable for any circuit.
+This particular example uses the yes_vote_check circuit. But for explanation reasons, we will just call it circuit because this logic is applicable to any circuit.
 
 Starting from the top, Circom circuit is compiled into 2 files:
 
 This process is done through the scripts.
 
-- circuit.wasm/circuit.cpp - it is a program representation of your circuit. It takes the inputs(public and private signals) and then generates - witness which is a whole computational trace of your arithmetic circuit (all correct signals to satisfy your circuit).
-- circuit.r1cs - more mathematical representation of a circuit. To read more about R1CS [start](https://medium.com/@VitalikButerin/quadratic-arithmetic-programs-from-zero-to-hero-f6d558cea649) here.
+- circuit.wasm/circuit.cpp - it is a program representation of your circuit. It takes the inputs(public and private signals) and then generates - a witness which is a whole computational trace of your arithmetic circuit (all correct signals to satisfy your circuit).
+- circuit.r1cs - a more mathematical representation of a circuit. To read more about R1CS [start](https://medium.com/@VitalikButerin/quadratic-arithmetic-programs-from-zero-to-hero-f6d558cea649) here.
 
-Starting from the left, witness is generated when the inputs (public and private signals) are supplied (e.g through the front-end) to circuit.wasm/cpp program.
+Starting from the left, witness is generated when the inputs (public and private signals) are supplied (e.g through the front end) to circuit.wasm/cpp program.
 
 On the right side, circuit.final.zkey is generated from the circuit. This file is a public parameters of the zk-SNARK protocol for our application.
 
-- Then a verification key is generated from circuit.final.zkey. Verification key helps to identify our zk-SNARK protocol.
+- Then a verification key is generated from circuit.final.zkey. The verification key helps to identify our zk-SNARK protocol.
 - Prover uses circuit.final.zkey as his proving key.
 - Prover combines circuit.final.zkey with the witness file mentioned before. It generates the proof.json (actual proof).
 - Prover sends the proof and public signals(inputs) to Verifier.
