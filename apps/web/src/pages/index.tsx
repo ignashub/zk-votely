@@ -10,9 +10,17 @@ import {
   RadioGroup,
   Radio,
   Stack,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
-import { usePrepareContractWrite, useContractWrite } from 'wagmi';
+import {
+  usePrepareContractWrite,
+  useContractWrite,
+  useContractEvent,
+} from 'wagmi';
 import { VoteYesVerifierAbi } from '../abis/VoteYesVerifier';
 import { VoteNoVerifierAbi } from '../abis/VoteNoVerifier';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
@@ -140,6 +148,15 @@ const Home: NextPage = () => {
   });
 
   const { write: voteYesWrite } = useContractWrite(yesVoteConfig);
+
+  useContractEvent({
+    address: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e',
+    abi: VoteYesVerifierAbi,
+    eventName: 'VerifySuccess',
+    listener(message) {
+      console.log(message);
+    },
+  });
 
   const { config: noVoteConfig } = usePrepareContractWrite({
     address: '0xd0EC3784eF33060483b00939Ea499307d9D7072c',
@@ -362,6 +379,20 @@ const Home: NextPage = () => {
               >
                 Verify No Proof With Smart Contract
               </Button>
+              <Alert status="error" marginBottom="16px">
+                <AlertIcon />
+                <AlertTitle>Your browser is outdated!</AlertTitle>
+                <AlertDescription>
+                  Your Chakra experience may be degraded.
+                </AlertDescription>
+              </Alert>
+              <Alert status="success" marginBottom="16px">
+                <AlertIcon />
+                <AlertTitle>Your browser is outdated!</AlertTitle>
+                <AlertDescription>
+                  Your Chakra experience may be degraded.
+                </AlertDescription>
+              </Alert>
               <Heading size={'md'} marginBottom="16px">
                 Proof:
               </Heading>

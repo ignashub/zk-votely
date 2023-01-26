@@ -121,11 +121,11 @@ To get more information on how to write Circom circuits check [this](https://doc
 
 Let's start with a simple prover and verifier workflow:
 
-![alt text](https://github.com/ignashub/web3-template/blob/main/apps/zkproof/diagrams/prover_verifier_workflow.png?raw=true)
+![alt text](/apps/zkproof/diagrams/prover_verifier_workflow.png)
 
 After that, let's look into our simple example circuit:
 
-![alt text](https://github.com/ignashub/web3-template/blob/main/apps/zkproof/diagrams/arithmetic_circuit_example.png?raw=true)
+![alt text](/apps/zkproof/diagrams/arithmetic_circuit_example.png)
 
 This circuit is very simple and it is easy to reverse engineer the private signal. Nonetheless, it was made for
 learning cases:
@@ -164,7 +164,7 @@ if it is equal to 18.
 
 What Prover and Verifier see can be visualized through these diagrams:
 
-![alt text](https://github.com/ignashub/web3-template/blob/main/apps/zkproof/diagrams/prover_verifier_views.png?raw=true)
+![alt text](apps/zkproof/diagrams/prover_verifier_views.png)
 
 - Prover knows everything about the circuit. All public, and private signals, constraints, and output.
 - Verifier knows all the public signals, constraints, and output value.
@@ -218,12 +218,12 @@ These circuits work very simple. They just take the binary length of the Yes (10
 
 To carry on, here is the representation of circuits in diagrams:
 
-![alt text](https://github.com/ignashub/web3-template/blob/main/apps/zkproof/diagrams/yes_no_circuit_diagrams.png?raw=true)
+![alt text](apps/zkproof/diagrams/yes_no_circuit_diagrams.png)
 
 And the Prover/Verifier views:
 
-![alt text](https://github.com/ignashub/web3-template/blob/main/apps/zkproof/diagrams/prover_verifier_yes_vote_views.png?raw=true)
-![alt text](https://github.com/ignashub/web3-template/blob/main/apps/zkproof/diagrams/prover_verifier_no_vote_views.png?raw=true)
+![alt text](/apps/zkproof/diagrams/prover_verifier_yes_vote_views.png)
+![alt text](/apps/zkproof/diagrams/prover_verifier_no_vote_views.png)
 
 ## Circom and Snarkjs workflow
 
@@ -231,7 +231,7 @@ Finally, we should look into how Circom and SnarkJS work together.
 
 To do so, a diagram was drawn:
 
-![alt text](https://github.com/ignashub/web3-template/blob/main/apps/zkproof/diagrams/circom_snarkjs_flow.png?raw=true)
+![alt text](/apps/zkproof/diagrams/circom_snarkjs_flow.png?raw=true)
 
 This particular example uses the yes_vote_check circuit. But for explanation reasons, we will just call it circuit because this logic is applicable to any circuit.
 
