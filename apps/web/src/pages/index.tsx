@@ -226,14 +226,16 @@ const Home: NextPage = () => {
           'relative flex flex-col flex-grow mt-4 mb-8 space-y-8 md:space-y-16 md:mt-8 md:mb-16'
         }
       >
-        <Section>
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignContent: 'center',
-            }}
-          >
+        {/* <Section> */}
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignContent: 'center',
+            // flexDirection: 'column',
+          }}
+        >
+          <Box boxSize="750px">
             <Flex justifyContent="center" flexDirection="column">
               <ConnectButton />
               <Heading size={'xl'} marginBottom="20px">
@@ -246,7 +248,6 @@ const Home: NextPage = () => {
                 label="a"
                 onChange={(e) => setA(e.target.value)}
                 errorBorderColor="red.300"
-                w="140px"
                 style={{ marginBottom: '8px' }}
               />
               <Input
@@ -256,7 +257,6 @@ const Home: NextPage = () => {
                 label="b"
                 onChange={(e) => setB(e.target.value)}
                 errorBorderColor="red.300"
-                w="140px"
                 style={{ marginBottom: '8px' }}
               />
               <Input
@@ -266,7 +266,6 @@ const Home: NextPage = () => {
                 label="c"
                 onChange={(e) => setC(e.target.value)}
                 errorBorderColor="red.300"
-                w="140px"
                 style={{ marginBottom: '8px' }}
               />
 
@@ -378,12 +377,13 @@ const Home: NextPage = () => {
                 <Text>{isVoteValid ? 'Valid proof' : 'Invalid proof'}</Text>
               )}
             </Flex>
+            <footer>
+              <Text>Byont Ventures B.V. © {new Date().getFullYear()}</Text>
+            </footer>
           </Box>
-        </Section>
+        </Box>
+        {/* </Section> */}
       </main>
-      <footer>
-        <Text>Byont Ventures B.V. © {new Date().getFullYear()}</Text>
-      </footer>
     </>
   );
 };
