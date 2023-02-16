@@ -1,5 +1,4 @@
 import type { NextPage } from 'next';
-import { Section } from '@/components/Section';
 import {
   Text,
   Box,
@@ -14,17 +13,26 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
+  Spinner,
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import {
   usePrepareContractWrite,
   useContractWrite,
-  useContractEvent,
+  useContractRead,
+  useWaitForTransaction,
 } from 'wagmi';
+import { utils } from 'ethers';
 import { VoteYesVerifierAbi } from '../abis/VoteYesVerifier';
 import { VoteNoVerifierAbi } from '../abis/VoteNoVerifier';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-
+import { Identity } from '@semaphore-protocol/identity';
+import {
+  generateProof,
+  verifyProof as verifyMember,
+} from '@semaphore-protocol/proof';
+import { Group } from '@semaphore-protocol/group';
+import { formatBytes32String } from 'ethers/lib/utils';
 import snarkjs = require('snarkjs');
 
 const makeProof = async (_proofInput, _wasm, _zkey) => {
@@ -125,6 +133,7 @@ const Home: NextPage = () => {
   const [isVoteValid, setIsVoteValid] = useState(false);
   const [voteProofSC1, setVoteProofSC1] = useState<`0x${string}` | undefined>();
   const [voteProofSC2, setVoteProofSC2] = useState<BigNumber | undefined>('');
+  const [yesResponse, setYesResponse] = useState(Boolean);
 
   const wasmFileVoteYes =
     'http://localhost:8000/plonk/votecheck/yes_vote_check/yes_vote_check_js/yes_vote_check.wasm';
@@ -145,18 +154,42 @@ const Home: NextPage = () => {
     abi: VoteYesVerifierAbi,
     functionName: 'verifyProof',
     args: [voteProofSC1, voteProofSC2],
+    // onSuccess(data) {
+    //   console.log('Success', data);
+    // },
   });
 
   const { write: voteYesWrite } = useContractWrite(yesVoteConfig);
 
-  useContractEvent({
-    address: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e',
-    abi: VoteYesVerifierAbi,
-    eventName: 'VerifySuccess',
-    listener(message) {
-      console.log(message);
-    },
-  });
+  // const { data: useWaitForTransactionData, isSuccess } = useWaitForTransaction({
+  //   hash: useContractWriteData?.hash,
+  // });
+
+  // const { data: yesResponseSC } = useContractRead({
+  //   address: '0x090494f3c0e5ef54D25Faac8b881A29D04A6E82f',
+  //   abi: VoteYesVerifierAbi,
+  //   functionName: 'verifyProof',
+  //   args: [voteProofSC1, voteProofSC2],
+  // });
+
+  // useEffect(() => {
+  //   if (yesResponseSC) {
+  //     let temp = yesResponseSC;
+  //     console.log(temp);
+  //     setYesResponse(temp);
+  //   }
+  // }, [voteProofSC2]);
+
+  // const { read: voteYesWrite } = useContractWrite(yesVoteReadConfig);
+
+  // useContractEvent({
+  //   address: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e',
+  //   abi: VoteYesVerifierAbi,
+  //   eventName: 'VerifySuccess',
+  //   listener(message) {
+  //     console.log(message);
+  //   },
+  // });
 
   const { config: noVoteConfig } = usePrepareContractWrite({
     address: '0xd0EC3784eF33060483b00939Ea499307d9D7072c',
@@ -232,6 +265,45 @@ const Home: NextPage = () => {
         makeVoteCallData(proofInput, wasmFileVoteNo, zkeyFileVoteNo);
       }
     );
+  };
+
+  //SEMAPHORE STUFF
+  const [identity, setIdentity] = useState<Identity>();
+  const [group, setGroup] = useState<Group>(new Group(1));
+
+  // const group = new Group(1);
+  const externalNullifier = utils.formatBytes32String('Topic');
+  const snarkArtifactsPath = 'zkproof/../../artifacts/snark';
+
+  const createIdentity = () => {
+    const _identity = new Identity();
+    setIdentity(_identity);
+    console.log(_identity.commitment);
+  };
+
+  const joinGroup = () => {
+    console.log(group.members);
+    const newGroup = new Group(1);
+    newGroup.addMember(identity.commitment);
+    setGroup(newGroup);
+  };
+
+  const greeting = utils.formatBytes32String('Hello World');
+
+  const fullProof = async () => {
+    const result = await generateProof(
+      identity,
+      group,
+      externalNullifier,
+      greeting,
+      {
+        wasmFilePath: `${snarkArtifactsPath}/semaphore.wasm`,
+        zkeyFilePath: `${snarkArtifactsPath}/semaphore.zkey`,
+      }
+    );
+
+    const verified = await verifyMember(result, 20);
+    console.log(verified);
   };
 
   return (
@@ -354,7 +426,7 @@ const Home: NextPage = () => {
                 bg="black"
                 _hover={{ bg: 'gray.600' }}
                 color="white"
-                onClick={voteYesWrite}
+                onClick={() => voteYesWrite?.()}
                 marginBottom="16px"
               >
                 Verify Yes Proof With Smart Contract
@@ -374,25 +446,25 @@ const Home: NextPage = () => {
                 bg="black"
                 _hover={{ bg: 'gray.600' }}
                 color="white"
-                onClick={voteNoWrite}
+                onClick={() => voteNoWrite?.()}
                 marginBottom="16px"
               >
                 Verify No Proof With Smart Contract
               </Button>
-              <Alert status="error" marginBottom="16px">
+              {/* <Alert status="error" marginBottom="16px">
                 <AlertIcon />
                 <AlertTitle>Your browser is outdated!</AlertTitle>
                 <AlertDescription>
                   Your Chakra experience may be degraded.
                 </AlertDescription>
-              </Alert>
-              <Alert status="success" marginBottom="16px">
+              </Alert> */}
+              {/* <Alert status="success" marginBottom="16px">
                 <AlertIcon />
                 <AlertTitle>Your browser is outdated!</AlertTitle>
                 <AlertDescription>
                   Your Chakra experience may be degraded.
                 </AlertDescription>
-              </Alert>
+              </Alert> */}
               <Heading size={'md'} marginBottom="16px">
                 Proof:
               </Heading>
@@ -404,10 +476,46 @@ const Home: NextPage = () => {
               <Heading size={'md'} marginBottom="16px">
                 Valid:
               </Heading>
+
               {voteProof.length > 0 && (
                 <Text>{isVoteValid ? 'Valid proof' : 'Invalid proof'}</Text>
               )}
+
+              <Heading size={'xl'} marginTop="50px" marginBottom="20px">
+                Create an Identity
+              </Heading>
+              <Button
+                variant="solid"
+                bg="black"
+                _hover={{ bg: 'gray.600' }}
+                color="white"
+                onClick={createIdentity}
+                marginBottom="16px"
+              >
+                Create an Identity
+              </Button>
+              <Button
+                variant="solid"
+                bg="black"
+                _hover={{ bg: 'gray.600' }}
+                color="white"
+                onClick={joinGroup}
+                marginBottom="16px"
+              >
+                Join a Group
+              </Button>
+              <Button
+                variant="solid"
+                bg="black"
+                _hover={{ bg: 'gray.600' }}
+                color="white"
+                onClick={fullProof}
+                marginBottom="16px"
+              >
+                Create a full proof
+              </Button>
             </Flex>
+
             <footer>
               <Text>Byont Ventures B.V. © {new Date().getFullYear()}</Text>
             </footer>

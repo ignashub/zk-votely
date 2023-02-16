@@ -120,7 +120,8 @@ contract PlonkVerifier {
 
   uint16 constant lastMem = 704;
 
-  event VerifySuccess(string message);
+  // event VerifySuccess(string message);
+  // emit VerifySuccess("Successful Verification");
 
   function verifyProof(
     bytes memory proof,
@@ -575,8 +576,6 @@ contract PlonkVerifier {
         mstore(add(mIn, 352), G2y1)
 
         let success := staticcall(sub(gas(), 2000), 8, mIn, 384, mIn, 0x20)
-
-        emit VerifySuccess("Successful Verification");
 
         isOk := and(success, mload(mIn))
       }
