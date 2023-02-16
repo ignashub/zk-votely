@@ -33,43 +33,14 @@ import {
 } from '@semaphore-protocol/proof';
 import { Group } from '@semaphore-protocol/group';
 import { formatBytes32String } from 'ethers/lib/utils';
+import {
+  makeProof,
+  verifyProof,
+  makePlonkProof,
+  verifyPlonkProof,
+} from '../utils/utils';
+
 import snarkjs = require('snarkjs');
-
-const makeProof = async (_proofInput, _wasm, _zkey) => {
-  const { proof, publicSignals } = await snarkjs.groth16.fullProve(
-    _proofInput,
-    _wasm,
-    _zkey
-  );
-  return { proof, publicSignals };
-};
-
-const verifyProof = async (_verificationkey, signals, proof) => {
-  const vkey = await fetch(_verificationkey).then(function (res) {
-    return res.json();
-  });
-
-  const res = await snarkjs.groth16.verify(vkey, signals, proof);
-  return res;
-};
-
-const makePlonkProof = async (_proofInput, _wasm, _zkey) => {
-  const { proof, publicSignals } = await snarkjs.plonk.fullProve(
-    _proofInput,
-    _wasm,
-    _zkey
-  );
-  return { proof, publicSignals };
-};
-
-const verifyPlonkProof = async (_verificationkey, signals, proof) => {
-  const vkey = await fetch(_verificationkey).then(function (res) {
-    return res.json();
-  });
-
-  const res = await snarkjs.plonk.verify(vkey, signals, proof);
-  return res;
-};
 
 const Home: NextPage = () => {
   //Example with groth16
@@ -271,7 +242,6 @@ const Home: NextPage = () => {
   const [identity, setIdentity] = useState<Identity>();
   const [group, setGroup] = useState<Group>(new Group(1));
 
-  // const group = new Group(1);
   const externalNullifier = utils.formatBytes32String('Topic');
   const snarkArtifactsPath = 'zkproof/../../artifacts/snark';
 
@@ -295,11 +265,11 @@ const Home: NextPage = () => {
       identity,
       group,
       externalNullifier,
-      greeting,
-      {
-        wasmFilePath: `${snarkArtifactsPath}/semaphore.wasm`,
-        zkeyFilePath: `${snarkArtifactsPath}/semaphore.zkey`,
-      }
+      greeting
+      // {
+      //   wasmFilePath: `${snarkArtifactsPath}/semaphore.wasm`,
+      //   zkeyFilePath: `${snarkArtifactsPath}/semaphore.zkey`,
+      // }
     );
 
     const verified = await verifyMember(result, 20);
