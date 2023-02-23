@@ -25,6 +25,7 @@ import {
 import { utils } from 'ethers';
 import { VoteYesVerifierAbi } from '../abis/VoteYesVerifier';
 import { VoteNoVerifierAbi } from '../abis/VoteNoVerifier';
+import { SemaphoreVotingAbi } from '../abis/SemaphoreVoting';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Identity } from '@semaphore-protocol/identity';
 import {
@@ -38,6 +39,7 @@ import {
   verifyProof,
   makePlonkProof,
   verifyPlonkProof,
+  voteToBinary,
 } from '../utils/utils';
 
 import snarkjs = require('snarkjs');
@@ -171,17 +173,6 @@ const Home: NextPage = () => {
 
   const { write: voteNoWrite } = useContractWrite(noVoteConfig);
 
-  const voteToBinary = (str = '') => {
-    let res = '';
-    res = str
-      .split('')
-      .map((char) => {
-        return char.charCodeAt(0).toString(2);
-      })
-      .join('');
-    return res;
-  };
-
   const makeVoteCallData = async (_proofInput, _wasm, _zkey) => {
     const { proof, publicSignals } = await snarkjs.plonk.fullProve(
       _proofInput,
@@ -242,8 +233,62 @@ const Home: NextPage = () => {
   const [identity, setIdentity] = useState<Identity>();
   const [group, setGroup] = useState<Group>(new Group(1));
 
+  const [semaphoreProof, setSemaphoreProof] = useState('');
+
   const externalNullifier = utils.formatBytes32String('Topic');
   const snarkArtifactsPath = 'zkproof/../../artifacts/snark';
+
+  //for creating pool
+  const [pollId, setPollId] = useState('');
+  const [coordinator, setCoordinator] = useState('');
+  const [merkleTreeDepth, setmerkleTreeDepth] = useState('');
+
+  //create pool
+  const { config: createPollConfig } = usePrepareContractWrite({
+    address: '0x89490c95eD199D980Cdb4FF8Bac9977EDb41A7E7 ',
+    abi: SemaphoreVotingAbi,
+    functionName: 'createPoll',
+    args: [pollId, coordinator, merkleTreeDepth],
+  });
+
+  const { write: createPool } = useContractWrite(createPollConfig);
+
+  //for adding voter
+  const [identityCommitment, setIdentityCommitment] = useState('');
+
+  const { config: addVoterConfig } = usePrepareContractWrite({
+    address: '0x89490c95eD199D980Cdb4FF8Bac9977EDb41A7E7 ',
+    abi: SemaphoreVotingAbi,
+    functionName: 'addVoter',
+    args: [pollId, identityCommitment],
+  });
+
+  const { write: addVoter } = useContractWrite(addVoterConfig);
+
+  //for start pool
+  const [encryptionKey, setEncryptionKey] = useState('');
+
+  const { config: startPollConfig } = usePrepareContractWrite({
+    address: '0x89490c95eD199D980Cdb4FF8Bac9977EDb41A7E7 ',
+    abi: SemaphoreVotingAbi,
+    functionName: 'startPoll',
+    args: [pollId, encryptionKey],
+  });
+
+  const { write: startPoll } = useContractWrite(startPollConfig);
+
+  //for cast vote
+  const [semaphoreVote, setSemaphoreVote] = useState('');
+  const [nullifierHash, setNullifierHash] = useState('');
+
+  const { config: castVoteConfig } = usePrepareContractWrite({
+    address: '0x89490c95eD199D980Cdb4FF8Bac9977EDb41A7E7 ',
+    abi: SemaphoreVotingAbi,
+    functionName: 'startPoll',
+    args: [identityCommitment],
+  });
+
+  const { write: castVote } = useContractWrite(castVoteConfig);
 
   const createIdentity = () => {
     const _identity = new Identity();

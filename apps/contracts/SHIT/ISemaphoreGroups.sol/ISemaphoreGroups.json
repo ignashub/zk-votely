@@ -1,0 +1,1380 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "Semaphore__GroupAlreadyExists",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "Semaphore__GroupDoesNotExist",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "groupId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "merkleTreeDepth",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "zeroValue",
+          "type": "uint256"
+        }
+      ],
+      "name": "GroupCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "groupId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "identityCommitment",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "merkleTreeRoot",
+          "type": "uint256"
+        }
+      ],
+      "name": "MemberAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "groupId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "identityCommitment",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "merkleTreeRoot",
+          "type": "uint256"
+        }
+      ],
+      "name": "MemberRemoved",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "groupId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "identityCommitment",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "newIdentityCommitment",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "merkleTreeRoot",
+          "type": "uint256"
+        }
+      ],
+      "name": "MemberUpdated",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "groupId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getMerkleTreeDepth",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "groupId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getMerkleTreeRoot",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "groupId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getNumberOfMerkleTreeLeaves",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "getMerkleTreeDepth(uint256)": "6389e107",
+    "getMerkleTreeRoot(uint256)": "dabc4d51",
+    "getNumberOfMerkleTreeLeaves(uint256)": "638480be"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"Semaphore__GroupAlreadyExists\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"Semaphore__GroupDoesNotExist\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"groupId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"merkleTreeDepth\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"zeroValue\",\"type\":\"uint256\"}],\"name\":\"GroupCreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"groupId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"identityCommitment\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"merkleTreeRoot\",\"type\":\"uint256\"}],\"name\":\"MemberAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"groupId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"identityCommitment\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"merkleTreeRoot\",\"type\":\"uint256\"}],\"name\":\"MemberRemoved\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"groupId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"identityCommitment\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"newIdentityCommitment\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"merkleTreeRoot\",\"type\":\"uint256\"}],\"name\":\"MemberUpdated\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"groupId\",\"type\":\"uint256\"}],\"name\":\"getMerkleTreeDepth\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"groupId\",\"type\":\"uint256\"}],\"name\":\"getMerkleTreeRoot\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"groupId\",\"type\":\"uint256\"}],\"name\":\"getNumberOfMerkleTreeLeaves\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"events\":{\"GroupCreated(uint256,uint256,uint256)\":{\"details\":\"Emitted when a new group is created.\",\"params\":{\"groupId\":\": Id of the group.\",\"merkleTreeDepth\":\": Depth of the tree.\",\"zeroValue\":\": Zero value of the tree.\"}},\"MemberAdded(uint256,uint256,uint256,uint256)\":{\"details\":\"Emitted when a new identity commitment is added.\",\"params\":{\"groupId\":\": Group id of the group.\",\"identityCommitment\":\": New identity commitment.\",\"index\":\": Identity commitment index.\",\"merkleTreeRoot\":\": New root hash of the tree.\"}},\"MemberRemoved(uint256,uint256,uint256,uint256)\":{\"details\":\"Emitted when a new identity commitment is removed.\",\"params\":{\"groupId\":\": Group id of the group.\",\"identityCommitment\":\": Existing identity commitment to be removed.\",\"index\":\": Identity commitment index.\",\"merkleTreeRoot\":\": New root hash of the tree.\"}},\"MemberUpdated(uint256,uint256,uint256,uint256,uint256)\":{\"details\":\"Emitted when an identity commitment is updated.\",\"params\":{\"groupId\":\": Group id of the group.\",\"identityCommitment\":\": Existing identity commitment to be updated.\",\"index\":\": Identity commitment index.\",\"merkleTreeRoot\":\": New root hash of the tree.\",\"newIdentityCommitment\":\": New identity commitment.\"}}},\"kind\":\"dev\",\"methods\":{\"getMerkleTreeDepth(uint256)\":{\"details\":\"Returns the depth of the tree of a group.\",\"params\":{\"groupId\":\": Id of the group.\"},\"returns\":{\"_0\":\"Depth of the group tree.\"}},\"getMerkleTreeRoot(uint256)\":{\"details\":\"Returns the last root hash of a group.\",\"params\":{\"groupId\":\": Id of the group.\"},\"returns\":{\"_0\":\"Root hash of the group.\"}},\"getNumberOfMerkleTreeLeaves(uint256)\":{\"details\":\"Returns the number of tree leaves of a group.\",\"params\":{\"groupId\":\": Id of the group.\"},\"returns\":{\"_0\":\"Number of tree leaves.\"}}},\"title\":\"SemaphoreGroups contract interface.\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/interfaces/ISemaphoreGroups.sol\":\"ISemaphoreGroups\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@contracts/=src/\",\":@openzeppelin/=../../node_modules/@openzeppelin/\",\":@zk-kit/=../../node_modules/@zk-kit/\",\":ds-test/=../../libs/ds-test/src/\",\":forge-std/=../../libs/forge-std/src/\"]},\"sources\":{\"src/interfaces/ISemaphoreGroups.sol\":{\"keccak256\":\"0x3db1b258338eb5ae1c13d431a04a2ba549174669bc5bdb613269fa55b6f9201d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://040823db91f2aa78059f3a6e5d6d3d9e493c26247fcd435827e708f7f59046aa\",\"dweb:/ipfs/QmPqup2n96B7WccuzGaf8yWf2otBemotVByduk3GedSFG2\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.17+commit.8df45f5f"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "Semaphore__GroupAlreadyExists"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "Semaphore__GroupDoesNotExist"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "groupId",
+              "type": "uint256",
+              "indexed": true
+            },
+            {
+              "internalType": "uint256",
+              "name": "merkleTreeDepth",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256",
+              "name": "zeroValue",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "GroupCreated",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "groupId",
+              "type": "uint256",
+              "indexed": true
+            },
+            {
+              "internalType": "uint256",
+              "name": "index",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256",
+              "name": "identityCommitment",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256",
+              "name": "merkleTreeRoot",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "MemberAdded",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "groupId",
+              "type": "uint256",
+              "indexed": true
+            },
+            {
+              "internalType": "uint256",
+              "name": "index",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256",
+              "name": "identityCommitment",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256",
+              "name": "merkleTreeRoot",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "MemberRemoved",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "groupId",
+              "type": "uint256",
+              "indexed": true
+            },
+            {
+              "internalType": "uint256",
+              "name": "index",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256",
+              "name": "identityCommitment",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256",
+              "name": "newIdentityCommitment",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256",
+              "name": "merkleTreeRoot",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "MemberUpdated",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "groupId",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getMerkleTreeDepth",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "groupId",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getMerkleTreeRoot",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "groupId",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getNumberOfMerkleTreeLeaves",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "getMerkleTreeDepth(uint256)": {
+            "details": "Returns the depth of the tree of a group.",
+            "params": {
+              "groupId": ": Id of the group."
+            },
+            "returns": {
+              "_0": "Depth of the group tree."
+            }
+          },
+          "getMerkleTreeRoot(uint256)": {
+            "details": "Returns the last root hash of a group.",
+            "params": {
+              "groupId": ": Id of the group."
+            },
+            "returns": {
+              "_0": "Root hash of the group."
+            }
+          },
+          "getNumberOfMerkleTreeLeaves(uint256)": {
+            "details": "Returns the number of tree leaves of a group.",
+            "params": {
+              "groupId": ": Id of the group."
+            },
+            "returns": {
+              "_0": "Number of tree leaves."
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@contracts/=src/",
+        ":@openzeppelin/=../../node_modules/@openzeppelin/",
+        ":@zk-kit/=../../node_modules/@zk-kit/",
+        ":ds-test/=../../libs/ds-test/src/",
+        ":forge-std/=../../libs/forge-std/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/interfaces/ISemaphoreGroups.sol": "ISemaphoreGroups"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "src/interfaces/ISemaphoreGroups.sol": {
+        "keccak256": "0x3db1b258338eb5ae1c13d431a04a2ba549174669bc5bdb613269fa55b6f9201d",
+        "urls": [
+          "bzz-raw://040823db91f2aa78059f3a6e5d6d3d9e493c26247fcd435827e708f7f59046aa",
+          "dweb:/ipfs/QmPqup2n96B7WccuzGaf8yWf2otBemotVByduk3GedSFG2"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "src/interfaces/ISemaphoreGroups.sol",
+    "id": 28643,
+    "exportedSymbols": {
+      "ISemaphoreGroups": [
+        28642
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:2545:38",
+    "nodes": [
+      {
+        "id": 28568,
+        "nodeType": "PragmaDirective",
+        "src": "32:31:38",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          ">=",
+          "0.7",
+          ".0",
+          "<",
+          "0.9",
+          ".0"
+        ]
+      },
+      {
+        "id": 28642,
+        "nodeType": "ContractDefinition",
+        "src": "115:2460:38",
+        "nodes": [
+          {
+            "id": 28571,
+            "nodeType": "ErrorDefinition",
+            "src": "147:37:38",
+            "nodes": [],
+            "errorSelector": "029f0579",
+            "name": "Semaphore__GroupDoesNotExist",
+            "nameLocation": "153:28:38",
+            "parameters": {
+              "id": 28570,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "181:2:38"
+            }
+          },
+          {
+            "id": 28573,
+            "nodeType": "ErrorDefinition",
+            "src": "188:38:38",
+            "nodes": [],
+            "errorSelector": "8121725b",
+            "name": "Semaphore__GroupAlreadyExists",
+            "nameLocation": "194:29:38",
+            "parameters": {
+              "id": 28572,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "223:2:38"
+            }
+          },
+          {
+            "id": 28582,
+            "nodeType": "EventDefinition",
+            "src": "420:108:38",
+            "nodes": [],
+            "anonymous": false,
+            "documentation": {
+              "id": 28574,
+              "nodeType": "StructuredDocumentation",
+              "src": "232:184:38",
+              "text": "@dev Emitted when a new group is created.\n @param groupId: Id of the group.\n @param merkleTreeDepth: Depth of the tree.\n @param zeroValue: Zero value of the tree."
+            },
+            "eventSelector": "0d000126c26c1bbe400fd2332187f75d58b69306f9ec47b408686189d3a00833",
+            "name": "GroupCreated",
+            "nameLocation": "426:12:38",
+            "parameters": {
+              "id": 28581,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 28576,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "groupId",
+                  "nameLocation": "461:7:38",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 28582,
+                  "src": "445:23:38",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 28575,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "445:7:38",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 28578,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "merkleTreeDepth",
+                  "nameLocation": "483:15:38",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 28582,
+                  "src": "475:23:38",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 28577,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "475:7:38",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 28580,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "zeroValue",
+                  "nameLocation": "513:9:38",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 28582,
+                  "src": "505:17:38",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 28579,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "505:7:38",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "438:89:38"
+            }
+          },
+          {
+            "id": 28593,
+            "nodeType": "EventDefinition",
+            "src": "805:135:38",
+            "nodes": [],
+            "anonymous": false,
+            "documentation": {
+              "id": 28583,
+              "nodeType": "StructuredDocumentation",
+              "src": "534:267:38",
+              "text": "@dev Emitted when a new identity commitment is added.\n @param groupId: Group id of the group.\n @param index: Identity commitment index.\n @param identityCommitment: New identity commitment.\n @param merkleTreeRoot: New root hash of the tree."
+            },
+            "eventSelector": "19239b3f93cd10558aaf11423af70c77763bf54f52bcc75bfa74d4d13548cde9",
+            "name": "MemberAdded",
+            "nameLocation": "811:11:38",
+            "parameters": {
+              "id": 28592,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 28585,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "groupId",
+                  "nameLocation": "845:7:38",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 28593,
+                  "src": "829:23:38",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 28584,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "829:7:38",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 28587,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "index",
+                  "nameLocation": "867:5:38",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 28593,
+                  "src": "859:13:38",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 28586,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "859:7:38",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 28589,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "identityCommitment",
+                  "nameLocation": "887:18:38",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 28593,
+                  "src": "879:26:38",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 28588,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "879:7:38",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 28591,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "merkleTreeRoot",
+                  "nameLocation": "920:14:38",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 28593,
+                  "src": "912:22:38",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 28590,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "912:7:38",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "822:117:38"
+            }
+          },
+          {
+            "id": 28606,
+            "nodeType": "EventDefinition",
+            "src": "1297:173:38",
+            "nodes": [],
+            "anonymous": false,
+            "documentation": {
+              "id": 28594,
+              "nodeType": "StructuredDocumentation",
+              "src": "946:347:38",
+              "text": "@dev Emitted when an identity commitment is updated.\n @param groupId: Group id of the group.\n @param index: Identity commitment index.\n @param identityCommitment: Existing identity commitment to be updated.\n @param newIdentityCommitment: New identity commitment.\n @param merkleTreeRoot: New root hash of the tree."
+            },
+            "eventSelector": "ea3588e4a2a0c93d6a0e69dfeaf7496f43ccccf02ad9ce0a5b7627cbca4b61b1",
+            "name": "MemberUpdated",
+            "nameLocation": "1303:13:38",
+            "parameters": {
+              "id": 28605,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 28596,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "groupId",
+                  "nameLocation": "1339:7:38",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 28606,
+                  "src": "1323:23:38",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 28595,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1323:7:38",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 28598,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "index",
+                  "nameLocation": "1361:5:38",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 28606,
+                  "src": "1353:13:38",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 28597,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1353:7:38",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 28600,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "identityCommitment",
+                  "nameLocation": "1381:18:38",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 28606,
+                  "src": "1373:26:38",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 28599,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1373:7:38",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 28602,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "newIdentityCommitment",
+                  "nameLocation": "1414:21:38",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 28606,
+                  "src": "1406:29:38",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 28601,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1406:7:38",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 28604,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "merkleTreeRoot",
+                  "nameLocation": "1450:14:38",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 28606,
+                  "src": "1442:22:38",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 28603,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1442:7:38",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1316:153:38"
+            }
+          },
+          {
+            "id": 28617,
+            "nodeType": "EventDefinition",
+            "src": "1768:137:38",
+            "nodes": [],
+            "anonymous": false,
+            "documentation": {
+              "id": 28607,
+              "nodeType": "StructuredDocumentation",
+              "src": "1476:288:38",
+              "text": "@dev Emitted when a new identity commitment is removed.\n @param groupId: Group id of the group.\n @param index: Identity commitment index.\n @param identityCommitment: Existing identity commitment to be removed.\n @param merkleTreeRoot: New root hash of the tree."
+            },
+            "eventSelector": "3108849c053c77b8073a11256dffb5ffd5b55e93e105a355e1c9061db890d871",
+            "name": "MemberRemoved",
+            "nameLocation": "1774:13:38",
+            "parameters": {
+              "id": 28616,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 28609,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "groupId",
+                  "nameLocation": "1810:7:38",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 28617,
+                  "src": "1794:23:38",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 28608,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1794:7:38",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 28611,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "index",
+                  "nameLocation": "1832:5:38",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 28617,
+                  "src": "1824:13:38",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 28610,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1824:7:38",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 28613,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "identityCommitment",
+                  "nameLocation": "1852:18:38",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 28617,
+                  "src": "1844:26:38",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 28612,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1844:7:38",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 28615,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "merkleTreeRoot",
+                  "nameLocation": "1885:14:38",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 28617,
+                  "src": "1877:22:38",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 28614,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1877:7:38",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1787:117:38"
+            }
+          },
+          {
+            "id": 28625,
+            "nodeType": "FunctionDefinition",
+            "src": "2041:76:38",
+            "nodes": [],
+            "documentation": {
+              "id": 28618,
+              "nodeType": "StructuredDocumentation",
+              "src": "1911:126:38",
+              "text": "@dev Returns the last root hash of a group.\n @param groupId: Id of the group.\n @return Root hash of the group."
+            },
+            "functionSelector": "dabc4d51",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getMerkleTreeRoot",
+            "nameLocation": "2050:17:38",
+            "parameters": {
+              "id": 28621,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 28620,
+                  "mutability": "mutable",
+                  "name": "groupId",
+                  "nameLocation": "2076:7:38",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 28625,
+                  "src": "2068:15:38",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 28619,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2068:7:38",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2067:17:38"
+            },
+            "returnParameters": {
+              "id": 28624,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 28623,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 28625,
+                  "src": "2108:7:38",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 28622,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2108:7:38",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2107:9:38"
+            },
+            "scope": 28642,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 28633,
+            "nodeType": "FunctionDefinition",
+            "src": "2257:77:38",
+            "nodes": [],
+            "documentation": {
+              "id": 28626,
+              "nodeType": "StructuredDocumentation",
+              "src": "2123:130:38",
+              "text": "@dev Returns the depth of the tree of a group.\n @param groupId: Id of the group.\n @return Depth of the group tree."
+            },
+            "functionSelector": "6389e107",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getMerkleTreeDepth",
+            "nameLocation": "2266:18:38",
+            "parameters": {
+              "id": 28629,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 28628,
+                  "mutability": "mutable",
+                  "name": "groupId",
+                  "nameLocation": "2293:7:38",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 28633,
+                  "src": "2285:15:38",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 28627,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2285:7:38",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2284:17:38"
+            },
+            "returnParameters": {
+              "id": 28632,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 28631,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 28633,
+                  "src": "2325:7:38",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 28630,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2325:7:38",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2324:9:38"
+            },
+            "scope": 28642,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 28641,
+            "nodeType": "FunctionDefinition",
+            "src": "2476:96:38",
+            "nodes": [],
+            "documentation": {
+              "id": 28634,
+              "nodeType": "StructuredDocumentation",
+              "src": "2340:132:38",
+              "text": "@dev Returns the number of tree leaves of a group.\n @param groupId: Id of the group.\n @return Number of tree leaves."
+            },
+            "functionSelector": "638480be",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getNumberOfMerkleTreeLeaves",
+            "nameLocation": "2485:27:38",
+            "parameters": {
+              "id": 28637,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 28636,
+                  "mutability": "mutable",
+                  "name": "groupId",
+                  "nameLocation": "2527:7:38",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 28641,
+                  "src": "2519:15:38",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 28635,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2519:7:38",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2512:27:38"
+            },
+            "returnParameters": {
+              "id": 28640,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 28639,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 28641,
+                  "src": "2563:7:38",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 28638,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2563:7:38",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2562:9:38"
+            },
+            "scope": 28642,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "ISemaphoreGroups",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 28569,
+          "nodeType": "StructuredDocumentation",
+          "src": "67:48:38",
+          "text": "@title SemaphoreGroups contract interface."
+        },
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          28642
+        ],
+        "name": "ISemaphoreGroups",
+        "nameLocation": "125:16:38",
+        "scope": 28643,
+        "usedErrors": [
+          28571,
+          28573
+        ]
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 38
+}

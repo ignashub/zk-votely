@@ -1,0 +1,409 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "uint256[2]",
+          "name": "",
+          "type": "uint256[2]"
+        }
+      ],
+      "name": "poseidon",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x61011961003a600b82828239805160001a60731461002d57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe730000000000000000000000000000000000000000301460806040526004361060335760003560e01c806329a5f2f6146038575b600080fd5b60496043366004605b565b50600090565b60405190815260200160405180910390f35b600060408284031215606c57600080fd5b82601f830112607a57600080fd5b6040516040810181811067ffffffffffffffff8211171560aa57634e487b7160e01b600052604160045260246000fd5b806040525080604084018581111560c057600080fd5b845b8181101560d857803583526020928301920160c2565b50919594505050505056fea26469706673582212204713e6059dea0ae92ba5aeaacb0a478c11d7b62b36fa368867be56f41393ea9c64736f6c63430008110033",
+    "sourceMap": "56:96:31:-:0;;;;;;;;;;;;;;;-1:-1:-1;;;56:96:31;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x730000000000000000000000000000000000000000301460806040526004361060335760003560e01c806329a5f2f6146038575b600080fd5b60496043366004605b565b50600090565b60405190815260200160405180910390f35b600060408284031215606c57600080fd5b82601f830112607a57600080fd5b6040516040810181811067ffffffffffffffff8211171560aa57634e487b7160e01b600052604160045260246000fd5b806040525080604084018581111560c057600080fd5b845b8181101560d857803583526020928301920160c2565b50919594505050505056fea26469706673582212204713e6059dea0ae92ba5aeaacb0a478c11d7b62b36fa368867be56f41393ea9c64736f6c63430008110033",
+    "sourceMap": "56:96:31:-:0;;;;;;;;;;;;;;;;;;;;;;;;81:69;;;;;;:::i;:::-;-1:-1:-1;139:7:31;;81:69;;;;1028:25:42;;;1016:2;1001:18;81:69:31;;;;;;;14:855:42;96:6;149:2;137:9;128:7;124:23;120:32;117:52;;;165:1;162;155:12;117:52;214:7;207:4;196:9;192:20;188:34;178:62;;236:1;233;226:12;178:62;269:2;263:9;311:2;303:6;299:15;380:6;368:10;365:22;344:18;332:10;329:34;326:62;323:185;;;430:10;425:3;421:20;418:1;411:31;465:4;462:1;455:15;493:4;490:1;483:15;323:185;528:10;524:2;517:22;;559:6;603:2;592:9;588:18;629:7;621:6;618:19;615:39;;;650:1;647;640:12;615:39;674:9;692:146;708:6;703:3;700:15;692:146;;;776:17;;764:30;;823:4;814:14;;;;725;692:146;;;-1:-1:-1;857:6:42;;14:855;-1:-1:-1;;;;;14:855:42:o",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "poseidon(uint256[2])": "29a5f2f6"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256[2]\",\"name\":\"\",\"type\":\"uint256[2]\"}],\"name\":\"poseidon\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/home/ignas/byont/poc-zk-snarks-voting-template/node_modules/@zk-kit/incremental-merkle-tree.sol/Hashes.sol\":\"PoseidonT3\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@contracts/=src/\",\":@openzeppelin/=../../node_modules/@openzeppelin/\",\":@zk-kit/=../../node_modules/@zk-kit/\",\":ds-test/=../../libs/ds-test/src/\",\":forge-std/=../../libs/forge-std/src/\"]},\"sources\":{\"/home/ignas/byont/poc-zk-snarks-voting-template/node_modules/@zk-kit/incremental-merkle-tree.sol/Hashes.sol\":{\"keccak256\":\"0xc634fec0820a2faab1bc350d94c3151835e8d2c2bc0321d9a198d62712786b81\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f3ccea79171329532b6b1300fab9fc971b1969b110e92fd6b338cc015d36bf07\",\"dweb:/ipfs/QmUYvW9mc26mvTFoDbKQYxPruQC98DJit9tANebPjvMhzP\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.17+commit.8df45f5f"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "uint256[2]",
+              "name": "",
+              "type": "uint256[2]"
+            }
+          ],
+          "stateMutability": "pure",
+          "type": "function",
+          "name": "poseidon",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@contracts/=src/",
+        ":@openzeppelin/=../../node_modules/@openzeppelin/",
+        ":@zk-kit/=../../node_modules/@zk-kit/",
+        ":ds-test/=../../libs/ds-test/src/",
+        ":forge-std/=../../libs/forge-std/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "/home/ignas/byont/poc-zk-snarks-voting-template/node_modules/@zk-kit/incremental-merkle-tree.sol/Hashes.sol": "PoseidonT3"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "/home/ignas/byont/poc-zk-snarks-voting-template/node_modules/@zk-kit/incremental-merkle-tree.sol/Hashes.sol": {
+        "keccak256": "0xc634fec0820a2faab1bc350d94c3151835e8d2c2bc0321d9a198d62712786b81",
+        "urls": [
+          "bzz-raw://f3ccea79171329532b6b1300fab9fc971b1969b110e92fd6b338cc015d36bf07",
+          "dweb:/ipfs/QmUYvW9mc26mvTFoDbKQYxPruQC98DJit9tANebPjvMhzP"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "/home/ignas/byont/poc-zk-snarks-voting-template/node_modules/@zk-kit/incremental-merkle-tree.sol/Hashes.sol",
+    "id": 27093,
+    "exportedSymbols": {
+      "PoseidonT3": [
+        27081
+      ],
+      "PoseidonT6": [
+        27092
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "31:220:31",
+    "nodes": [
+      {
+        "id": 27070,
+        "nodeType": "PragmaDirective",
+        "src": "31:23:31",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".4"
+        ]
+      },
+      {
+        "id": 27081,
+        "nodeType": "ContractDefinition",
+        "src": "56:96:31",
+        "nodes": [
+          {
+            "id": 27080,
+            "nodeType": "FunctionDefinition",
+            "src": "81:69:31",
+            "nodes": [],
+            "body": {
+              "id": 27079,
+              "nodeType": "Block",
+              "src": "148:2:31",
+              "nodes": [],
+              "statements": []
+            },
+            "functionSelector": "29a5f2f6",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "poseidon",
+            "nameLocation": "90:8:31",
+            "parameters": {
+              "id": 27075,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 27074,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 27080,
+                  "src": "99:17:31",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint256_$2_memory_ptr",
+                    "typeString": "uint256[2]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 27071,
+                      "name": "uint256",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "99:7:31",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 27073,
+                    "length": {
+                      "hexValue": "32",
+                      "id": 27072,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "kind": "number",
+                      "lValueRequested": false,
+                      "nodeType": "Literal",
+                      "src": "107:1:31",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_rational_2_by_1",
+                        "typeString": "int_const 2"
+                      },
+                      "value": "2"
+                    },
+                    "nodeType": "ArrayTypeName",
+                    "src": "99:10:31",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint256_$2_storage_ptr",
+                      "typeString": "uint256[2]"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "98:19:31"
+            },
+            "returnParameters": {
+              "id": 27078,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 27077,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 27080,
+                  "src": "139:7:31",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 27076,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "139:7:31",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "138:9:31"
+            },
+            "scope": 27081,
+            "stateMutability": "pure",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "PoseidonT3",
+        "contractDependencies": [],
+        "contractKind": "library",
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          27081
+        ],
+        "name": "PoseidonT3",
+        "nameLocation": "64:10:31",
+        "scope": 27093,
+        "usedErrors": []
+      },
+      {
+        "id": 27092,
+        "nodeType": "ContractDefinition",
+        "src": "154:96:31",
+        "nodes": [
+          {
+            "id": 27091,
+            "nodeType": "FunctionDefinition",
+            "src": "179:69:31",
+            "nodes": [],
+            "body": {
+              "id": 27090,
+              "nodeType": "Block",
+              "src": "246:2:31",
+              "nodes": [],
+              "statements": []
+            },
+            "functionSelector": "4937a258",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "poseidon",
+            "nameLocation": "188:8:31",
+            "parameters": {
+              "id": 27086,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 27085,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 27091,
+                  "src": "197:17:31",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_uint256_$5_memory_ptr",
+                    "typeString": "uint256[5]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 27082,
+                      "name": "uint256",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "197:7:31",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "id": 27084,
+                    "length": {
+                      "hexValue": "35",
+                      "id": 27083,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "kind": "number",
+                      "lValueRequested": false,
+                      "nodeType": "Literal",
+                      "src": "205:1:31",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_rational_5_by_1",
+                        "typeString": "int_const 5"
+                      },
+                      "value": "5"
+                    },
+                    "nodeType": "ArrayTypeName",
+                    "src": "197:10:31",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_uint256_$5_storage_ptr",
+                      "typeString": "uint256[5]"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "196:19:31"
+            },
+            "returnParameters": {
+              "id": 27089,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 27088,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 27091,
+                  "src": "237:7:31",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 27087,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "237:7:31",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "236:9:31"
+            },
+            "scope": 27092,
+            "stateMutability": "pure",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "PoseidonT6",
+        "contractDependencies": [],
+        "contractKind": "library",
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          27092
+        ],
+        "name": "PoseidonT6",
+        "nameLocation": "162:10:31",
+        "scope": 27093,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 31
+}
