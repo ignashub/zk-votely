@@ -16,7 +16,13 @@ import {
   Spinner,
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
-import { usePrepareContractWrite, useContractWrite, useAccount } from 'wagmi';
+import {
+  usePrepareContractWrite,
+  useContractWrite,
+  useContract,
+  useProvider,
+  useSigner,
+} from 'wagmi';
 import { BigNumber, utils, ethers } from 'ethers';
 import { VoteYesVerifierAbi } from '../abis/VoteYesVerifier';
 import { VoteNoVerifierAbi } from '../abis/VoteNoVerifier';
@@ -234,34 +240,36 @@ const Home: NextPage = () => {
   const snarkArtifactsPath = 'zkproof/../../artifacts/snark';
 
   //for creating pool
-  const [pollId, setPollId] = useState<BigNumber>();
-  const [coordinator, setCoordinator] = useState<`0x${string}`>();
-  const [merkleTreeDepth, setMerkleTreeDepth] = useState<BigNumber>();
+  const [pollId, setPollId] = useState<BigNumber | undefined>();
+  const [coordinator, setCoordinator] = useState<`0x${string}` | undefined>();
+  const [merkleTreeDepth, setMerkleTreeDepth] = useState<
+    BigNumber | undefined
+  >();
 
-  //create pool
-  const { config: createPollConfig } = usePrepareContractWrite({
-    address: '0xE3A41Eb999b595ff1502EAa32D835b80A9295d2d ',
+  const { data: signer, isError, isLoading } = useSigner();
+
+  const contract = useContract({
+    address: '0x5b7fAb089fAEbd3f98c96487Cb1ce04a7c44cE44',
     abi: SemaphoreVotingAbi,
-    functionName: 'createPoll',
-    args: [pollId, `0x${coordinator}`, merkleTreeDepth],
+    signerOrProvider: signer,
   });
 
-  const { write: createPoll } = useContractWrite(createPollConfig);
+  const setCoordinatorAddress = async () => {
+    const address = await signer.getAddress();
+    setCoordinator(`0x${address.slice(2)}`);
+    console.log(coordinator);
+  };
 
   const createBallout = async () => {
     console.log(pollId);
+    console.log(coordinator);
     console.log(merkleTreeDepth);
 
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
+    const myGasLimit = BigNumber.from(5000000);
 
-    const address = await signer.getAddress();
-    console.log(address);
-
-    setCoordinator(address);
-    console.log(coordinator);
-
-    // createPoll(pollId, coordinator, merkleTreeDepth);
+    await contract.createPoll(pollId, coordinator, merkleTreeDepth, {
+      gasLimit: myGasLimit,
+    });
   };
 
   //for adding voter
@@ -426,6 +434,16 @@ const Home: NextPage = () => {
                 marginBottom="16px"
               >
                 Create a Ballout
+              </Button>
+              <Button
+                variant="solid"
+                bg="black"
+                _hover={{ bg: 'gray.600' }}
+                color="white"
+                onClick={setCoordinatorAddress}
+                marginBottom="16px"
+              >
+                Set a Coordinator Address
               </Button>
               <Button
                 variant="solid"
