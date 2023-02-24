@@ -16,13 +16,8 @@ import {
   Spinner,
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
-import {
-  usePrepareContractWrite,
-  useContractWrite,
-  useContractRead,
-  useWaitForTransaction,
-} from 'wagmi';
-import { utils } from 'ethers';
+import { usePrepareContractWrite, useContractWrite, useAccount } from 'wagmi';
+import { BigNumber, utils, ethers } from 'ethers';
 import { VoteYesVerifierAbi } from '../abis/VoteYesVerifier';
 import { VoteNoVerifierAbi } from '../abis/VoteNoVerifier';
 import { SemaphoreVotingAbi } from '../abis/SemaphoreVoting';
@@ -239,56 +234,72 @@ const Home: NextPage = () => {
   const snarkArtifactsPath = 'zkproof/../../artifacts/snark';
 
   //for creating pool
-  const [pollId, setPollId] = useState('');
-  const [coordinator, setCoordinator] = useState('');
-  const [merkleTreeDepth, setmerkleTreeDepth] = useState('');
+  const [pollId, setPollId] = useState<BigNumber>();
+  const [coordinator, setCoordinator] = useState<`0x${string}`>();
+  const [merkleTreeDepth, setMerkleTreeDepth] = useState<BigNumber>();
 
   //create pool
   const { config: createPollConfig } = usePrepareContractWrite({
-    address: '0x89490c95eD199D980Cdb4FF8Bac9977EDb41A7E7 ',
+    address: '0xE3A41Eb999b595ff1502EAa32D835b80A9295d2d ',
     abi: SemaphoreVotingAbi,
     functionName: 'createPoll',
-    args: [pollId, coordinator, merkleTreeDepth],
+    args: [pollId, `0x${coordinator}`, merkleTreeDepth],
   });
 
-  const { write: createPool } = useContractWrite(createPollConfig);
+  const { write: createPoll } = useContractWrite(createPollConfig);
+
+  const createBallout = async () => {
+    console.log(pollId);
+    console.log(merkleTreeDepth);
+
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+
+    const address = await signer.getAddress();
+    console.log(address);
+
+    setCoordinator(address);
+    console.log(coordinator);
+
+    // createPoll(pollId, coordinator, merkleTreeDepth);
+  };
 
   //for adding voter
-  const [identityCommitment, setIdentityCommitment] = useState('');
+  // const [identityCommitment, setIdentityCommitment] = useState('');
 
-  const { config: addVoterConfig } = usePrepareContractWrite({
-    address: '0x89490c95eD199D980Cdb4FF8Bac9977EDb41A7E7 ',
-    abi: SemaphoreVotingAbi,
-    functionName: 'addVoter',
-    args: [pollId, identityCommitment],
-  });
+  // const { config: addVoterConfig } = usePrepareContractWrite({
+  //   address: '0x89490c95eD199D980Cdb4FF8Bac9977EDb41A7E7 ',
+  //   abi: SemaphoreVotingAbi,
+  //   functionName: 'addVoter',
+  //   args: [pollId, identityCommitment],
+  // });
 
-  const { write: addVoter } = useContractWrite(addVoterConfig);
+  // const { write: addVoter } = useContractWrite(addVoterConfig);
 
   //for start pool
-  const [encryptionKey, setEncryptionKey] = useState('');
+  // const [encryptionKey, setEncryptionKey] = useState('');
 
-  const { config: startPollConfig } = usePrepareContractWrite({
-    address: '0x89490c95eD199D980Cdb4FF8Bac9977EDb41A7E7 ',
-    abi: SemaphoreVotingAbi,
-    functionName: 'startPoll',
-    args: [pollId, encryptionKey],
-  });
+  // const { config: startPollConfig } = usePrepareContractWrite({
+  //   address: '0x89490c95eD199D980Cdb4FF8Bac9977EDb41A7E7 ',
+  //   abi: SemaphoreVotingAbi,
+  //   functionName: 'startPoll',
+  //   args: [pollId, encryptionKey],
+  // });
 
-  const { write: startPoll } = useContractWrite(startPollConfig);
+  // const { write: startPoll } = useContractWrite(startPollConfig);
 
   //for cast vote
-  const [semaphoreVote, setSemaphoreVote] = useState('');
-  const [nullifierHash, setNullifierHash] = useState('');
+  // const [semaphoreVote, setSemaphoreVote] = useState('');
+  // const [nullifierHash, setNullifierHash] = useState('');
 
-  const { config: castVoteConfig } = usePrepareContractWrite({
-    address: '0x89490c95eD199D980Cdb4FF8Bac9977EDb41A7E7 ',
-    abi: SemaphoreVotingAbi,
-    functionName: 'startPoll',
-    args: [identityCommitment],
-  });
+  // const { config: castVoteConfig } = usePrepareContractWrite({
+  //   address: '0x89490c95eD199D980Cdb4FF8Bac9977EDb41A7E7 ',
+  //   abi: SemaphoreVotingAbi,
+  //   functionName: 'startPoll',
+  //   args: [identityCommitment],
+  // });
 
-  const { write: castVote } = useContractWrite(castVoteConfig);
+  // const { write: castVote } = useContractWrite(castVoteConfig);
 
   const createIdentity = () => {
     const _identity = new Identity();
@@ -342,163 +353,31 @@ const Home: NextPage = () => {
           <Box boxSize="750px">
             <Flex justifyContent="center" flexDirection="column">
               <ConnectButton />
-              <Heading size={'xl'} marginBottom="20px">
-                Verify with Groth16
-              </Heading>
-              <Input
-                id="outlined-basic"
-                placeholder="A = 4"
-                type="number"
-                label="a"
-                onChange={(e) => setA(e.target.value)}
-                errorBorderColor="red.300"
-                style={{ marginBottom: '8px' }}
-              />
-              <Input
-                id="outlined-basic"
-                placeholder="B = 3"
-                type="number"
-                label="b"
-                onChange={(e) => setB(e.target.value)}
-                errorBorderColor="red.300"
-                style={{ marginBottom: '8px' }}
-              />
-              <Input
-                id="outlined-basic"
-                placeholder="C = 6"
-                type="number"
-                label="c"
-                onChange={(e) => setC(e.target.value)}
-                errorBorderColor="red.300"
-                style={{ marginBottom: '8px' }}
-              />
-
-              <Button
-                variant="solid"
-                bg="black"
-                _hover={{ bg: 'gray.600' }}
-                color="white"
-                onClick={runProofs}
-                marginBottom="16px"
-              >
-                Verify Proof With Groth16
-              </Button>
-              <Button
-                variant="solid"
-                bg="black"
-                _hover={{ bg: 'gray.600' }}
-                color="white"
-                onClick={runPlonkProofs}
-                marginBottom="16px"
-              >
-                Verify Proof With Plonk
-              </Button>
-              <Heading size={'xl'} marginBottom="20px">
-                Proof:
-              </Heading>
-              <Text marginBottom="16px">{proof}</Text>
-              <Heading size={'md'} marginBottom="16px">
-                Signals:
-              </Heading>
-              <Text marginBottom="40px">{signals}</Text>
-              <Heading size={'md'} marginBottom="16px">
-                Valid:
-              </Heading>
-              {proof.length > 0 && (
-                <Text>{isValid ? 'Valid proof' : 'Invalid proof'}</Text>
-              )}
-
-              <Heading size={'xl'} marginTop="50px" marginBottom="20px">
-                Verify Vote via Smart Contract
-              </Heading>
-              <RadioGroup
-                onChange={setVoteString}
-                value={voteString}
-                marginBottom="16px"
-              >
-                <Stack direction="row">
-                  <Radio colorScheme="green" value="Yes">
-                    Yes
-                  </Radio>
-                  <Radio colorScheme="red" value="No">
-                    No
-                  </Radio>
-                </Stack>
-              </RadioGroup>
-
-              <Button
-                variant="solid"
-                bg="black"
-                _hover={{ bg: 'gray.600' }}
-                color="white"
-                onClick={runVoteYesProofs}
-                marginBottom="16px"
-              >
-                Verify Yes Proof
-              </Button>
-              <Button
-                variant="solid"
-                bg="black"
-                _hover={{ bg: 'gray.600' }}
-                color="white"
-                onClick={() => voteYesWrite?.()}
-                marginBottom="16px"
-              >
-                Verify Yes Proof With Smart Contract
-              </Button>
-              <Button
-                variant="solid"
-                bg="black"
-                _hover={{ bg: 'gray.600' }}
-                color="white"
-                onClick={runVoteNoProofs}
-                marginBottom="16px"
-              >
-                Verify No Proof
-              </Button>
-              <Button
-                variant="solid"
-                bg="black"
-                _hover={{ bg: 'gray.600' }}
-                color="white"
-                onClick={() => voteNoWrite?.()}
-                marginBottom="16px"
-              >
-                Verify No Proof With Smart Contract
-              </Button>
-              {/* <Alert status="error" marginBottom="16px">
-                <AlertIcon />
-                <AlertTitle>Your browser is outdated!</AlertTitle>
-                <AlertDescription>
-                  Your Chakra experience may be degraded.
-                </AlertDescription>
-              </Alert> */}
-              {/* <Alert status="success" marginBottom="16px">
-                <AlertIcon />
-                <AlertTitle>Your browser is outdated!</AlertTitle>
-                <AlertDescription>
-                  Your Chakra experience may be degraded.
-                </AlertDescription>
-              </Alert> */}
-              <Heading size={'md'} marginBottom="16px">
-                Proof:
-              </Heading>
-              <Text marginBottom="16px">{voteProof}</Text>
-              <Heading size={'md'} marginBottom="16px">
-                Signals:
-              </Heading>
-              <Text marginBottom="40px">{voteSignals}</Text>
-              <Heading size={'md'} marginBottom="16px">
-                Valid:
-              </Heading>
-
-              {voteProof.length > 0 && (
-                <Text>{isVoteValid ? 'Valid proof' : 'Invalid proof'}</Text>
-              )}
-
               <Heading size={'xl'} marginTop="50px" marginBottom="20px">
                 Create an Identity
               </Heading>
+              {identity ? (
+                <Box py="6" whiteSpace="nowrap">
+                  <Box
+                    p="5"
+                    borderWidth={1}
+                    borderColor="gray.500"
+                    borderRadius="4px"
+                  >
+                    <Text textOverflow="ellipsis" overflow="hidden">
+                      Trapdoor: {identity.trapdoor.toString()}
+                    </Text>
+                    <Text textOverflow="ellipsis" overflow="hidden">
+                      Nullifier: {identity.nullifier.toString()}
+                    </Text>
+                    <Text textOverflow="ellipsis" overflow="hidden">
+                      Commitment: {identity.commitment.toString()}
+                    </Text>
+                  </Box>
+                </Box>
+              ) : (
+                <div></div>
+              )}
               <Button
                 variant="solid"
                 bg="black"
@@ -509,6 +388,45 @@ const Home: NextPage = () => {
               >
                 Create an Identity
               </Button>
+              <Input
+                id="outlined-basic"
+                placeholder="Set Ballot Id"
+                type="number"
+                label="BallotId"
+                onChange={(e) => setPollId(BigNumber.from(e.target.value))}
+                errorBorderColor="red.300"
+                style={{ marginBottom: '8px' }}
+              />
+              {/* <Input
+                id="outlined-basic"
+                placeholder="Coordinator"
+                type="text"
+                label="Coordinator"
+                onChange={(e) => setCoordinator(`0x${e.target.value}`)}
+                errorBorderColor="red.300"
+                style={{ marginBottom: '8px' }}
+              /> */}
+              <Input
+                id="outlined-basic"
+                placeholder="Ballot Size"
+                type="number"
+                label="Ballot Size"
+                onChange={(e) =>
+                  setMerkleTreeDepth(BigNumber.from(e.target.value))
+                }
+                errorBorderColor="red.300"
+                style={{ marginBottom: '8px' }}
+              />
+              <Button
+                variant="solid"
+                bg="black"
+                _hover={{ bg: 'gray.600' }}
+                color="white"
+                onClick={createBallout}
+                marginBottom="16px"
+              >
+                Create a Ballout
+              </Button>
               <Button
                 variant="solid"
                 bg="black"
@@ -517,7 +435,7 @@ const Home: NextPage = () => {
                 onClick={joinGroup}
                 marginBottom="16px"
               >
-                Join a Group
+                Join a Ballout
               </Button>
               <Button
                 variant="solid"
