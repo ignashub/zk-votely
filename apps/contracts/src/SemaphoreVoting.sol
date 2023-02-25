@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: MIT
-pragma solidity >=0.7.0 <0.9.0;
+pragma solidity 0.8.4;
 
 import "./interfaces/ISemaphoreVoting.sol";
 import "./interfaces/ISemaphoreVerifier.sol";
@@ -51,7 +51,7 @@ contract SemaphoreVoting is ISemaphoreVoting, SemaphoreGroups {
   function addVoter(
     uint256 pollId,
     uint256 identityCommitment
-  ) public override onlyCoordinator(pollId) {
+  ) public override {
     if (polls[pollId].state != PollState.Created) {
       revert Semaphore__PollHasAlreadyBeenStarted();
     }
