@@ -6,12 +6,8 @@ import {
   Button,
   Input,
   Flex,
-  RadioGroup,
-  Radio,
-  Stack,
   Alert,
   AlertIcon,
-  AlertTitle,
   AlertDescription,
   Spinner,
 } from '@chakra-ui/react';
@@ -37,15 +33,22 @@ const Home: NextPage = () => {
   const externalNullifier = utils.formatBytes32String('Topic');
   const snarkArtifactsPath = 'zkproof/../../artifacts/snark';
 
-  //for creating pool
+  //For creating pool
   const [pollId, setPollId] = useState<BigNumber | undefined>();
   const [coordinator, setCoordinator] = useState<`0x${string}` | undefined>();
   const [merkleTreeDepth, setMerkleTreeDepth] = useState<
     BigNumber | undefined
   >();
 
+  //Alerts
+  const [successfulAlert, setSuccessfulAlert] = useState(false);
+  const [errorAlert, setErrorAlert] = useState(false);
+  const [loadingAlert, setLoadingAlert] = useState(false);
+
+  //Signer
   const { data: signer, isError, isLoading } = useSigner();
 
+  //SemaphoreVote Smart Contract
   const contract = useContract({
     address: '0x5b7fAb089fAEbd3f98c96487Cb1ce04a7c44cE44',
     abi: SemaphoreVotingAbi,
@@ -59,11 +62,8 @@ const Home: NextPage = () => {
   };
 
   const createBallout = async () => {
-    console.log(pollId);
-    console.log(coordinator);
-    console.log(merkleTreeDepth);
-
     const myGasLimit = BigNumber.from(5000000);
+    setLoadingAlert(true);
 
     try {
       let result = await contract.createPoll(
@@ -74,9 +74,23 @@ const Home: NextPage = () => {
           gasLimit: myGasLimit,
         }
       );
-      console.log(`${coordinator} and ballout id ${pollId}`);
+      const receipt = await result.wait();
+      // Check the status of the transaction
+      if (receipt.status === 1) {
+        // Transaction succeeded
+        setLoadingAlert(false);
+        setSuccessfulAlert(true);
+        setTimeout(() => {
+          setSuccessfulAlert(false);
+        }, 5000);
+      }
     } catch (error: any) {
-      console.error('Error fetching data', error);
+      // Transaction failed
+      setLoadingAlert(false);
+      setErrorAlert(true);
+      setTimeout(() => {
+        setErrorAlert(false);
+      }, 5000);
     }
   };
 
@@ -227,6 +241,20 @@ const Home: NextPage = () => {
               >
                 Create a full proof
               </Button>
+
+              {successfulAlert && (
+                <Alert status="success" variant="subtle">
+                  <AlertIcon />
+                  <AlertDescription>Successful Transaction!</AlertDescription>
+                </Alert>
+              )}
+              {errorAlert && (
+                <Alert status="error" variant="subtle">
+                  <AlertIcon />
+                  <AlertDescription>Failed Transaction!</AlertDescription>
+                </Alert>
+              )}
+              {loadingAlert && <Spinner />}
             </Flex>
 
             <footer>
