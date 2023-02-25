@@ -23,7 +23,10 @@ const Voter: NextPage = () => {
   const router = useRouter();
   //SEMAPHORE STUFF
   const [identity, setIdentity] = useState<Identity>();
-  const [pollId, setPollId] = useState<BigNumber | undefined>();
+  //For creating pool
+  const [pollId, setPollId] = useState<BigNumber | undefined>(
+    BigNumber.from(0)
+  );
 
   //Alerts
   const [successfulAlert, setSuccessfulAlert] = useState(false);
@@ -31,14 +34,14 @@ const Voter: NextPage = () => {
   const [loadingAlert, setLoadingAlert] = useState(false);
 
   //Signer
-  // const { data: signer, isError, isLoading } = useSigner();
+  const { data: signer, isError, isLoading } = useSigner();
 
   //SemaphoreVote Smart Contract
-  // const contract = useContract({
-  //   address: '0x1fb1a2B61AE799914Fd69Bb5aA17ceb3eE8aa023',
-  //   abi: SemaphoreVotingAbi,
-  //   signerOrProvider: signer,
-  // });
+  const contract = useContract({
+    address: '0x41A1B6E666267e7C67A79cdFcD1a3Dcb976Ee8E5',
+    abi: SemaphoreVotingAbi,
+    signerOrProvider: signer,
+  });
 
   const goToHomePage = () => {
     router.push('/');
@@ -51,33 +54,43 @@ const Voter: NextPage = () => {
   };
 
   const joinBallout = async () => {
-    // await createIdentity();
-    // if (contract) {
-    //   const myGasLimit = BigNumber.from(5000000);
-    //   setLoadingAlert(true);
-    //   try {
-    //     let result = await contract.addVoter(pollId, identity.commitment, {
-    //       gasLimit: myGasLimit,
-    //     });
-    //     const receipt = await result.wait();
-    //     // Check the status of the transaction
-    //     if (receipt.status === 1) {
-    //       // Transaction succeeded
-    //       setLoadingAlert(false);
-    //       setSuccessfulAlert(true);
-    //       setTimeout(() => {
-    //         setSuccessfulAlert(false);
-    //       }, 5000);
-    //     }
-    //   } catch (error: any) {
-    //     // Transaction failed
-    //     setLoadingAlert(false);
-    //     setErrorAlert(true);
-    //     setTimeout(() => {
-    //       setErrorAlert(false);
-    //     }, 5000);
-    //   }
-    // }
+    if (!contract) {
+      console.error('Smart contract is not loaded');
+      return;
+    }
+
+    if (!pollId) {
+      console.error('Poll ID is missing');
+      return;
+    }
+
+    setLoadingAlert(true);
+
+    try {
+      const coordinator = signer?.getAddress();
+      const myGasLimit = BigNumber.from(5000000);
+      console.log(coordinator);
+      let result = await contract.addVoter(pollId, identity?.commitment, {
+        gasLimit: myGasLimit,
+      });
+
+      const receipt = await result.wait();
+
+      if (receipt.status === 1) {
+        setLoadingAlert(false);
+        setSuccessfulAlert(true);
+        setTimeout(() => {
+          setSuccessfulAlert(false);
+        }, 5000);
+      }
+    } catch (error) {
+      console.error('Error creating poll:', error);
+      setLoadingAlert(false);
+      setErrorAlert(true);
+      setTimeout(() => {
+        setErrorAlert(false);
+      }, 5000);
+    }
   };
 
   // const joinGroup = () => {
@@ -173,9 +186,9 @@ const Voter: NextPage = () => {
               </Button>
               <Input
                 id="outlined-basic"
-                placeholder="Enter Ballout Id"
+                placeholder="Set Ballot Id dont use the same one"
                 type="number"
-                // onChange={(e) => setPollId(BigNumber.from(e.target.value))}
+                onChange={(e) => setPollId(BigNumber.from(e.target.value))}
                 errorBorderColor="red.300"
                 style={{ marginBottom: '8px' }}
               />
@@ -184,7 +197,7 @@ const Voter: NextPage = () => {
                 bg="black"
                 _hover={{ bg: 'gray.600' }}
                 color="white"
-                // onClick={createIdentity}
+                onClick={joinBallout}
                 marginBottom="16px"
               >
                 Join a Ballout
@@ -208,7 +221,7 @@ const Voter: NextPage = () => {
                 Vote
               </Button>
 
-              {/* {successfulAlert && (
+              {successfulAlert && (
                 <Alert status="success" variant="subtle">
                   <AlertIcon />
                   <AlertDescription>Successful Transaction!</AlertDescription>
@@ -220,7 +233,7 @@ const Voter: NextPage = () => {
                   <AlertDescription>Failed Transaction!</AlertDescription>
                 </Alert>
               )}
-              {loadingAlert && <Spinner />} */}
+              {loadingAlert && <Spinner />}
             </Flex>
 
             <footer>

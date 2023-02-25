@@ -13,22 +13,22 @@ import {
   Spinner,
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
-import { useContract, useSigner } from 'wagmi';
 import { BigNumber, utils, ethers } from 'ethers';
 import { SemaphoreVotingAbi } from '../abis/SemaphoreVoting';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Identity } from '@semaphore-protocol/identity';
+import { useContract, useSigner } from 'wagmi';
 
 const Coordinator: NextPage = () => {
   const router = useRouter();
 
-  const {
-    query: { add1 },
-  } = router;
+  //   const {
+  //     query: { walletSigner },
+  //   } = router;
 
-  const props = {
-    add1,
-  };
+  //   const props = {
+  //     walletSigner,
+  //   };
 
   //SEMAPHORE STUFF
   const [identity, setIdentity] = useState<Identity>();
@@ -39,8 +39,10 @@ const Coordinator: NextPage = () => {
   const snarkArtifactsPath = 'zkproof/../../artifacts/snark';
 
   //For creating pool
-  const [pollId, setPollId] = useState<BigNumber | undefined>();
-  const [coordinator, setCoordinator] = useState<`0x${string}` | undefined>();
+  const [pollId, setPollId] = useState<BigNumber | undefined>(
+    BigNumber.from(0)
+  );
+  //   const [coordinator, setCoordinator] = useState<`0x${string}` | undefined>();
   const [merkleTreeDepth, setMerkleTreeDepth] = useState<
     BigNumber | undefined
   >();
@@ -51,63 +53,60 @@ const Coordinator: NextPage = () => {
   const [loadingAlert, setLoadingAlert] = useState(false);
 
   //Signer
-  //   const { data: signer, isError, isLoading } = useSigner();
+  const { data: signer, isError, isLoading } = useSigner();
 
   //SemaphoreVote Smart Contract
-  //   const contract = useContract({
-  //     address: '0x5b7fAb089fAEbd3f98c96487Cb1ce04a7c44cE44',
-  //     abi: SemaphoreVotingAbi,
-  //     signerOrProvider: signer,
-  //   });
+  const contract = useContract({
+    address: '0x41A1B6E666267e7C67A79cdFcD1a3Dcb976Ee8E5',
+    abi: SemaphoreVotingAbi,
+    signerOrProvider: signer,
+  });
 
   const goToHomePage = () => {
     router.push('/');
   };
 
-  //   async function setCoordinatorAddress() {
-  //     if (!signer) {
-  //       throw new Error('Signer not available');
-  //     }
-
-  //     const address = await signer.getAddress();
-  //     console.log('Signer address:', address);
-  //     console.log(pollId);
-  //     console.log(merkleTreeDepth);
-  //     console.log(contract);
-  //   }
-
   const createBallout = async () => {
-    console.log(props.add1);
-    // await setCoordinatorAddress();
-    // const myGasLimit = BigNumber.from(5000000);
-    // setLoadingAlert(true);
-    // try {
-    //   let result = await contract.createPoll(
-    //     pollId,
-    //     coordinator,
-    //     merkleTreeDepth,
-    //     {
-    //       gasLimit: myGasLimit,
-    //     }
-    //   );
-    //   const receipt = await result.wait();
-    //   // Check the status of the transaction
-    //   if (receipt.status === 1) {
-    //     // Transaction succeeded
-    //     setLoadingAlert(false);
-    //     setSuccessfulAlert(true);
-    //     setTimeout(() => {
-    //       setSuccessfulAlert(false);
-    //     }, 5000);
-    //   }
-    // } catch (error: any) {
-    //   // Transaction failed
-    //   setLoadingAlert(false);
-    //   setErrorAlert(true);
-    //   setTimeout(() => {
-    //     setErrorAlert(false);
-    //   }, 5000);
-    // }
+    if (!contract) {
+      console.error('Smart contract is not loaded');
+      return;
+    }
+
+    if (!pollId || !merkleTreeDepth) {
+      console.error('Poll ID or Merkle tree depth is missing');
+      return;
+    }
+
+    setLoadingAlert(true);
+
+    try {
+      const coordinator = signer?.getAddress();
+      const myGasLimit = BigNumber.from(5000000);
+      console.log(coordinator);
+      let result = await contract.createPoll(
+        pollId,
+        coordinator,
+        merkleTreeDepth,
+        { gasLimit: myGasLimit }
+      );
+
+      const receipt = await result.wait();
+
+      if (receipt.status === 1) {
+        setLoadingAlert(false);
+        setSuccessfulAlert(true);
+        setTimeout(() => {
+          setSuccessfulAlert(false);
+        }, 5000);
+      }
+    } catch (error) {
+      console.error('Error creating poll:', error);
+      setLoadingAlert(false);
+      setErrorAlert(true);
+      setTimeout(() => {
+        setErrorAlert(false);
+      }, 5000);
+    }
   };
 
   const startBallout = async () => {};
