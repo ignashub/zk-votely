@@ -109,9 +109,59 @@ const Coordinator: NextPage = () => {
     }
   };
 
-  const startBallout = async () => {};
+  const startBallout = async () => {
+    setLoadingAlert(true);
+    try {
+      const myGasLimit = BigNumber.from(5000000);
+      const encryptionKey = BigNumber.from(123456789);
+      let result = await contract.startPoll(pollId, encryptionKey, {
+        gasLimit: myGasLimit,
+      });
 
-  const stopBallout = async () => {};
+      const receipt = await result.wait();
+      if (receipt.status === 1) {
+        setLoadingAlert(false);
+        setSuccessfulAlert(true);
+        setTimeout(() => {
+          setSuccessfulAlert(false);
+        }, 5000);
+      }
+    } catch (error) {
+      console.error('Error starting poll:', error);
+      setLoadingAlert(false);
+      setErrorAlert(true);
+      setTimeout(() => {
+        setErrorAlert(false);
+      }, 5000);
+    }
+  };
+
+  const stopBallout = async () => {
+    setLoadingAlert(true);
+    try {
+      const myGasLimit = BigNumber.from(5000000);
+      const encryptionKey = BigNumber.from(123456789);
+      let result = await contract.endPoll(pollId, encryptionKey, {
+        gasLimit: myGasLimit,
+      });
+
+      const receipt = await result.wait();
+      if (receipt.status === 1) {
+        setLoadingAlert(false);
+        setSuccessfulAlert(true);
+        setTimeout(() => {
+          setSuccessfulAlert(false);
+        }, 5000);
+      }
+    } catch (error) {
+      console.error('Error ending poll:', error);
+      setLoadingAlert(false);
+      setErrorAlert(true);
+      setTimeout(() => {
+        setErrorAlert(false);
+      }, 5000);
+    }
+  };
 
   return (
     <>

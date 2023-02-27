@@ -23,6 +23,7 @@ const Voter: NextPage = () => {
   const router = useRouter();
   //SEMAPHORE STUFF
   const [identity, setIdentity] = useState<Identity>();
+  const [vote, setVote] = useState<BigNumber | undefined>(BigNumber.from(0));
   //For creating pool
   const [pollId, setPollId] = useState<BigNumber | undefined>(
     BigNumber.from(0)
@@ -84,7 +85,53 @@ const Voter: NextPage = () => {
         }, 5000);
       }
     } catch (error) {
-      console.error('Error creating poll:', error);
+      console.error('Error joining poll:', error);
+      setLoadingAlert(false);
+      setErrorAlert(true);
+      setTimeout(() => {
+        setErrorAlert(false);
+      }, 5000);
+    }
+  };
+
+  const postVote = async () => {
+    if (!contract) {
+      console.error('Smart contract is not loaded');
+      return;
+    }
+
+    if (!pollId) {
+      console.error('Poll ID is missing');
+      return;
+    }
+
+    setLoadingAlert(true);
+
+    try {
+      const coordinator = signer?.getAddress();
+      const myGasLimit = BigNumber.from(5000000);
+      console.log(coordinator);
+      let result = await contract.castVote(
+        vote,
+        pollId,
+        identity?.nullifier,
+        proof,
+        {
+          gasLimit: myGasLimit,
+        }
+      );
+
+      const receipt = await result.wait();
+
+      if (receipt.status === 1) {
+        setLoadingAlert(false);
+        setSuccessfulAlert(true);
+        setTimeout(() => {
+          setSuccessfulAlert(false);
+        }, 5000);
+      }
+    } catch (error) {
+      console.error('Error joining poll:', error);
       setLoadingAlert(false);
       setErrorAlert(true);
       setTimeout(() => {
