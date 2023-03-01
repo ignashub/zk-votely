@@ -18,23 +18,34 @@ import { BigNumber, utils, ethers } from 'ethers';
 import { SemaphoreVotingAbi } from '../abis/SemaphoreVoting';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Identity } from '@semaphore-protocol/identity';
+import {
+  FullProof,
+  generateProof,
+  verifyProof,
+} from '@semaphore-protocol/proof';
+import { Group } from '@semaphore-protocol/group';
 
 const Voter: NextPage = () => {
   const router = useRouter();
   //SEMAPHORE STUFF
   const [identity, setIdentity] = useState<Identity>();
   const [vote, setVote] = useState<BigNumber | undefined>(BigNumber.from(0));
-  //For creating pool
+  //For joining pool
   const [pollId, setPollId] = useState<BigNumber | undefined>(
     BigNumber.from(0)
   );
+  const [merkleTreeDepth, setMerkleTreeDepth] = useState<
+    BigNumber | undefined
+  >();
+  const [group, setGroup] = useState<Group>(new Group(1));
+  const [proof, setProof] = useState<FullProof>();
 
   //Alerts
   const [successfulAlert, setSuccessfulAlert] = useState(false);
   const [errorAlert, setErrorAlert] = useState(false);
   const [loadingAlert, setLoadingAlert] = useState(false);
 
-  //Signer
+  //Smart Contract Signer
   const { data: signer, isError, isLoading } = useSigner();
 
   //SemaphoreVote Smart Contract
@@ -54,6 +65,9 @@ const Voter: NextPage = () => {
     console.log(_identity.commitment);
   };
 
+  const externalNullifier = utils.formatBytes32String('Topic');
+  const greeting = utils.formatBytes32String('Hello World');
+
   const joinBallout = async () => {
     if (!contract) {
       console.error('Smart contract is not loaded');
@@ -70,7 +84,6 @@ const Voter: NextPage = () => {
     try {
       const coordinator = signer?.getAddress();
       const myGasLimit = BigNumber.from(5000000);
-      console.log(coordinator);
       let result = await contract.addVoter(pollId, identity?.commitment, {
         gasLimit: myGasLimit,
       });
@@ -83,9 +96,21 @@ const Voter: NextPage = () => {
         setTimeout(() => {
           setSuccessfulAlert(false);
         }, 5000);
+        setGroup(new Group(pollId.toNumber(), merkleTreeDepth.toNumber()));
+        group.addMember(identity.commitment);
+
+        const result = await generateProof(
+          identity,
+          group,
+          externalNullifier,
+          greeting
+        );
+        setProof(result);
+        console.log(result);
+        console.log(result.nullifierHash);
       }
     } catch (error) {
-      console.error('Error joining poll:', error);
+      console.error('Error joining ballout:', error);
       setLoadingAlert(false);
       setErrorAlert(true);
       setTimeout(() => {
@@ -99,14 +124,12 @@ const Voter: NextPage = () => {
       console.error('Smart contract is not loaded');
       return;
     }
-
     if (!pollId) {
       console.error('Poll ID is missing');
       return;
     }
-
     setLoadingAlert(true);
-
+    proof.proof[0] = [bigNumber];
     try {
       const coordinator = signer?.getAddress();
       const myGasLimit = BigNumber.from(5000000);
@@ -114,15 +137,13 @@ const Voter: NextPage = () => {
       let result = await contract.castVote(
         vote,
         pollId,
-        identity?.nullifier,
-        proof,
+        BigNumber.from(proof.nullifierHash),
+        proofArray,
         {
           gasLimit: myGasLimit,
         }
       );
-
       const receipt = await result.wait();
-
       if (receipt.status === 1) {
         setLoadingAlert(false);
         setSuccessfulAlert(true);
@@ -131,7 +152,7 @@ const Voter: NextPage = () => {
         }, 5000);
       }
     } catch (error) {
-      console.error('Error joining poll:', error);
+      console.error('Error voting:', error);
       setLoadingAlert(false);
       setErrorAlert(true);
       setTimeout(() => {
@@ -140,30 +161,12 @@ const Voter: NextPage = () => {
     }
   };
 
-  // const joinGroup = () => {
-  //   console.log(group.members);
-  //   const newGroup = new Group(1);
-  //   newGroup.addMember(identity.commitment);
-  //   setGroup(newGroup);
-  // };
-
-  // const greeting = utils.formatBytes32String('Hello World');
-
-  // const fullProof = async () => {
-  //   const result = await generateProof(
-  //     identity,
-  //     group,
-  //     externalNullifier,
-  //     greeting
-  // {
-  //   wasmFilePath: `${snarkArtifactsPath}/semaphore.wasm`,
-  //   zkeyFilePath: `${snarkArtifactsPath}/semaphore.zkey`,
-  // }
-  //   );
-
-  //   const verified = await verifyMember(result, 20);
-  //   console.log(verified);
-  // };
+  const joinGroup = () => {
+    console.log(group.members);
+    const newGroup = new Group(1);
+    newGroup.addMember(identity.commitment);
+    setGroup(newGroup);
+  };
 
   return (
     <>
@@ -233,9 +236,19 @@ const Voter: NextPage = () => {
               </Button>
               <Input
                 id="outlined-basic"
-                placeholder="Set Ballot Id dont use the same one"
+                placeholder="Ballot Id"
                 type="number"
                 onChange={(e) => setPollId(BigNumber.from(e.target.value))}
+                errorBorderColor="red.300"
+                style={{ marginBottom: '8px' }}
+              />
+              <Input
+                id="outlined-basic"
+                placeholder="Merkle Tree Depth"
+                type="number"
+                onChange={(e) =>
+                  setMerkleTreeDepth(BigNumber.from(e.target.value))
+                }
                 errorBorderColor="red.300"
                 style={{ marginBottom: '8px' }}
               />
@@ -253,7 +266,7 @@ const Voter: NextPage = () => {
                 id="outlined-basic"
                 placeholder="Enter Your Vote"
                 type="number"
-                // onChange={(e) => setPollId(BigNumber.from(e.target.value))}
+                onChange={(e) => setVote(BigNumber.from(e.target.value))}
                 errorBorderColor="red.300"
                 style={{ marginBottom: '8px' }}
               />
@@ -262,7 +275,7 @@ const Voter: NextPage = () => {
                 bg="black"
                 _hover={{ bg: 'gray.600' }}
                 color="white"
-                // onClick={fullProof}
+                onClick={postVote}
                 marginBottom="16px"
               >
                 Vote

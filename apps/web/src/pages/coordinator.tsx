@@ -18,6 +18,7 @@ import { SemaphoreVotingAbi } from '../abis/SemaphoreVoting';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Identity } from '@semaphore-protocol/identity';
 import { useContract, useSigner } from 'wagmi';
+import { Group } from '@semaphore-protocol/group';
 
 const Coordinator: NextPage = () => {
   const router = useRouter();
@@ -98,6 +99,7 @@ const Coordinator: NextPage = () => {
         setTimeout(() => {
           setSuccessfulAlert(false);
         }, 5000);
+        // const group1 = new Group(pollId.toNumber(), merkleTreeDepth.toNumber());
       }
     } catch (error) {
       console.error('Error creating poll:', error);
@@ -229,7 +231,7 @@ const Coordinator: NextPage = () => {
               />
               <Input
                 id="outlined-basic"
-                placeholder="Ballot Size Minimum 16"
+                placeholder="Set Merkle Tree Depth"
                 type="number"
                 onChange={(e) =>
                   setMerkleTreeDepth(BigNumber.from(e.target.value))
