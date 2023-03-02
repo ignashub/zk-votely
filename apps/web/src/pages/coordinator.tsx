@@ -58,7 +58,7 @@ const Coordinator: NextPage = () => {
 
   //SemaphoreVote Smart Contract
   const contract = useContract({
-    address: '0x41A1B6E666267e7C67A79cdFcD1a3Dcb976Ee8E5',
+    address: '0xE3822875200cE49d674c25424dAc63Ac61405aa5',
     abi: SemaphoreVotingAbi,
     signerOrProvider: signer,
   });

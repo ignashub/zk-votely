@@ -14,15 +14,11 @@ import {
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { useContract, useSigner } from 'wagmi';
-import { BigNumber, utils, ethers } from 'ethers';
+import { BigNumber, utils } from 'ethers';
 import { SemaphoreVotingAbi } from '../abis/SemaphoreVoting';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Identity } from '@semaphore-protocol/identity';
-import {
-  FullProof,
-  generateProof,
-  verifyProof,
-} from '@semaphore-protocol/proof';
+import { FullProof, generateProof } from '@semaphore-protocol/proof';
 import { Group } from '@semaphore-protocol/group';
 
 const Voter: NextPage = () => {
@@ -38,7 +34,7 @@ const Voter: NextPage = () => {
     BigNumber | undefined
   >();
   const [group, setGroup] = useState<Group>(new Group(1));
-  const [proof, setProof] = useState<FullProof>();
+  const [fullProof, setFullProof] = useState<FullProof>();
 
   //Alerts
   const [successfulAlert, setSuccessfulAlert] = useState(false);
@@ -50,7 +46,7 @@ const Voter: NextPage = () => {
 
   //SemaphoreVote Smart Contract
   const contract = useContract({
-    address: '0x41A1B6E666267e7C67A79cdFcD1a3Dcb976Ee8E5',
+    address: '0xE3822875200cE49d674c25424dAc63Ac61405aa5',
     abi: SemaphoreVotingAbi,
     signerOrProvider: signer,
   });
@@ -96,18 +92,6 @@ const Voter: NextPage = () => {
         setTimeout(() => {
           setSuccessfulAlert(false);
         }, 5000);
-        setGroup(new Group(pollId.toNumber(), merkleTreeDepth.toNumber()));
-        group.addMember(identity.commitment);
-
-        const result = await generateProof(
-          identity,
-          group,
-          externalNullifier,
-          greeting
-        );
-        setProof(result);
-        console.log(result);
-        console.log(result.nullifierHash);
       }
     } catch (error) {
       console.error('Error joining ballout:', error);
@@ -117,6 +101,23 @@ const Voter: NextPage = () => {
         setErrorAlert(false);
       }, 5000);
     }
+  };
+
+  const makeVoteProof = async () => {
+    console.log('it works');
+    setGroup(new Group(pollId.toNumber(), merkleTreeDepth.toNumber()));
+    group.addMember(identity.commitment);
+
+    const proof = await generateProof(
+      identity,
+      group,
+      externalNullifier,
+      greeting
+    );
+    setFullProof(proof);
+    console.log(proof);
+    console.log('it works 2222222');
+    // console.log(result.nullifierHash);
   };
 
   const postVote = async () => {
@@ -129,15 +130,21 @@ const Voter: NextPage = () => {
       return;
     }
     setLoadingAlert(true);
-    proof.proof[0] = [bigNumber];
+
+    console.log(fullProof.proof);
+
+    const proofArray = fullProof.proof.map(
+      (value: BigNumber | string | number | null | undefined | BN) => value
+    );
+    console.log(proofArray);
+
     try {
       const coordinator = signer?.getAddress();
       const myGasLimit = BigNumber.from(5000000);
-      console.log(coordinator);
       let result = await contract.castVote(
         vote,
         pollId,
-        BigNumber.from(proof.nullifierHash),
+        BigNumber.from(fullProof.nullifierHash),
         proofArray,
         {
           gasLimit: myGasLimit,
@@ -159,13 +166,6 @@ const Voter: NextPage = () => {
         setErrorAlert(false);
       }, 5000);
     }
-  };
-
-  const joinGroup = () => {
-    console.log(group.members);
-    const newGroup = new Group(1);
-    newGroup.addMember(identity.commitment);
-    setGroup(newGroup);
   };
 
   return (
@@ -261,6 +261,16 @@ const Voter: NextPage = () => {
                 marginBottom="16px"
               >
                 Join a Ballout
+              </Button>
+              <Button
+                variant="solid"
+                bg="black"
+                _hover={{ bg: 'gray.600' }}
+                color="white"
+                onClick={makeVoteProof}
+                marginBottom="16px"
+              >
+                Generate Proof
               </Button>
               <Input
                 id="outlined-basic"
