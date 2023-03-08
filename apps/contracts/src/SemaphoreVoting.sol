@@ -52,8 +52,11 @@ contract SemaphoreVoting is ISemaphoreVoting, SemaphoreGroups {
     uint256 pollId,
     uint256 identityCommitment
   ) public override {
-    if (polls[pollId].state != PollState.Created) {
-      revert Semaphore__PollHasAlreadyBeenStarted();
+    // if (polls[pollId].state != PollState.Created) {
+    //     revert Semaphore__PollHasAlreadyBeenStarted();
+    // }
+    if (polls[pollId].state != PollState.Ongoing) {
+      revert Semaphore__PollIsNotOngoing();
     }
 
     _addMember(pollId, identityCommitment);
@@ -80,9 +83,9 @@ contract SemaphoreVoting is ISemaphoreVoting, SemaphoreGroups {
     uint256 pollId,
     uint256[8] calldata proof
   ) public override {
-    if (polls[pollId].state != PollState.Ongoing) {
-      revert Semaphore__PollIsNotOngoing();
-    }
+    // if (polls[pollId].state != PollState.Ongoing) {
+    //     revert Semaphore__PollIsNotOngoing();
+    // }
 
     if (polls[pollId].nullifierHashes[nullifierHash]) {
       revert Semaphore__YouAreUsingTheSameNillifierTwice();

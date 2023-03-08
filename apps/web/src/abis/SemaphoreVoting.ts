@@ -242,8 +242,39 @@ export const SemaphoreVotingAbi = [
         name: 'vote',
         type: 'uint256',
       },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'merkleTreeRoot',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'merkleTreeDepth',
+        type: 'uint256',
+      },
     ],
     name: 'VoteAdded',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'pollId',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'identityCommitment',
+        type: 'uint256',
+      },
+    ],
+    name: 'VoterAdded',
     type: 'event',
   },
   {
@@ -285,6 +316,11 @@ export const SemaphoreVotingAbi = [
         internalType: 'uint256[8]',
         name: 'proof',
         type: 'uint256[8]',
+      },
+      {
+        internalType: 'uint256',
+        name: 'merkleTreeRoot',
+        type: 'uint256',
       },
     ],
     name: 'castVote',

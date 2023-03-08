@@ -16,9 +16,7 @@ import React, { useState } from 'react';
 import { BigNumber, utils, ethers } from 'ethers';
 import { SemaphoreVotingAbi } from '../abis/SemaphoreVoting';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { Identity } from '@semaphore-protocol/identity';
 import { useContract, useSigner } from 'wagmi';
-import { Group } from '@semaphore-protocol/group';
 
 const Coordinator: NextPage = () => {
   const router = useRouter();
@@ -32,18 +30,11 @@ const Coordinator: NextPage = () => {
   //   };
 
   //SEMAPHORE STUFF
-  const [identity, setIdentity] = useState<Identity>();
-
-  const [semaphoreProof, setSemaphoreProof] = useState('');
-
-  const externalNullifier = utils.formatBytes32String('Topic');
-  const snarkArtifactsPath = 'zkproof/../../artifacts/snark';
-
   //For creating pool
   const [pollId, setPollId] = useState<BigNumber | undefined>(
     BigNumber.from(0)
   );
-  //   const [coordinator, setCoordinator] = useState<`0x${string}` | undefined>();
+
   const [merkleTreeDepth, setMerkleTreeDepth] = useState<
     BigNumber | undefined
   >();
@@ -58,7 +49,7 @@ const Coordinator: NextPage = () => {
 
   //SemaphoreVote Smart Contract
   const contract = useContract({
-    address: '0xE3822875200cE49d674c25424dAc63Ac61405aa5',
+    address: '0xf9718b9b6dEa83880bE00636DFe7452bc38639C5',
     abi: SemaphoreVotingAbi,
     signerOrProvider: signer,
   });
@@ -67,18 +58,24 @@ const Coordinator: NextPage = () => {
     router.push('/');
   };
 
-  const createBallout = async () => {
+  const createBallot = async () => {
     if (!contract) {
       console.error('Smart contract is not loaded');
       return;
     }
 
-    if (!pollId || !merkleTreeDepth) {
-      console.error('Poll ID or Merkle tree depth is missing');
-      return;
-    }
+    // if (!pollId || !merkleTreeDepth) {
+    //   console.error('Poll ID or Merkle tree depth is missing');
+    //   return;
+    // }
 
     setLoadingAlert(true);
+
+    // console.log(pollId);
+    // console.log(pollId.toNumber());
+    // console.log(BigInt(pollId));
+
+    console.log(`pollID on Creating Ballot: ${pollId}`);
 
     try {
       const coordinator = signer?.getAddress();
@@ -88,7 +85,9 @@ const Coordinator: NextPage = () => {
         pollId,
         coordinator,
         merkleTreeDepth,
-        { gasLimit: myGasLimit }
+        {
+          gasLimit: myGasLimit,
+        }
       );
 
       const receipt = await result.wait();
@@ -111,7 +110,8 @@ const Coordinator: NextPage = () => {
     }
   };
 
-  const startBallout = async () => {
+  const startBallot = async () => {
+    console.log(`pollID on Starting Ballot: ${pollId}`);
     setLoadingAlert(true);
     try {
       const myGasLimit = BigNumber.from(5000000);
@@ -138,7 +138,7 @@ const Coordinator: NextPage = () => {
     }
   };
 
-  const stopBallout = async () => {
+  const stopBallot = async () => {
     setLoadingAlert(true);
     try {
       const myGasLimit = BigNumber.from(5000000);
@@ -197,30 +197,8 @@ const Coordinator: NextPage = () => {
               </Button>
               <ConnectButton />
               <Heading size={'xl'} marginTop="50px" marginBottom="20px">
-                Create an Identity
+                Create a Ballot
               </Heading>
-              {identity ? (
-                <Box py="6" whiteSpace="nowrap">
-                  <Box
-                    p="5"
-                    borderWidth={1}
-                    borderColor="gray.500"
-                    borderRadius="4px"
-                  >
-                    <Text textOverflow="ellipsis" overflow="hidden">
-                      Trapdoor: {identity.trapdoor.toString()}
-                    </Text>
-                    <Text textOverflow="ellipsis" overflow="hidden">
-                      Nullifier: {identity.nullifier.toString()}
-                    </Text>
-                    <Text textOverflow="ellipsis" overflow="hidden">
-                      Commitment: {identity.commitment.toString()}
-                    </Text>
-                  </Box>
-                </Box>
-              ) : (
-                <div></div>
-              )}
               <Input
                 id="outlined-basic"
                 placeholder="Set Ballot Id dont use the same one"
@@ -244,30 +222,30 @@ const Coordinator: NextPage = () => {
                 bg="black"
                 _hover={{ bg: 'gray.600' }}
                 color="white"
-                onClick={createBallout}
+                onClick={createBallot}
                 marginBottom="16px"
               >
-                Create a Ballout
+                Create a Ballot
               </Button>
               <Button
                 variant="solid"
                 bg="black"
                 _hover={{ bg: 'gray.600' }}
                 color="white"
-                onClick={startBallout}
+                onClick={startBallot}
                 marginBottom="16px"
               >
-                Start a Ballout
+                Start a Ballot
               </Button>
               <Button
                 variant="solid"
                 bg="black"
                 _hover={{ bg: 'gray.600' }}
                 color="white"
-                onClick={stopBallout}
+                onClick={stopBallot}
                 marginBottom="16px"
               >
-                Stop a Ballout
+                Stop a Ballot
               </Button>
 
               {successfulAlert && (

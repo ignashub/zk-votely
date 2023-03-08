@@ -12,13 +12,17 @@ import {
   AlertDescription,
   Spinner,
 } from '@chakra-ui/react';
-import React, { useState } from 'react';
-import { useContract, useSigner } from 'wagmi';
+import React, { useState, useEffect } from 'react';
+import { useContract, useSigner, useContractEvent } from 'wagmi';
 import { BigNumber, utils } from 'ethers';
 import { SemaphoreVotingAbi } from '../abis/SemaphoreVoting';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Identity } from '@semaphore-protocol/identity';
-import { FullProof, generateProof } from '@semaphore-protocol/proof';
+import {
+  FullProof,
+  generateProof,
+  verifyProof,
+} from '@semaphore-protocol/proof';
 import { Group } from '@semaphore-protocol/group';
 
 const Voter: NextPage = () => {
@@ -33,7 +37,7 @@ const Voter: NextPage = () => {
   const [merkleTreeDepth, setMerkleTreeDepth] = useState<
     BigNumber | undefined
   >();
-  const [group, setGroup] = useState<Group>(new Group(1));
+  const [group, setGroup] = useState<Group | undefined>();
   const [fullProof, setFullProof] = useState<FullProof>();
 
   //Alerts
@@ -46,9 +50,32 @@ const Voter: NextPage = () => {
 
   //SemaphoreVote Smart Contract
   const contract = useContract({
-    address: '0xE3822875200cE49d674c25424dAc63Ac61405aa5',
+    address: '0xf9718b9b6dEa83880bE00636DFe7452bc38639C5',
     abi: SemaphoreVotingAbi,
     signerOrProvider: signer,
+  });
+
+  const contractEvent = useContractEvent({
+    address: '0xf9718b9b6dEa83880bE00636DFe7452bc38639C5',
+    abi: SemaphoreVotingAbi,
+    eventName: 'VoteAdded',
+    listener(pollId, vote, merkleTreeRoot, merkleTreeDepth) {
+      console.log(
+        pollId.toString(),
+        vote.toString(),
+        merkleTreeRoot.toString(),
+        merkleTreeDepth.toString()
+      );
+    },
+  });
+
+  const contractEvent2 = useContractEvent({
+    address: '0xf9718b9b6dEa83880bE00636DFe7452bc38639C5',
+    abi: SemaphoreVotingAbi,
+    eventName: 'VoterAdded',
+    listener(pollId, identityCommitment) {
+      console.log(pollId.toString(), identityCommitment.toString());
+    },
   });
 
   const goToHomePage = () => {
@@ -60,9 +87,6 @@ const Voter: NextPage = () => {
     setIdentity(_identity);
     console.log(_identity.commitment);
   };
-
-  const externalNullifier = utils.formatBytes32String('Topic');
-  const greeting = utils.formatBytes32String('Hello World');
 
   const joinBallout = async () => {
     if (!contract) {
@@ -77,8 +101,11 @@ const Voter: NextPage = () => {
 
     setLoadingAlert(true);
 
+    console.log(identity.commitment);
+
+    console.log(`pollID on Joining Ballot: ${pollId}`);
+
     try {
-      const coordinator = signer?.getAddress();
       const myGasLimit = BigNumber.from(5000000);
       let result = await contract.addVoter(pollId, identity?.commitment, {
         gasLimit: myGasLimit,
@@ -103,21 +130,62 @@ const Voter: NextPage = () => {
     }
   };
 
-  const makeVoteProof = async () => {
-    console.log('it works');
-    setGroup(new Group(pollId.toNumber(), merkleTreeDepth.toNumber()));
-    group.addMember(identity.commitment);
+  const createNewGroup = async () => {
+    const newGroup = new Group(pollId.toNumber(), merkleTreeDepth.toNumber());
+    setGroup(newGroup);
+    console.log(`Group members: ${group.members}`);
+    console.log(`Group root: ${group.root}`);
+  };
 
-    const proof = await generateProof(
-      identity,
-      group,
-      externalNullifier,
-      greeting
-    );
+  const makeVoteProof = async () => {
+    console.log(group);
+    console.log(`Group members: ${group.members}`);
+    console.log(`Group root: ${group.root}`);
+    group.addMember(identity.commitment);
+    console.log(group);
+    console.log(`Group members: ${group.members}`);
+    console.log(`Group root: ${group.root}`);
+
+    const proof = await generateProof(identity, group, pollId, vote);
     setFullProof(proof);
     console.log(proof);
-    console.log('it works 2222222');
-    // console.log(result.nullifierHash);
+    console.log(pollId.toNumber());
+  };
+
+  // useEffect(() => {
+  //   const createNewGroup = async () => {
+  //     console.log(`Group members: ${group?.members}`);
+  //     console.log(`Group root: ${group?.root}`);
+  //     const newGroup = new Group(pollId.toNumber(), merkleTreeDepth.toNumber());
+  //     setGroup(newGroup);
+  //   };
+
+  //   const makeVoteProof = async () => {
+  //     console.log(`Group members: ${group?.members}`);
+  //     console.log(`Group root: ${group?.root}`);
+  //     if (!group) {
+  //       await createNewGroup();
+  //     }
+  //     console.log(`Group members: ${group?.members}`);
+  //     console.log(`Group root: ${group?.root}`);
+  //     group?.addMember(identity?.commitment);
+  //     console.log(`Group members: ${group?.members}`);
+  //     console.log(`Group root: ${group?.root}`);
+
+  //     const proof = await generateProof(identity, group!, pollId!, vote!);
+  //     setFullProof(proof);
+  //     console.log(proof);
+  //     console.log(pollId?.toNumber());
+  //   };
+
+  //   makeVoteProof();
+  // }, [identity, vote, pollId, merkleTreeDepth, group]);
+
+  const verifyVoteProof = async () => {
+    console.log(group);
+    console.log(group.root);
+    let result = await verifyProof(fullProof, merkleTreeDepth.toNumber());
+    console.log(result);
   };
 
   const postVote = async () => {
@@ -138,14 +206,18 @@ const Voter: NextPage = () => {
     );
     console.log(proofArray);
 
+    console.log(`pollID on Vote: ${pollId}`);
+
     try {
-      const coordinator = signer?.getAddress();
       const myGasLimit = BigNumber.from(5000000);
+      const nullifierHash = BigNumber.from(fullProof.nullifierHash);
+      console.log(nullifierHash);
       let result = await contract.castVote(
         vote,
+        nullifierHash,
         pollId,
-        BigNumber.from(fullProof.nullifierHash),
         proofArray,
+        group.root,
         {
           gasLimit: myGasLimit,
         }
@@ -260,8 +332,26 @@ const Voter: NextPage = () => {
                 onClick={joinBallout}
                 marginBottom="16px"
               >
-                Join a Ballout
+                Join a Ballout On-Chain
               </Button>
+              <Button
+                variant="solid"
+                bg="black"
+                _hover={{ bg: 'gray.600' }}
+                color="white"
+                onClick={createNewGroup}
+                marginBottom="16px"
+              >
+                Create a Group Off-Chain
+              </Button>
+              <Input
+                id="outlined-basic"
+                placeholder="Enter Your Vote"
+                type="number"
+                onChange={(e) => setVote(BigNumber.from(e.target.value))}
+                errorBorderColor="red.300"
+                style={{ marginBottom: '8px' }}
+              />
               <Button
                 variant="solid"
                 bg="black"
@@ -272,14 +362,16 @@ const Voter: NextPage = () => {
               >
                 Generate Proof
               </Button>
-              <Input
-                id="outlined-basic"
-                placeholder="Enter Your Vote"
-                type="number"
-                onChange={(e) => setVote(BigNumber.from(e.target.value))}
-                errorBorderColor="red.300"
-                style={{ marginBottom: '8px' }}
-              />
+              <Button
+                variant="solid"
+                bg="black"
+                _hover={{ bg: 'gray.600' }}
+                color="white"
+                onClick={verifyVoteProof}
+                marginBottom="16px"
+              >
+                Verify Proof
+              </Button>
               <Button
                 variant="solid"
                 bg="black"
