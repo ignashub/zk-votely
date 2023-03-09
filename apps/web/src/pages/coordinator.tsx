@@ -166,106 +166,93 @@ const Coordinator: NextPage = () => {
   };
 
   return (
-    <>
-      <main
-        data-testid="Layout"
-        id="maincontent"
-        className={
-          'relative flex flex-col flex-grow mt-4 mb-8 space-y-8 md:space-y-16 md:mt-8 md:mb-16'
-        }
-      >
-        {/* <Section> */}
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignContent: 'center',
-            // flexDirection: 'column',
-          }}
-        >
-          <Box boxSize="750px">
-            <Flex justifyContent="center" flexDirection="column">
-              <Button
-                variant="solid"
-                bg="black"
-                _hover={{ bg: 'gray.600' }}
-                color="white"
-                onClick={goToHomePage}
-                marginBottom="16px"
-              >
-                Back
-              </Button>
-              <Heading size={'xl'} marginTop="50px" marginBottom="20px">
-                Create a Ballot
-              </Heading>
-              <Input
-                id="outlined-basic"
-                placeholder="Set Ballot Id dont use the same one"
-                type="number"
-                onChange={(e) => setPollId(BigNumber.from(e.target.value))}
-                errorBorderColor="red.300"
-                style={{ marginBottom: '8px' }}
-              />
-              <Input
-                id="outlined-basic"
-                placeholder="Set Merkle Tree Depth"
-                type="number"
-                onChange={(e) =>
-                  setMerkleTreeDepth(BigNumber.from(e.target.value))
-                }
-                errorBorderColor="red.300"
-                style={{ marginBottom: '8px' }}
-              />
-              <Button
-                variant="solid"
-                bg="black"
-                _hover={{ bg: 'gray.600' }}
-                color="white"
-                onClick={createBallot}
-                marginBottom="16px"
-              >
-                Create a Ballot
-              </Button>
-              <Button
-                variant="solid"
-                bg="black"
-                _hover={{ bg: 'gray.600' }}
-                color="white"
-                onClick={startBallot}
-                marginBottom="16px"
-              >
-                Start a Ballot
-              </Button>
-              <Button
-                variant="solid"
-                bg="black"
-                _hover={{ bg: 'gray.600' }}
-                color="white"
-                onClick={stopBallot}
-                marginBottom="16px"
-              >
-                Stop a Ballot
-              </Button>
-
-              {successfulAlert && (
-                <Alert status="success" variant="subtle">
-                  <AlertIcon />
-                  <AlertDescription>Successful Transaction!</AlertDescription>
-                </Alert>
-              )}
-              {errorAlert && (
-                <Alert status="error" variant="subtle">
-                  <AlertIcon />
-                  <AlertDescription>Failed Transaction!</AlertDescription>
-                </Alert>
-              )}
-              {loadingAlert && <Spinner />}
-            </Flex>
-          </Box>
-        </Box>
-        {/* </Section> */}
-      </main>
-    </>
+    <main
+      data-testid="Layout"
+      id="maincontent"
+      className="flex flex-col items-center justify-center flex-grow mt-4 mb-8 space-y-8 md:space-y-16 md:mt-8 md:mb-16"
+    >
+      <Box maxW="xl" w="full" p="6" rounded="lg" shadow="md">
+        <Flex flexDir="column" alignItems="center">
+          <Button
+            variant="solid"
+            bg="black"
+            _hover={{ bg: 'gray.600' }}
+            color="white"
+            onClick={goToHomePage}
+            mb="4"
+            alignSelf="flex-start" // Added to align the button to the left
+          >
+            Back
+          </Button>
+          <Heading size="xl" mt="8" mb="4">
+            Create a Ballot
+          </Heading>
+          <Input
+            placeholder="Set Ballot Id (do not use the same one)"
+            type="number"
+            onChange={(e) => setPollId(BigNumber.from(e.target.value))}
+            errorBorderColor="red.300"
+            mb="4"
+          />
+          <Input
+            placeholder="Set Merkle Tree Depth"
+            type="number"
+            onChange={(e) => setMerkleTreeDepth(BigNumber.from(e.target.value))}
+            errorBorderColor="red.300"
+            mb="4"
+          />
+          <Flex flexDir={['column', 'row']} mb="4">
+            <Button
+              variant="solid"
+              bg="black"
+              _hover={{ bg: 'gray.600' }}
+              color="white"
+              onClick={createBallot}
+              mr={[0, '4']}
+              mb={['4', 0]}
+              w={['full', 'auto']}
+            >
+              Create a Ballot
+            </Button>
+            <Button
+              variant="solid"
+              bg="black"
+              _hover={{ bg: 'gray.600' }}
+              color="white"
+              onClick={startBallot}
+              mr={[0, '4']}
+              mb={['4', 0]}
+              w={['full', 'auto']}
+            >
+              Start a Ballot
+            </Button>
+            <Button
+              variant="solid"
+              bg="black"
+              _hover={{ bg: 'gray.600' }}
+              color="white"
+              onClick={stopBallot}
+              w={['full', 'auto']}
+            >
+              Stop a Ballot
+            </Button>
+          </Flex>
+          {successfulAlert && (
+            <Alert status="success" variant="subtle" w="full" mb="4">
+              <AlertIcon />
+              <AlertDescription>Successful Transaction!</AlertDescription>
+            </Alert>
+          )}
+          {errorAlert && (
+            <Alert status="error" variant="subtle" w="full" mb="4">
+              <AlertIcon />
+              <AlertDescription>Failed Transaction!</AlertDescription>
+            </Alert>
+          )}
+          {loadingAlert && <Spinner mt="4" />}
+        </Flex>
+      </Box>
+    </main>
   );
 };
 

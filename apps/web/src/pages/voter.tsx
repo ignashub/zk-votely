@@ -245,91 +245,87 @@ const Voter: NextPage = () => {
       <main
         data-testid="Layout"
         id="maincontent"
-        className={
-          'relative flex flex-col flex-grow mt-4 mb-8 space-y-8 md:space-y-16 md:mt-8 md:mb-16'
-        }
+        className="flex flex-col items-center justify-center flex-grow mt-4 mb-8 space-y-8 md:space-y-16 md:mt-8 md:mb-16"
       >
         {/* <Section> */}
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignContent: 'center',
-            // flexDirection: 'column',
-          }}
-        >
-          <Box boxSize="750px">
-            <Flex justifyContent="center" flexDirection="column">
-              <Button
-                variant="solid"
-                bg="black"
-                _hover={{ bg: 'gray.600' }}
-                color="white"
-                onClick={goToHomePage}
-                marginBottom="16px"
-              >
-                Back
-              </Button>
-              <Heading size={'xl'} marginTop="50px" marginBottom="20px">
-                Create an Identity
-              </Heading>
-              {identity ? (
-                <Box py="6" whiteSpace="nowrap">
-                  <Box
-                    p="5"
-                    borderWidth={1}
-                    borderColor="gray.500"
-                    borderRadius="4px"
-                  >
-                    <Text textOverflow="ellipsis" overflow="hidden">
-                      Trapdoor: {identity.trapdoor.toString()}
-                    </Text>
-                    <Text textOverflow="ellipsis" overflow="hidden">
-                      Nullifier: {identity.nullifier.toString()}
-                    </Text>
-                    <Text textOverflow="ellipsis" overflow="hidden">
-                      Commitment: {identity.commitment.toString()}
-                    </Text>
-                  </Box>
+        <Box maxW="xl" w="full" p="6" rounded="lg" shadow="md">
+          <Flex flexDir="column" alignItems="center">
+            <Button
+              variant="solid"
+              bg="black"
+              _hover={{ bg: 'gray.600' }}
+              color="white"
+              onClick={goToHomePage}
+              mb="4"
+              alignSelf="flex-start"
+            >
+              Back
+            </Button>
+            <Heading size="xl" mt="8" mb="4">
+              Create an Identity
+            </Heading>
+            {identity ? (
+              <Box py="6" whiteSpace="nowrap">
+                <Box
+                  p="5"
+                  borderWidth={1}
+                  borderColor="gray.500"
+                  borderRadius="4px"
+                >
+                  <Text textOverflow="ellipsis" overflow="hidden">
+                    Trapdoor: {identity.trapdoor.toString()}
+                  </Text>
+                  <Text textOverflow="ellipsis" overflow="hidden">
+                    Nullifier: {identity.nullifier.toString()}
+                  </Text>
+                  <Text textOverflow="ellipsis" overflow="hidden">
+                    Commitment: {identity.commitment.toString()}
+                  </Text>
                 </Box>
-              ) : (
-                <div></div>
-              )}
-              <Button
-                variant="solid"
-                bg="black"
-                _hover={{ bg: 'gray.600' }}
-                color="white"
-                onClick={createIdentity}
-                marginBottom="16px"
-              >
-                Create an Identity
-              </Button>
-              <Input
-                id="outlined-basic"
-                placeholder="Ballot Id"
-                type="number"
-                onChange={(e) => setPollId(BigNumber.from(e.target.value))}
-                errorBorderColor="red.300"
-                style={{ marginBottom: '8px' }}
-              />
-              <Input
-                id="outlined-basic"
-                placeholder="Merkle Tree Depth"
-                type="number"
-                onChange={(e) =>
-                  setMerkleTreeDepth(BigNumber.from(e.target.value))
-                }
-                errorBorderColor="red.300"
-                style={{ marginBottom: '8px' }}
-              />
+              </Box>
+            ) : (
+              <div></div>
+            )}
+            <Button
+              variant="solid"
+              bg="black"
+              _hover={{ bg: 'gray.600' }}
+              color="white"
+              onClick={createIdentity}
+              mr={[0, '4']}
+              mb={['4', 4]}
+              w={['full', 'auto']}
+            >
+              Create an Identity
+            </Button>
+            <Input
+              id="outlined-basic"
+              placeholder="Ballot Id"
+              type="number"
+              onChange={(e) => setPollId(BigNumber.from(e.target.value))}
+              errorBorderColor="red.300"
+              style={{ marginBottom: '8px' }}
+            />
+            <Input
+              id="outlined-basic"
+              placeholder="Merkle Tree Depth"
+              type="number"
+              onChange={(e) =>
+                setMerkleTreeDepth(BigNumber.from(e.target.value))
+              }
+              errorBorderColor="red.300"
+              style={{ marginBottom: '8px' }}
+            />
+            <Flex flexDir={['column', 'row']} mb="4">
               <Button
                 variant="solid"
                 bg="black"
                 _hover={{ bg: 'gray.600' }}
                 color="white"
                 onClick={joinBallout}
-                marginBottom="16px"
+                mr={[0, '4']}
+                mb={['4', 0]}
+                w={['full', 'auto']}
               >
                 Join a Ballout On-Chain
               </Button>
@@ -339,25 +335,31 @@ const Voter: NextPage = () => {
                 _hover={{ bg: 'gray.600' }}
                 color="white"
                 onClick={createNewGroup}
-                marginBottom="16px"
+                mr={[0, '4']}
+                mb={['4', 0]}
+                w={['full', 'auto']}
               >
                 Create a Group Off-Chain
               </Button>
-              <Input
-                id="outlined-basic"
-                placeholder="Enter Your Vote"
-                type="number"
-                onChange={(e) => setVote(BigNumber.from(e.target.value))}
-                errorBorderColor="red.300"
-                style={{ marginBottom: '8px' }}
-              />
+            </Flex>
+            <Input
+              id="outlined-basic"
+              placeholder="Enter Your Vote"
+              type="number"
+              onChange={(e) => setVote(BigNumber.from(e.target.value))}
+              errorBorderColor="red.300"
+              style={{ marginBottom: '8px' }}
+            />
+            <Flex flexDir={['column', 'row']} mb="4">
               <Button
                 variant="solid"
                 bg="black"
                 _hover={{ bg: 'gray.600' }}
                 color="white"
                 onClick={makeVoteProof}
-                marginBottom="16px"
+                mr={[0, '4']}
+                mb={['4', 0]}
+                w={['full', 'auto']}
               >
                 Generate Proof
               </Button>
@@ -367,7 +369,9 @@ const Voter: NextPage = () => {
                 _hover={{ bg: 'gray.600' }}
                 color="white"
                 onClick={verifyVoteProof}
-                marginBottom="16px"
+                mr={[0, '4']}
+                mb={['4', 0]}
+                w={['full', 'auto']}
               >
                 Verify Proof
               </Button>
@@ -377,26 +381,27 @@ const Voter: NextPage = () => {
                 _hover={{ bg: 'gray.600' }}
                 color="white"
                 onClick={postVote}
-                marginBottom="16px"
+                mr={[0, '4']}
+                mb={['4', 0]}
+                w={['full', 'auto']}
               >
                 Vote
               </Button>
-
-              {successfulAlert && (
-                <Alert status="success" variant="subtle">
-                  <AlertIcon />
-                  <AlertDescription>Successful Transaction!</AlertDescription>
-                </Alert>
-              )}
-              {errorAlert && (
-                <Alert status="error" variant="subtle">
-                  <AlertIcon />
-                  <AlertDescription>Failed Transaction!</AlertDescription>
-                </Alert>
-              )}
-              {loadingAlert && <Spinner />}
             </Flex>
-          </Box>
+            {successfulAlert && (
+              <Alert status="success" variant="subtle">
+                <AlertIcon />
+                <AlertDescription>Successful Transaction!</AlertDescription>
+              </Alert>
+            )}
+            {errorAlert && (
+              <Alert status="error" variant="subtle">
+                <AlertIcon />
+                <AlertDescription>Failed Transaction!</AlertDescription>
+              </Alert>
+            )}
+            {loadingAlert && <Spinner />}
+          </Flex>
         </Box>
         {/* </Section> */}
       </main>
