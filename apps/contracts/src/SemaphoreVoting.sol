@@ -81,18 +81,19 @@ contract SemaphoreVoting is ISemaphoreVoting, SemaphoreGroups {
     uint256 vote,
     uint256 nullifierHash,
     uint256 pollId,
-    uint256[8] calldata proof
+    uint256[8] calldata proof,
+    uint256 merkleTreeRoot
   ) public override {
-    // if (polls[pollId].state != PollState.Ongoing) {
-    //     revert Semaphore__PollIsNotOngoing();
-    // }
+    if (polls[pollId].state != PollState.Ongoing) {
+      revert Semaphore__PollIsNotOngoing();
+    }
 
     if (polls[pollId].nullifierHashes[nullifierHash]) {
       revert Semaphore__YouAreUsingTheSameNillifierTwice();
     }
 
     uint256 merkleTreeDepth = getMerkleTreeDepth(pollId);
-    uint256 merkleTreeRoot = getMerkleTreeRoot(pollId);
+    // uint256 merkleTreeRoot = getMerkleTreeRoot(pollId);
 
     verifier.verifyProof(
       merkleTreeRoot,
@@ -105,7 +106,7 @@ contract SemaphoreVoting is ISemaphoreVoting, SemaphoreGroups {
 
     polls[pollId].nullifierHashes[nullifierHash] = true;
 
-    emit VoteAdded(pollId, vote);
+    emit VoteAdded(pollId, vote, merkleTreeRoot, merkleTreeDepth);
   }
 
   /// @dev See {ISemaphoreVoting-publishDecryptionKey}.

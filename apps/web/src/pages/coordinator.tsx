@@ -49,7 +49,7 @@ const Coordinator: NextPage = () => {
 
   //SemaphoreVote Smart Contract
   const contract = useContract({
-    address: '0xf9718b9b6dEa83880bE00636DFe7452bc38639C5',
+    address: '0x55b41f5bE0Eeb48B9618a8E1C8fa1f6Db4870BE4',
     abi: SemaphoreVotingAbi,
     signerOrProvider: signer,
   });
@@ -195,7 +195,6 @@ const Coordinator: NextPage = () => {
               >
                 Back
               </Button>
-              <ConnectButton />
               <Heading size={'xl'} marginTop="50px" marginBottom="20px">
                 Create a Ballot
               </Heading>
@@ -262,10 +261,6 @@ const Coordinator: NextPage = () => {
               )}
               {loadingAlert && <Spinner />}
             </Flex>
-
-            <footer>
-              <Text>Byont Ventures B.V. © {new Date().getFullYear()}</Text>
-            </footer>
           </Box>
         </Box>
         {/* </Section> */}

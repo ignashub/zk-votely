@@ -259,25 +259,6 @@ export const SemaphoreVotingAbi = [
     type: 'event',
   },
   {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'pollId',
-        type: 'uint256',
-      },
-      {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'identityCommitment',
-        type: 'uint256',
-      },
-    ],
-    name: 'VoterAdded',
-    type: 'event',
-  },
-  {
     inputs: [
       {
         internalType: 'uint256',

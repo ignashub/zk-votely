@@ -50,13 +50,13 @@ const Voter: NextPage = () => {
 
   //SemaphoreVote Smart Contract
   const contract = useContract({
-    address: '0xf9718b9b6dEa83880bE00636DFe7452bc38639C5',
+    address: '0x55b41f5bE0Eeb48B9618a8E1C8fa1f6Db4870BE4',
     abi: SemaphoreVotingAbi,
     signerOrProvider: signer,
   });
 
   const contractEvent = useContractEvent({
-    address: '0xf9718b9b6dEa83880bE00636DFe7452bc38639C5',
+    address: '0x55b41f5bE0Eeb48B9618a8E1C8fa1f6Db4870BE4',
     abi: SemaphoreVotingAbi,
     eventName: 'VoteAdded',
     listener(pollId, vote, merkleTreeRoot, merkleTreeDepth) {
@@ -69,14 +69,14 @@ const Voter: NextPage = () => {
     },
   });
 
-  const contractEvent2 = useContractEvent({
-    address: '0xf9718b9b6dEa83880bE00636DFe7452bc38639C5',
-    abi: SemaphoreVotingAbi,
-    eventName: 'VoterAdded',
-    listener(pollId, identityCommitment) {
-      console.log(pollId.toString(), identityCommitment.toString());
-    },
-  });
+  // const contractEvent2 = useContractEvent({
+  //   address: '0x896d9f0768F80Ea38971175AebA4479ee2a8b3D6',
+  //   abi: SemaphoreVotingAbi,
+  //   eventName: 'VoterAdded',
+  //   listener(pollId, identityCommitment) {
+  //     console.log(pollId.toString(), identityCommitment.toString());
+  //   },
+  // });
 
   const goToHomePage = () => {
     router.push('/');
@@ -270,7 +270,6 @@ const Voter: NextPage = () => {
               >
                 Back
               </Button>
-              <ConnectButton />
               <Heading size={'xl'} marginTop="50px" marginBottom="20px">
                 Create an Identity
               </Heading>
@@ -397,10 +396,6 @@ const Voter: NextPage = () => {
               )}
               {loadingAlert && <Spinner />}
             </Flex>
-
-            <footer>
-              <Text>Byont Ventures B.V. © {new Date().getFullYear()}</Text>
-            </footer>
           </Box>
         </Box>
         {/* </Section> */}
