@@ -1,5 +1,16 @@
 export const SemaphoreVotingAbi = [
   {
+    inputs: [
+      {
+        internalType: 'contract ISemaphoreVerifier',
+        name: '_verifier',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'nonpayable',
+    type: 'constructor',
+  },
+  {
     inputs: [],
     name: 'Semaphore__CallerIsNotThePollCoordinator',
     type: 'error',
@@ -354,35 +365,6 @@ export const SemaphoreVotingAbi = [
     inputs: [
       {
         internalType: 'uint256',
-        name: 'pollId',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
-        name: 'encryptionKey',
-        type: 'uint256',
-      },
-    ],
-    name: 'startPoll',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'contract ISemaphoreVerifier',
-        name: '_verifier',
-        type: 'address',
-      },
-    ],
-    stateMutability: 'nonpayable',
-    type: 'constructor',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint256',
         name: 'groupId',
         type: 'uint256',
       },
@@ -434,6 +416,48 @@ export const SemaphoreVotingAbi = [
       },
     ],
     stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'pollId',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'option',
+        type: 'uint256',
+      },
+    ],
+    name: 'getVoteCount',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'pollId',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'encryptionKey',
+        type: 'uint256',
+      },
+    ],
+    name: 'startPoll',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function',
   },
   {

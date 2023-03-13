@@ -12,11 +12,10 @@ import {
   AlertDescription,
   Spinner,
 } from '@chakra-ui/react';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useContract, useSigner, useContractEvent } from 'wagmi';
 import { BigNumber, utils } from 'ethers';
 import { SemaphoreVotingAbi } from '../abis/SemaphoreVoting';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Identity } from '@semaphore-protocol/identity';
 import {
   FullProof,
@@ -24,6 +23,7 @@ import {
   verifyProof,
 } from '@semaphore-protocol/proof';
 import { Group } from '@semaphore-protocol/group';
+import { Poll } from '../components/Poll';
 
 const Voter: NextPage = () => {
   const router = useRouter();
@@ -50,13 +50,13 @@ const Voter: NextPage = () => {
 
   //SemaphoreVote Smart Contract
   const contract = useContract({
-    address: '0x55b41f5bE0Eeb48B9618a8E1C8fa1f6Db4870BE4',
+    address: '0x1FA7E5c89AC5C8d51f8FEFc88C9c667a53c950ad',
     abi: SemaphoreVotingAbi,
     signerOrProvider: signer,
   });
 
   const contractEvent = useContractEvent({
-    address: '0x55b41f5bE0Eeb48B9618a8E1C8fa1f6Db4870BE4',
+    address: '0x1FA7E5c89AC5C8d51f8FEFc88C9c667a53c950ad',
     abi: SemaphoreVotingAbi,
     eventName: 'VoteAdded',
     listener(pollId, vote, merkleTreeRoot, merkleTreeDepth) {
@@ -133,8 +133,6 @@ const Voter: NextPage = () => {
   const createNewGroup = async () => {
     const newGroup = new Group(pollId.toNumber(), merkleTreeDepth.toNumber());
     setGroup(newGroup);
-    console.log(`Group members: ${group.members}`);
-    console.log(`Group root: ${group.root}`);
   };
 
   const makeVoteProof = async () => {
@@ -403,6 +401,7 @@ const Voter: NextPage = () => {
             {loadingAlert && <Spinner />}
           </Flex>
         </Box>
+        <Poll group={group}></Poll>
         {/* </Section> */}
       </main>
     </>
