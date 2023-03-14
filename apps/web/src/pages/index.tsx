@@ -1,42 +1,28 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
+import { Text, Box, Button, Flex,
+  IconButton,
+  Stack,
+  Collapse,
+  Icon,
+  Link,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  useColorModeValue,
+  useBreakpointValue,
+  useDisclosure } from '@chakra-ui/react';
 import {
-  Text,
-  Box,
-  Heading,
-  Button,
-  Input,
-  Flex,
-  Alert,
-  AlertIcon,
-  AlertDescription,
-  Spinner,
-} from '@chakra-ui/react';
-import React, { useState } from 'react';
-import { useSigner } from 'wagmi';
+    HamburgerIcon,
+    CloseIcon,
+    ChevronDownIcon,
+    ChevronRightIcon,
+  } from '@chakra-ui/icons';
+import React, from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const Home: NextPage = () => {
-  // const [signerAddress, setSignerAddress] = useState<
-  //   `0x${string}` | undefined
-  // >();
   const router = useRouter();
-  // const { data: signer, isError, isLoading } = useSigner();
-
-  // const fetchSignerAddress = async () => {
-  //   const address = await signer.getAddress();
-  //   setSignerAddress(`0x${address.slice(2)}`);
-  //   console.log(address);
-  // };
-
-  // const goToCoordinatorPage = () => {
-  //   router.push({
-  //     pathname: '/coordinator',
-  //     query: {
-  //       walletSigner: signerAddress,
-  //     },
-  //   });
-  // };
 
   const goToCoordinatorPage = () => {
     router.push('/coordinator');
@@ -55,56 +41,34 @@ const Home: NextPage = () => {
           'relative flex flex-col flex-grow mt-4 mb-8 space-y-8 md:space-y-16 md:mt-8 md:mb-16'
         }
       >
-        {/* <Section> */}
         <Box
           sx={{
             display: 'flex',
             justifyContent: 'center',
             alignContent: 'center',
-            // flexDirection: 'column',
           }}
         >
           <Box boxSize="750px">
-            <Flex justifyContent="center" flexDirection="column">
-              <ConnectButton />
-              {/* <Button
-                variant="solid"
-                bg="black"
-                _hover={{ bg: 'gray.600' }}
-                color="white"
-                onClick={fetchSignerAddress}
-                marginBottom="16px"
+            <Box textAlign="center">
+              <Text
+                as="h1"
+                fontSize={{ base: '3xl', md: '5xl' }}
+                fontWeight="bold"
+                color={useColorModeValue('gray.700', 'gray.200')}
               >
-                Set Signer
-              </Button> */}
-              <Button
-                variant="solid"
-                bg="black"
-                _hover={{ bg: 'gray.600' }}
-                color="white"
-                onClick={goToCoordinatorPage}
-                marginBottom="16px"
+                ZK Votely
+              </Text>
+              <Text
+                as="p"
+                fontSize={{ base: 'lg', md: 'xl' }}
+                color={useColorModeValue('gray.500', 'gray.300')}
+                mt={3}
               >
-                Coordinator
-              </Button>
-              <Button
-                variant="solid"
-                bg="black"
-                _hover={{ bg: 'gray.600' }}
-                color="white"
-                onClick={goToVoterPage}
-                marginBottom="16px"
-              >
-                Voter
-              </Button>
-            </Flex>
-
-            <footer>
-              <Text>Byont Ventures B.V. © {new Date().getFullYear()}</Text>
-            </footer>
+                ZK Votely is a voting platform based on zero-knowledge proofs technology. It is built using Next.js, TypeScript, Semaphore Protocol and Solidity.
+              </Text>
+            </Box>
           </Box>
         </Box>
-        {/* </Section> */}
       </main>
     </>
   );

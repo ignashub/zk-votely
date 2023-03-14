@@ -16,7 +16,6 @@ import React, { useState } from 'react';
 import { BigNumber, utils, ethers } from 'ethers';
 import { SemaphoreVotingAbi } from '../abis/SemaphoreVoting';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { Identity } from '@semaphore-protocol/identity';
 import { useContract, useSigner } from 'wagmi';
 
 const Coordinator: NextPage = () => {
@@ -31,18 +30,11 @@ const Coordinator: NextPage = () => {
   //   };
 
   //SEMAPHORE STUFF
-  const [identity, setIdentity] = useState<Identity>();
-
-  const [semaphoreProof, setSemaphoreProof] = useState('');
-
-  const externalNullifier = utils.formatBytes32String('Topic');
-  const snarkArtifactsPath = 'zkproof/../../artifacts/snark';
-
   //For creating pool
   const [pollId, setPollId] = useState<BigNumber | undefined>(
     BigNumber.from(0)
   );
-  //   const [coordinator, setCoordinator] = useState<`0x${string}` | undefined>();
+
   const [merkleTreeDepth, setMerkleTreeDepth] = useState<
     BigNumber | undefined
   >();
@@ -57,7 +49,7 @@ const Coordinator: NextPage = () => {
 
   //SemaphoreVote Smart Contract
   const contract = useContract({
-    address: '0x41A1B6E666267e7C67A79cdFcD1a3Dcb976Ee8E5',
+    address: '0x1FA7E5c89AC5C8d51f8FEFc88C9c667a53c950ad',
     abi: SemaphoreVotingAbi,
     signerOrProvider: signer,
   });
@@ -66,18 +58,24 @@ const Coordinator: NextPage = () => {
     router.push('/');
   };
 
-  const createBallout = async () => {
+  const createBallot = async () => {
     if (!contract) {
       console.error('Smart contract is not loaded');
       return;
     }
 
-    if (!pollId || !merkleTreeDepth) {
-      console.error('Poll ID or Merkle tree depth is missing');
-      return;
-    }
+    // if (!pollId || !merkleTreeDepth) {
+    //   console.error('Poll ID or Merkle tree depth is missing');
+    //   return;
+    // }
 
     setLoadingAlert(true);
+
+    // console.log(pollId);
+    // console.log(pollId.toNumber());
+    // console.log(BigInt(pollId));
+
+    console.log(`pollID on Creating Ballot: ${pollId}`);
 
     try {
       const coordinator = signer?.getAddress();
@@ -87,7 +85,9 @@ const Coordinator: NextPage = () => {
         pollId,
         coordinator,
         merkleTreeDepth,
-        { gasLimit: myGasLimit }
+        {
+          gasLimit: myGasLimit,
+        }
       );
 
       const receipt = await result.wait();
@@ -98,6 +98,7 @@ const Coordinator: NextPage = () => {
         setTimeout(() => {
           setSuccessfulAlert(false);
         }, 5000);
+        // const group1 = new Group(pollId.toNumber(), merkleTreeDepth.toNumber());
       }
     } catch (error) {
       console.error('Error creating poll:', error);
@@ -109,7 +110,8 @@ const Coordinator: NextPage = () => {
     }
   };
 
-  const startBallout = async () => {
+  const startBallot = async () => {
+    console.log(`pollID on Starting Ballot: ${pollId}`);
     setLoadingAlert(true);
     try {
       const myGasLimit = BigNumber.from(5000000);
@@ -136,7 +138,7 @@ const Coordinator: NextPage = () => {
     }
   };
 
-  const stopBallout = async () => {
+  const stopBallot = async () => {
     setLoadingAlert(true);
     try {
       const myGasLimit = BigNumber.from(5000000);
@@ -164,133 +166,93 @@ const Coordinator: NextPage = () => {
   };
 
   return (
-    <>
-      <main
-        data-testid="Layout"
-        id="maincontent"
-        className={
-          'relative flex flex-col flex-grow mt-4 mb-8 space-y-8 md:space-y-16 md:mt-8 md:mb-16'
-        }
-      >
-        {/* <Section> */}
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignContent: 'center',
-            // flexDirection: 'column',
-          }}
-        >
-          <Box boxSize="750px">
-            <Flex justifyContent="center" flexDirection="column">
-              <Button
-                variant="solid"
-                bg="black"
-                _hover={{ bg: 'gray.600' }}
-                color="white"
-                onClick={goToHomePage}
-                marginBottom="16px"
-              >
-                Back
-              </Button>
-              <ConnectButton />
-              <Heading size={'xl'} marginTop="50px" marginBottom="20px">
-                Create an Identity
-              </Heading>
-              {identity ? (
-                <Box py="6" whiteSpace="nowrap">
-                  <Box
-                    p="5"
-                    borderWidth={1}
-                    borderColor="gray.500"
-                    borderRadius="4px"
-                  >
-                    <Text textOverflow="ellipsis" overflow="hidden">
-                      Trapdoor: {identity.trapdoor.toString()}
-                    </Text>
-                    <Text textOverflow="ellipsis" overflow="hidden">
-                      Nullifier: {identity.nullifier.toString()}
-                    </Text>
-                    <Text textOverflow="ellipsis" overflow="hidden">
-                      Commitment: {identity.commitment.toString()}
-                    </Text>
-                  </Box>
-                </Box>
-              ) : (
-                <div></div>
-              )}
-              <Input
-                id="outlined-basic"
-                placeholder="Set Ballot Id dont use the same one"
-                type="number"
-                onChange={(e) => setPollId(BigNumber.from(e.target.value))}
-                errorBorderColor="red.300"
-                style={{ marginBottom: '8px' }}
-              />
-              <Input
-                id="outlined-basic"
-                placeholder="Ballot Size Minimum 16"
-                type="number"
-                onChange={(e) =>
-                  setMerkleTreeDepth(BigNumber.from(e.target.value))
-                }
-                errorBorderColor="red.300"
-                style={{ marginBottom: '8px' }}
-              />
-              <Button
-                variant="solid"
-                bg="black"
-                _hover={{ bg: 'gray.600' }}
-                color="white"
-                onClick={createBallout}
-                marginBottom="16px"
-              >
-                Create a Ballout
-              </Button>
-              <Button
-                variant="solid"
-                bg="black"
-                _hover={{ bg: 'gray.600' }}
-                color="white"
-                onClick={startBallout}
-                marginBottom="16px"
-              >
-                Start a Ballout
-              </Button>
-              <Button
-                variant="solid"
-                bg="black"
-                _hover={{ bg: 'gray.600' }}
-                color="white"
-                onClick={stopBallout}
-                marginBottom="16px"
-              >
-                Stop a Ballout
-              </Button>
-
-              {successfulAlert && (
-                <Alert status="success" variant="subtle">
-                  <AlertIcon />
-                  <AlertDescription>Successful Transaction!</AlertDescription>
-                </Alert>
-              )}
-              {errorAlert && (
-                <Alert status="error" variant="subtle">
-                  <AlertIcon />
-                  <AlertDescription>Failed Transaction!</AlertDescription>
-                </Alert>
-              )}
-              {loadingAlert && <Spinner />}
-            </Flex>
-
-            <footer>
-              <Text>Byont Ventures B.V. © {new Date().getFullYear()}</Text>
-            </footer>
-          </Box>
-        </Box>
-        {/* </Section> */}
-      </main>
-    </>
+    <main
+      data-testid="Layout"
+      id="maincontent"
+      className="flex flex-col items-center justify-center flex-grow mt-4 mb-8 space-y-8 md:space-y-16 md:mt-8 md:mb-16"
+    >
+      <Box maxW="xl" w="full" p="6" rounded="lg" shadow="md">
+        <Flex flexDir="column" alignItems="center">
+          <Button
+            variant="solid"
+            bg="black"
+            _hover={{ bg: 'gray.600' }}
+            color="white"
+            onClick={goToHomePage}
+            mb="4"
+            alignSelf="flex-start" // Added to align the button to the left
+          >
+            Back
+          </Button>
+          <Heading size="xl" mt="8" mb="4">
+            Create a Ballot
+          </Heading>
+          <Input
+            placeholder="Set Ballot Id (do not use the same one)"
+            type="number"
+            onChange={(e) => setPollId(BigNumber.from(e.target.value))}
+            errorBorderColor="red.300"
+            mb="4"
+          />
+          <Input
+            placeholder="Set Merkle Tree Depth"
+            type="number"
+            onChange={(e) => setMerkleTreeDepth(BigNumber.from(e.target.value))}
+            errorBorderColor="red.300"
+            mb="4"
+          />
+          <Flex flexDir={['column', 'row']} mb="4">
+            <Button
+              variant="solid"
+              bg="black"
+              _hover={{ bg: 'gray.600' }}
+              color="white"
+              onClick={createBallot}
+              mr={[0, '4']}
+              mb={['4', 0]}
+              w={['full', 'auto']}
+            >
+              Create a Ballot
+            </Button>
+            <Button
+              variant="solid"
+              bg="black"
+              _hover={{ bg: 'gray.600' }}
+              color="white"
+              onClick={startBallot}
+              mr={[0, '4']}
+              mb={['4', 0]}
+              w={['full', 'auto']}
+            >
+              Start a Ballot
+            </Button>
+            <Button
+              variant="solid"
+              bg="black"
+              _hover={{ bg: 'gray.600' }}
+              color="white"
+              onClick={stopBallot}
+              w={['full', 'auto']}
+            >
+              Stop a Ballot
+            </Button>
+          </Flex>
+          {successfulAlert && (
+            <Alert status="success" variant="subtle" w="full" mb="4">
+              <AlertIcon />
+              <AlertDescription>Successful Transaction!</AlertDescription>
+            </Alert>
+          )}
+          {errorAlert && (
+            <Alert status="error" variant="subtle" w="full" mb="4">
+              <AlertIcon />
+              <AlertDescription>Failed Transaction!</AlertDescription>
+            </Alert>
+          )}
+          {loadingAlert && <Spinner mt="4" />}
+        </Flex>
+      </Box>
+    </main>
   );
 };
 

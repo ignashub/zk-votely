@@ -18,5 +18,6 @@
   },
   "search.exclude": {
     "**/node_modules": false
-  }
+  },
+  "git.ignoreLimitWarning": true
 }
