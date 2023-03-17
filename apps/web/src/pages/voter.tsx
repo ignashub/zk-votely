@@ -1,4 +1,6 @@
 import type { NextPage } from 'next';
+import { useQuery, gql } from '@apollo/client';
+import { SimpleGrid } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import {
   Text,
@@ -23,8 +25,21 @@ import {
   verifyProof,
 } from '@semaphore-protocol/proof';
 import { Group } from '@semaphore-protocol/group';
-import { Poll } from '../components/Poll';
+import { PollCard } from '../components/PollCard';
 
+const POLLS_QUERY = gql`
+  query GetAllPolls {
+    polls {
+      id
+      title
+      description
+      votingOptions {
+        id
+        value
+      }
+    }
+  }
+`;
 const Voter: NextPage = () => {
   const router = useRouter();
   //SEMAPHORE STUFF
@@ -48,26 +63,34 @@ const Voter: NextPage = () => {
   //Smart Contract Signer
   const { data: signer, isError, isLoading } = useSigner();
 
+  //Get all polls
+  const { data: pollData, loading, error } = useQuery(POLLS_QUERY);
+
   //SemaphoreVote Smart Contract
   const contract = useContract({
-    address: '0x1FA7E5c89AC5C8d51f8FEFc88C9c667a53c950ad',
+    address: '0x50DE78F84F8D7e5f43178523ae59f8AF42E534bF',
     abi: SemaphoreVotingAbi,
     signerOrProvider: signer,
   });
 
-  const contractEvent = useContractEvent({
-    address: '0x1FA7E5c89AC5C8d51f8FEFc88C9c667a53c950ad',
-    abi: SemaphoreVotingAbi,
-    eventName: 'VoteAdded',
-    listener(pollId, vote, merkleTreeRoot, merkleTreeDepth) {
-      console.log(
-        pollId.toString(),
-        vote.toString(),
-        merkleTreeRoot.toString(),
-        merkleTreeDepth.toString()
-      );
-    },
-  });
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+
+  const { polls } = pollData;
+
+  // const contractEvent = useContractEvent({
+  //   address: '0x50DE78F84F8D7e5f43178523ae59f8AF42E534bF',
+  //   abi: SemaphoreVotingAbi,
+  //   eventName: 'VoteAdded',
+  //   listener(pollId, vote, merkleTreeRoot, merkleTreeDepth) {
+  //     console.log(
+  //       pollId.toString(),
+  //       vote.toString(),
+  //       merkleTreeRoot.toString(),
+  //       merkleTreeDepth.toString()
+  //     );
+  //   },
+  // });
 
   // const contractEvent2 = useContractEvent({
   //   address: '0x896d9f0768F80Ea38971175AebA4479ee2a8b3D6',
@@ -401,7 +424,17 @@ const Voter: NextPage = () => {
             {loadingAlert && <Spinner />}
           </Flex>
         </Box>
-        <Poll group={group}></Poll>
+        <SimpleGrid columns={[1, 2, 3]} spacing="8">
+          {polls.map((poll) => (
+            <PollCard
+              key={poll.id}
+              title={poll.title}
+              description={poll.description}
+              votingOptions={poll.votingOptions.map((option) => option.value)}
+              pollId={poll.id}
+            />
+          ))}
+        </SimpleGrid>
         {/* </Section> */}
       </main>
     </>

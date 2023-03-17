@@ -1,16 +1,5 @@
 [
   {
-    "inputs": [
-      {
-        "internalType": "contract ISemaphoreVerifier",
-        "name": "_verifier",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
     "inputs": [],
     "name": "Semaphore__CallerIsNotThePollCoordinator",
     "type": "error"
@@ -183,6 +172,24 @@
         "internalType": "address",
         "name": "coordinator",
         "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "title",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "description",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "votingOptions",
+        "type": "uint256[]"
       }
     ],
     "name": "PollCreated",
@@ -336,6 +343,21 @@
         "internalType": "uint256",
         "name": "merkleTreeDepth",
         "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "title",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "description",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "votingOptions",
+        "type": "uint256[]"
       }
     ],
     "name": "createPoll",
@@ -360,6 +382,35 @@
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "pollId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "encryptionKey",
+        "type": "uint256"
+      }
+    ],
+    "name": "startPoll",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract ISemaphoreVerifier",
+        "name": "_verifier",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
   },
   {
     "inputs": [
@@ -416,24 +467,6 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "pollId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "encryptionKey",
-        "type": "uint256"
-      }
-    ],
-    "name": "startPoll",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
