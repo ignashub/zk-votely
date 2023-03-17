@@ -1,16 +1,5 @@
 export const SemaphoreVotingAbi = [
   {
-    inputs: [
-      {
-        internalType: 'contract ISemaphoreVerifier',
-        name: '_verifier',
-        type: 'address',
-      },
-    ],
-    stateMutability: 'nonpayable',
-    type: 'constructor',
-  },
-  {
     inputs: [],
     name: 'Semaphore__CallerIsNotThePollCoordinator',
     type: 'error',
@@ -184,6 +173,24 @@ export const SemaphoreVotingAbi = [
         name: 'coordinator',
         type: 'address',
       },
+      {
+        indexed: false,
+        internalType: 'string',
+        name: 'title',
+        type: 'string',
+      },
+      {
+        indexed: false,
+        internalType: 'string',
+        name: 'description',
+        type: 'string',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256[]',
+        name: 'votingOptions',
+        type: 'uint256[]',
+      },
     ],
     name: 'PollCreated',
     type: 'event',
@@ -337,6 +344,21 @@ export const SemaphoreVotingAbi = [
         name: 'merkleTreeDepth',
         type: 'uint256',
       },
+      {
+        internalType: 'string',
+        name: 'title',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'description',
+        type: 'string',
+      },
+      {
+        internalType: 'uint256[]',
+        name: 'votingOptions',
+        type: 'uint256[]',
+      },
     ],
     name: 'createPoll',
     outputs: [],
@@ -360,6 +382,35 @@ export const SemaphoreVotingAbi = [
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'pollId',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'encryptionKey',
+        type: 'uint256',
+      },
+    ],
+    name: 'startPoll',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'contract ISemaphoreVerifier',
+        name: '_verifier',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'nonpayable',
+    type: 'constructor',
   },
   {
     inputs: [
@@ -416,48 +467,6 @@ export const SemaphoreVotingAbi = [
       },
     ],
     stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint256',
-        name: 'pollId',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
-        name: 'option',
-        type: 'uint256',
-      },
-    ],
-    name: 'getVoteCount',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint256',
-        name: 'pollId',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
-        name: 'encryptionKey',
-        type: 'uint256',
-      },
-    ],
-    name: 'startPoll',
-    outputs: [],
-    stateMutability: 'nonpayable',
     type: 'function',
   },
   {

@@ -17,6 +17,14 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
 
+import { ApolloClient, InMemoryCache } from '@apollo/client';
+import { ApolloProvider } from '@apollo/client';
+
+const apolloClient = new ApolloClient({
+  uri: 'https://api.thegraph.com/subgraphs/name/ignashub/zkvotely', // Replace with your actual GraphQL API endpoint
+  cache: new InMemoryCache(),
+});
+
 // If loading a variable font, you don't need to specify the font weight
 const inter = Inter();
 
@@ -28,18 +36,19 @@ const App = ({ Component, pageProps }: AppProps): JSX.Element => {
         titleTemplate={`%s | ${process.env.NEXT_PUBLIC_APP_NAME}`}
         canonical={process.env.NEXT_PUBLIC_APP_URL}
       />
-
-      <WagmiConfig client={client}>
-        <RainbowKitProvider chains={chains}>
-          <ChakraProvider>
-            <div className={inter.className}></div>
-            <SkipToMain />
-            <Navbar />
-            <Component {...pageProps} />
-            <Footer />
-          </ChakraProvider>
-        </RainbowKitProvider>
-      </WagmiConfig>
+      <ApolloProvider client={apolloClient}>
+        <WagmiConfig client={client}>
+          <RainbowKitProvider chains={chains}>
+            <ChakraProvider>
+              <div className={inter.className}></div>
+              <SkipToMain />
+              <Navbar />
+              <Component {...pageProps} />
+              <Footer />
+            </ChakraProvider>
+          </RainbowKitProvider>
+        </WagmiConfig>
+      </ApolloProvider>
     </>
   );
 };

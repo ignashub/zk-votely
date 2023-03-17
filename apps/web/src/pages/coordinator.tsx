@@ -15,7 +15,6 @@ import {
 import React, { useState } from 'react';
 import { BigNumber, utils, ethers } from 'ethers';
 import { SemaphoreVotingAbi } from '../abis/SemaphoreVoting';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useContract, useSigner } from 'wagmi';
 
 const Coordinator: NextPage = () => {
@@ -34,10 +33,21 @@ const Coordinator: NextPage = () => {
   const [pollId, setPollId] = useState<BigNumber | undefined>(
     BigNumber.from(0)
   );
-
   const [merkleTreeDepth, setMerkleTreeDepth] = useState<
     BigNumber | undefined
   >();
+  const [title, setTitle] = useState<string | undefined>();
+  const [description, setDescription] = useState<string | undefined>();
+  const [votingOptions, setVotingOptions] = useState<string | undefined>();
+
+  //Input Validation
+  const [inputErrors, setInputErrors] = useState({
+    pollId: false,
+    merkleTreeDepth: false,
+    title: false,
+    description: false,
+    votingOptions: false,
+  });
 
   //Alerts
   const [successfulAlert, setSuccessfulAlert] = useState(false);
@@ -49,13 +59,61 @@ const Coordinator: NextPage = () => {
 
   //SemaphoreVote Smart Contract
   const contract = useContract({
-    address: '0x1FA7E5c89AC5C8d51f8FEFc88C9c667a53c950ad',
+    address: '0x50DE78F84F8D7e5f43178523ae59f8AF42E534bF',
     abi: SemaphoreVotingAbi,
     signerOrProvider: signer,
   });
 
   const goToHomePage = () => {
     router.push('/');
+  };
+
+  const convertVotingOptions = (optionsString: string) => {
+    const optionsArray = optionsString
+      .split(',')
+      .map((option) => option.trim());
+    return optionsArray.map((_, index) => index + 1);
+  };
+
+  function isValidInput(value) {
+    // You can also add more validation rules depending on your requirements
+    return value.trim() !== '';
+  }
+
+  const handlePollIdChange = (e) => {
+    const value = e.target.value;
+    setInputErrors((prev) => ({ ...prev, pollId: !isValidInput(value) }));
+    setPollId(BigNumber.from(value));
+  };
+
+  const handleMerkleTreeDepthChange = (e) => {
+    const value = e.target.value;
+    setInputErrors((prev) => ({
+      ...prev,
+      merkleTreeDepth: !isValidInput(value),
+    }));
+    setMerkleTreeDepth(BigNumber.from(value));
+  };
+
+  const handleTitleChange = (e) => {
+    const value = e.target.value;
+    setInputErrors((prev) => ({ ...prev, title: !isValidInput(value) }));
+    setTitle(value);
+  };
+
+  const handleDescriptionChange = (e) => {
+    const value = e.target.value;
+    setInputErrors((prev) => ({ ...prev, description: !isValidInput(value) }));
+    setDescription(value);
+  };
+
+  const handleVotingOptionsChange = (e) => {
+    const value = e.target.value;
+    setInputErrors((prev) => ({
+      ...prev,
+      votingOptions: !isValidInput(value),
+    }));
+    setVotingOptions(value);
   };
 
   const createBallot = async () => {
@@ -71,23 +129,26 @@ const Coordinator: NextPage = () => {
 
     setLoadingAlert(true);
 
-    // console.log(pollId);
-    // console.log(pollId.toNumber());
-    // console.log(BigInt(pollId));
+    console.log(`Title: ${title}`);
+    console.log(`Description: ${description}`);
+    console.log(`Voting Options: ${votingOptions}`);
 
     console.log(`pollID on Creating Ballot: ${pollId}`);
 
     try {
-      const coordinator = signer?.getAddress();
+      const coordinator = await signer?.getAddress();
       const myGasLimit = BigNumber.from(5000000);
       console.log(coordinator);
       let result = await contract.createPoll(
         pollId,
         coordinator,
         merkleTreeDepth,
-        {
-          gasLimit: myGasLimit,
-        }
+        title,
+        description,
+        convertVotingOptions(votingOptions)
+        // {
+        //   gasLimit: myGasLimit,
+        // }
       );
 
       const receipt = await result.wait();
@@ -190,16 +251,41 @@ const Coordinator: NextPage = () => {
           <Input
             placeholder="Set Ballot Id (do not use the same one)"
             type="number"
-            onChange={(e) => setPollId(BigNumber.from(e.target.value))}
+            onChange={handlePollIdChange}
             errorBorderColor="red.300"
             mb="4"
+            isInvalid={inputErrors.pollId}
           />
           <Input
             placeholder="Set Merkle Tree Depth"
             type="number"
-            onChange={(e) => setMerkleTreeDepth(BigNumber.from(e.target.value))}
+            onChange={handleMerkleTreeDepthChange}
             errorBorderColor="red.300"
             mb="4"
+            isInvalid={inputErrors.merkleTreeDepth}
+          />
+          <Input
+            placeholder="Title"
+            type="text"
+            onChange={handleTitleChange}
+            errorBorderColor="red.300"
+            mb="4"
+            isInvalid={inputErrors.title}
+          />
+          <Input
+            placeholder="Description"
+            type="text"
+            onChange={handleDescriptionChange}
+            errorBorderColor="red.300"
+            mb="4"
+            isInvalid={inputErrors.description}
+          />
+          <Input
+            placeholder="Voting Options (comma-separated)"
+            onChange={handleVotingOptionsChange}
+            errorBorderColor="red.300"
+            mb="4"
+            isInvalid={inputErrors.votingOptions}
           />
           <Flex flexDir={['column', 'row']} mb="4">
             <Button
@@ -207,22 +293,25 @@ const Coordinator: NextPage = () => {
               bg="black"
               _hover={{ bg: 'gray.600' }}
               color="white"
-              onClick={createBallot}
+              onClick={signer ? createBallot : undefined}
               mr={[0, '4']}
               mb={['4', 0]}
               w={['full', 'auto']}
+              isDisabled={!signer}
             >
               Create a Ballot
             </Button>
+
             <Button
               variant="solid"
               bg="black"
               _hover={{ bg: 'gray.600' }}
               color="white"
-              onClick={startBallot}
+              onClick={signer ? startBallot : undefined}
               mr={[0, '4']}
               mb={['4', 0]}
               w={['full', 'auto']}
+              isDisabled={!signer}
             >
               Start a Ballot
             </Button>
@@ -231,8 +320,9 @@ const Coordinator: NextPage = () => {
               bg="black"
               _hover={{ bg: 'gray.600' }}
               color="white"
-              onClick={stopBallot}
+              onClick={signer ? stopBallot : undefined}
               w={['full', 'auto']}
+              isDisabled={!signer}
             >
               Stop a Ballot
             </Button>
