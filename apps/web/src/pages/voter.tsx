@@ -68,7 +68,7 @@ const Voter: NextPage = () => {
 
   //SemaphoreVote Smart Contract
   const contract = useContract({
-    address: '0x50DE78F84F8D7e5f43178523ae59f8AF42E534bF',
+    address: '0x5718714BF9417C9D815E1A4389E62b3f693Ba673',
     abi: SemaphoreVotingAbi,
     signerOrProvider: signer,
   });
@@ -172,35 +172,6 @@ const Voter: NextPage = () => {
     console.log(proof);
     console.log(pollId.toNumber());
   };
-
-  // useEffect(() => {
-  //   const createNewGroup = async () => {
-  //     console.log(`Group members: ${group?.members}`);
-  //     console.log(`Group root: ${group?.root}`);
-  //     const newGroup = new Group(pollId.toNumber(), merkleTreeDepth.toNumber());
-  //     setGroup(newGroup);
-  //   };
-
-  //   const makeVoteProof = async () => {
-  //     console.log(`Group members: ${group?.members}`);
-  //     console.log(`Group root: ${group?.root}`);
-  //     if (!group) {
-  //       await createNewGroup();
-  //     }
-  //     console.log(`Group members: ${group?.members}`);
-  //     console.log(`Group root: ${group?.root}`);
-  //     group?.addMember(identity?.commitment);
-  //     console.log(`Group members: ${group?.members}`);
-  //     console.log(`Group root: ${group?.root}`);
-
-  //     const proof = await generateProof(identity, group!, pollId!, vote!);
-  //     setFullProof(proof);
-  //     console.log(proof);
-  //     console.log(pollId?.toNumber());
-  //   };
-
-  //   makeVoteProof();
-  // }, [identity, vote, pollId, merkleTreeDepth, group]);
 
   const verifyVoteProof = async () => {
     console.log(group);
@@ -430,7 +401,7 @@ const Voter: NextPage = () => {
               key={poll.id}
               title={poll.title}
               description={poll.description}
-              votingOptions={poll.votingOptions.map((option) => option.value)}
+              votingOptions={poll.votingOptions}
               pollId={poll.id}
             />
           ))}

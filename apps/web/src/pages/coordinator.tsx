@@ -38,7 +38,7 @@ const Coordinator: NextPage = () => {
   >();
   const [title, setTitle] = useState<string | undefined>();
   const [description, setDescription] = useState<string | undefined>();
-  const [votingOptions, setVotingOptions] = useState<string | undefined>();
+  const [votingOptions, setVotingOptions] = useState<string | undefined>('');
 
   //Input Validation
   const [inputErrors, setInputErrors] = useState({
@@ -59,7 +59,7 @@ const Coordinator: NextPage = () => {
 
   //SemaphoreVote Smart Contract
   const contract = useContract({
-    address: '0x50DE78F84F8D7e5f43178523ae59f8AF42E534bF',
+    address: '0x5718714BF9417C9D815E1A4389E62b3f693Ba673',
     abi: SemaphoreVotingAbi,
     signerOrProvider: signer,
   });
@@ -68,17 +68,17 @@ const Coordinator: NextPage = () => {
     router.push('/');
   };
 
-  const convertVotingOptions = (optionsString: string) => {
-    const optionsArray = optionsString
-      .split(',')
-      .map((option) => option.trim());
-    return optionsArray.map((_, index) => index + 1);
-  };
-
   function isValidInput(value) {
     // You can also add more validation rules depending on your requirements
     return value.trim() !== '';
   }
+
+  const convertVotingOptions = (optionsString: string) => {
+    const optionsArray = optionsString
+      .split(',')
+      .map((option) => option.trim());
+    return optionsArray;
+  };
 
   const handlePollIdChange = (e) => {
     const value = e.target.value;
@@ -114,6 +114,7 @@ const Coordinator: NextPage = () => {
       votingOptions: !isValidInput(value),
     }));
     setVotingOptions(value);
+    console.log(votingOptions);
   };
 
   const createBallot = async () => {
@@ -132,10 +133,13 @@ const Coordinator: NextPage = () => {
     console.log(`Title: ${title}`);
     console.log(`Description: ${description}`);
     console.log(`Voting Options: ${votingOptions}`);
+    console.log(votingOptions);
+    console.log(votingOptions.split(',').map((option) => option.trim()));
 
     console.log(`pollID on Creating Ballot: ${pollId}`);
 
     try {
+      const optionsArray = convertVotingOptions(votingOptions);
       const coordinator = await signer?.getAddress();
       const myGasLimit = BigNumber.from(5000000);
       console.log(coordinator);
@@ -145,7 +149,7 @@ const Coordinator: NextPage = () => {
         merkleTreeDepth,
         title,
         description,
-        convertVotingOptions(votingOptions)
+        optionsArray
         // {
         //   gasLimit: myGasLimit,
         // }

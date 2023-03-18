@@ -187,9 +187,9 @@ export const SemaphoreVotingAbi = [
       },
       {
         indexed: false,
-        internalType: 'uint256[]',
+        internalType: 'string[]',
         name: 'votingOptions',
-        type: 'uint256[]',
+        type: 'string[]',
       },
     ],
     name: 'PollCreated',
@@ -256,9 +256,9 @@ export const SemaphoreVotingAbi = [
       },
       {
         indexed: false,
-        internalType: 'uint256',
+        internalType: 'string',
         name: 'vote',
-        type: 'uint256',
+        type: 'string',
       },
       {
         indexed: false,
@@ -297,9 +297,9 @@ export const SemaphoreVotingAbi = [
   {
     inputs: [
       {
-        internalType: 'uint256',
+        internalType: 'string',
         name: 'vote',
-        type: 'uint256',
+        type: 'string',
       },
       {
         internalType: 'uint256',
@@ -355,9 +355,9 @@ export const SemaphoreVotingAbi = [
         type: 'string',
       },
       {
-        internalType: 'uint256[]',
+        internalType: 'string[]',
         name: 'votingOptions',
-        type: 'uint256[]',
+        type: 'string[]',
       },
     ],
     name: 'createPoll',

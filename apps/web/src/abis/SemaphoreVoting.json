@@ -187,9 +187,9 @@
       },
       {
         "indexed": false,
-        "internalType": "uint256[]",
+        "internalType": "string[]",
         "name": "votingOptions",
-        "type": "uint256[]"
+        "type": "string[]"
       }
     ],
     "name": "PollCreated",
@@ -256,9 +256,9 @@
       },
       {
         "indexed": false,
-        "internalType": "uint256",
+        "internalType": "string",
         "name": "vote",
-        "type": "uint256"
+        "type": "string"
       },
       {
         "indexed": false,
@@ -297,9 +297,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
+        "internalType": "string",
         "name": "vote",
-        "type": "uint256"
+        "type": "string"
       },
       {
         "internalType": "uint256",
@@ -355,9 +355,9 @@
         "type": "string"
       },
       {
-        "internalType": "uint256[]",
+        "internalType": "string[]",
         "name": "votingOptions",
-        "type": "uint256[]"
+        "type": "string[]"
       }
     ],
     "name": "createPoll",
