@@ -68,38 +68,49 @@ const Voter: NextPage = () => {
 
   //SemaphoreVote Smart Contract
   const contract = useContract({
-    address: '0x5718714BF9417C9D815E1A4389E62b3f693Ba673',
+    address: '0x7d685063b214f6b75CD6E3d896dc60759b950E0B',
     abi: SemaphoreVotingAbi,
     signerOrProvider: signer,
   });
+
+  const contractEvent =
+    contract &&
+    useContractEvent({
+      address: '0x7d685063b214f6b75CD6E3d896dc60759b950E0B',
+      abi: SemaphoreVotingAbi,
+      eventName: 'VoteAdded',
+      listener(pollId, vote, merkleTreeRoot, merkleTreeDepth) {
+        console.log('Event listener triggered');
+        console.log(
+          pollId.toString(),
+          vote.toString(),
+          merkleTreeRoot.toString(),
+          merkleTreeDepth.toString()
+        );
+      },
+    });
+
+  const contractEvent2 =
+    contract &&
+    useContractEvent({
+      address: '0x7d685063b214f6b75CD6E3d896dc60759b950E0B',
+      abi: SemaphoreVotingAbi,
+      eventName: 'MemberAdded',
+      listener(groupId, index, identityCommitment, merkleTreeRoot) {
+        console.log('Member Event listener triggered');
+        console.log(
+          groupId.toString(),
+          index.toString(),
+          identityCommitment.toString(),
+          merkleTreeRoot.toString()
+        );
+      },
+    });
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
 
   const { polls } = pollData;
-
-  // const contractEvent = useContractEvent({
-  //   address: '0x50DE78F84F8D7e5f43178523ae59f8AF42E534bF',
-  //   abi: SemaphoreVotingAbi,
-  //   eventName: 'VoteAdded',
-  //   listener(pollId, vote, merkleTreeRoot, merkleTreeDepth) {
-  //     console.log(
-  //       pollId.toString(),
-  //       vote.toString(),
-  //       merkleTreeRoot.toString(),
-  //       merkleTreeDepth.toString()
-  //     );
-  //   },
-  // });
-
-  // const contractEvent2 = useContractEvent({
-  //   address: '0x896d9f0768F80Ea38971175AebA4479ee2a8b3D6',
-  //   abi: SemaphoreVotingAbi,
-  //   eventName: 'VoterAdded',
-  //   listener(pollId, identityCommitment) {
-  //     console.log(pollId.toString(), identityCommitment.toString());
-  //   },
-  // });
 
   const goToHomePage = () => {
     router.push('/');
@@ -127,6 +138,9 @@ const Voter: NextPage = () => {
     console.log(identity.commitment);
 
     console.log(`pollID on Joining Ballot: ${pollId}`);
+
+    // await createNewGroup();
+    // await makeVoteProof();
 
     try {
       const myGasLimit = BigNumber.from(5000000);
@@ -159,18 +173,16 @@ const Voter: NextPage = () => {
   };
 
   const makeVoteProof = async () => {
-    console.log(group);
+    console.log('Making vote proof');
     console.log(`Group members: ${group.members}`);
     console.log(`Group root: ${group.root}`);
     group.addMember(identity.commitment);
-    console.log(group);
     console.log(`Group members: ${group.members}`);
     console.log(`Group root: ${group.root}`);
 
     const proof = await generateProof(identity, group, pollId, vote);
     setFullProof(proof);
     console.log(proof);
-    console.log(pollId.toNumber());
   };
 
   const verifyVoteProof = async () => {
@@ -178,6 +190,10 @@ const Voter: NextPage = () => {
     console.log(group.root);
     let result = await verifyProof(fullProof, merkleTreeDepth.toNumber());
     console.log(result);
+    const proofArray = fullProof.proof.map(
+      (value: BigNumber | string | number | null | undefined | BN) => value
+    );
+    console.log(proofArray);
   };
 
   const postVote = async () => {
@@ -191,14 +207,14 @@ const Voter: NextPage = () => {
     }
     setLoadingAlert(true);
 
-    console.log(fullProof.proof);
-
     const proofArray = fullProof.proof.map(
       (value: BigNumber | string | number | null | undefined | BN) => value
     );
     console.log(proofArray);
 
-    console.log(`pollID on Vote: ${pollId}`);
+    console.log(`vote on postVote: ${vote}`);
+    console.log(`pollID on postVote: ${pollId}`);
+    console.log(`group.root on postVote: ${group.root}`);
 
     try {
       const myGasLimit = BigNumber.from(5000000);
@@ -396,15 +412,19 @@ const Voter: NextPage = () => {
           </Flex>
         </Box>
         <SimpleGrid columns={[1, 2, 3]} spacing="8">
-          {polls.map((poll) => (
-            <PollCard
-              key={poll.id}
-              title={poll.title}
-              description={poll.description}
-              votingOptions={poll.votingOptions}
-              pollId={poll.id}
-            />
-          ))}
+          {polls.map(
+            (poll) =>
+              identity && (
+                <PollCard
+                  key={poll.id}
+                  title={poll.title}
+                  description={poll.description}
+                  votingOptions={poll.votingOptions}
+                  pollId={poll.id}
+                  identityCommitment={identity.commitment}
+                />
+              )
+          )}
         </SimpleGrid>
         {/* </Section> */}
       </main>

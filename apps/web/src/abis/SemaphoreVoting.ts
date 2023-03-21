@@ -1,5 +1,16 @@
 export const SemaphoreVotingAbi = [
   {
+    inputs: [
+      {
+        internalType: 'contract ISemaphoreVerifier',
+        name: '_verifier',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'nonpayable',
+    type: 'constructor',
+  },
+  {
     inputs: [],
     name: 'Semaphore__CallerIsNotThePollCoordinator',
     type: 'error',
@@ -256,9 +267,9 @@ export const SemaphoreVotingAbi = [
       },
       {
         indexed: false,
-        internalType: 'string',
+        internalType: 'uint256',
         name: 'vote',
-        type: 'string',
+        type: 'uint256',
       },
       {
         indexed: false,
@@ -297,9 +308,9 @@ export const SemaphoreVotingAbi = [
   {
     inputs: [
       {
-        internalType: 'string',
+        internalType: 'uint256',
         name: 'vote',
-        type: 'string',
+        type: 'uint256',
       },
       {
         internalType: 'uint256',
@@ -387,35 +398,6 @@ export const SemaphoreVotingAbi = [
     inputs: [
       {
         internalType: 'uint256',
-        name: 'pollId',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
-        name: 'encryptionKey',
-        type: 'uint256',
-      },
-    ],
-    name: 'startPoll',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'contract ISemaphoreVerifier',
-        name: '_verifier',
-        type: 'address',
-      },
-    ],
-    stateMutability: 'nonpayable',
-    type: 'constructor',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint256',
         name: 'groupId',
         type: 'uint256',
       },
@@ -467,6 +449,24 @@ export const SemaphoreVotingAbi = [
       },
     ],
     stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'pollId',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'encryptionKey',
+        type: 'uint256',
+      },
+    ],
+    name: 'startPoll',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function',
   },
   {

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Box, VStack, Text, RadioGroup, Radio } from '@chakra-ui/react';
+import { Box, VStack, Text, RadioGroup, Radio, Button } from '@chakra-ui/react';
 
 interface PollCardProps {
   title: string;
   description: string;
   votingOptions: string[];
   pollId: string;
+  identityCommitment: string;
 }
 
 export const PollCard: React.FC<PollCardProps> = ({
@@ -13,6 +14,7 @@ export const PollCard: React.FC<PollCardProps> = ({
   description,
   votingOptions,
   pollId,
+  identityCommitment,
 }) => {
   const [selectedOption, setSelectedOption] = useState('');
 
@@ -29,7 +31,8 @@ export const PollCard: React.FC<PollCardProps> = ({
         <Text fontSize="md">{description}</Text>
         <RadioGroup value={selectedOption} onChange={handleChange}>
           {votingOptions.map((option, index) => {
-            console.log('Option:', option);
+            // console.log('Option:', option);
+            // console.log(identityCommitment);
             return (
               <Radio key={`${pollId}-${index}`} value={index.toString()}>
                 <Text>{option}</Text>
@@ -37,6 +40,18 @@ export const PollCard: React.FC<PollCardProps> = ({
             );
           })}
         </RadioGroup>
+        <Button
+          variant="solid"
+          bg="black"
+          _hover={{ bg: 'gray.600' }}
+          color="white"
+          // onClick={joinBallout}
+          mr={[0, '4']}
+          mb={['4', 0]}
+          w={['full', 'auto']}
+        >
+          Join a Ballout On-Chain
+        </Button>
       </VStack>
     </Box>
   );

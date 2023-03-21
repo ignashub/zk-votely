@@ -59,7 +59,7 @@ const Coordinator: NextPage = () => {
 
   //SemaphoreVote Smart Contract
   const contract = useContract({
-    address: '0x5718714BF9417C9D815E1A4389E62b3f693Ba673',
+    address: '0x7d685063b214f6b75CD6E3d896dc60759b950E0B',
     abi: SemaphoreVotingAbi,
     signerOrProvider: signer,
   });
@@ -149,10 +149,10 @@ const Coordinator: NextPage = () => {
         merkleTreeDepth,
         title,
         description,
-        optionsArray
-        // {
-        //   gasLimit: myGasLimit,
-        // }
+        optionsArray,
+        {
+          gasLimit: myGasLimit,
+        }
       );
 
       const receipt = await result.wait();
