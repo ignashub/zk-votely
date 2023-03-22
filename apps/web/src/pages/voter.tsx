@@ -139,9 +139,6 @@ const Voter: NextPage = () => {
 
     console.log(`pollID on Joining Ballot: ${pollId}`);
 
-    // await createNewGroup();
-    // await makeVoteProof();
-
     try {
       const myGasLimit = BigNumber.from(5000000);
       let result = await contract.addVoter(pollId, identity?.commitment, {
@@ -169,20 +166,21 @@ const Voter: NextPage = () => {
 
   const createNewGroup = async () => {
     const newGroup = new Group(pollId.toNumber(), merkleTreeDepth.toNumber());
-    setGroup(newGroup);
+    return newGroup;
   };
 
-  const makeVoteProof = async () => {
-    console.log('Making vote proof');
-    console.log(`Group members: ${group.members}`);
-    console.log(`Group root: ${group.root}`);
-    group.addMember(identity.commitment);
-    console.log(`Group members: ${group.members}`);
-    console.log(`Group root: ${group.root}`);
+  const makeVoteProof = async (newGroup) => {
+    // console.log('Making vote proof');
+    // console.log(`Group members: ${group.members}`);
+    // console.log(`Group root: ${group.root}`);
+    newGroup.addMember(identity.commitment);
+    // console.log(`Group members: ${group.members}`);
+    // console.log(`Group root: ${group.root}`);
 
-    const proof = await generateProof(identity, group, pollId, vote);
+    const proof = await generateProof(identity, newGroup, pollId, vote);
     setFullProof(proof);
     console.log(proof);
+    return proof;
   };
 
   const verifyVoteProof = async () => {
@@ -207,6 +205,9 @@ const Voter: NextPage = () => {
     }
     setLoadingAlert(true);
 
+    const newGroup = await createNewGroup();
+    const fullProof = await makeVoteProof(newGroup);
+
     const proofArray = fullProof.proof.map(
       (value: BigNumber | string | number | null | undefined | BN) => value
     );
@@ -214,7 +215,7 @@ const Voter: NextPage = () => {
 
     console.log(`vote on postVote: ${vote}`);
     console.log(`pollID on postVote: ${pollId}`);
-    console.log(`group.root on postVote: ${group.root}`);
+    console.log(`Group root on postVote: ${newGroup.root}`);
 
     try {
       const myGasLimit = BigNumber.from(5000000);
@@ -225,7 +226,7 @@ const Voter: NextPage = () => {
         nullifierHash,
         pollId,
         proofArray,
-        group.root,
+        newGroup.root,
         {
           gasLimit: myGasLimit,
         }
@@ -337,7 +338,7 @@ const Voter: NextPage = () => {
               >
                 Join a Ballout On-Chain
               </Button>
-              <Button
+              {/* <Button
                 variant="solid"
                 bg="black"
                 _hover={{ bg: 'gray.600' }}
@@ -348,7 +349,7 @@ const Voter: NextPage = () => {
                 w={['full', 'auto']}
               >
                 Create a Group Off-Chain
-              </Button>
+              </Button> */}
             </Flex>
             <Input
               id="outlined-basic"
@@ -359,7 +360,7 @@ const Voter: NextPage = () => {
               style={{ marginBottom: '8px' }}
             />
             <Flex flexDir={['column', 'row']} mb="4">
-              <Button
+              {/* <Button
                 variant="solid"
                 bg="black"
                 _hover={{ bg: 'gray.600' }}
@@ -370,8 +371,8 @@ const Voter: NextPage = () => {
                 w={['full', 'auto']}
               >
                 Generate Proof
-              </Button>
-              <Button
+              </Button> */}
+              {/* <Button
                 variant="solid"
                 bg="black"
                 _hover={{ bg: 'gray.600' }}
@@ -382,7 +383,7 @@ const Voter: NextPage = () => {
                 w={['full', 'auto']}
               >
                 Verify Proof
-              </Button>
+              </Button> */}
               <Button
                 variant="solid"
                 bg="black"

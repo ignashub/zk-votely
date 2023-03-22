@@ -54,7 +54,7 @@
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@semaphore-protocol/group": "^3.0.0",
-    "@semaphore-protocol/identity": "^3.0.0",
+    "@semaphore-protocol/identity": "^3.4.0",
     "@semaphore-protocol/proof": "^3.0.0",
     "abitype": "^0.2.5",
     "cors": "^2.8.5",
