@@ -16,7 +16,7 @@ import {
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { useContract, useSigner, useContractEvent } from 'wagmi';
-import { BigNumber, utils } from 'ethers';
+import { BigNumber } from 'ethers';
 import { SemaphoreVotingAbi } from '../abis/SemaphoreVoting';
 import { Identity } from '@semaphore-protocol/identity';
 import {
@@ -33,6 +33,7 @@ const POLLS_QUERY = gql`
       id
       title
       description
+      merkleTreeDepth
       votingOptions {
         id
         value
@@ -68,7 +69,7 @@ const Voter: NextPage = () => {
 
   //SemaphoreVote Smart Contract
   const contract = useContract({
-    address: '0x4cfED314eadD3Dd6bAF7888BA289a2FE8F1A87fC',
+    address: '0x84c403687c0811899A97d358FDd6Ce7012B1e6C0',
     abi: SemaphoreVotingAbi,
     signerOrProvider: signer,
   });
@@ -76,7 +77,7 @@ const Voter: NextPage = () => {
   const contractEvent =
     contract &&
     useContractEvent({
-      address: '0x4cfED314eadD3Dd6bAF7888BA289a2FE8F1A87fC',
+      address: '0x84c403687c0811899A97d358FDd6Ce7012B1e6C0',
       abi: SemaphoreVotingAbi,
       eventName: 'VoteAdded',
       listener(pollId, vote, merkleTreeRoot, merkleTreeDepth) {
@@ -93,7 +94,7 @@ const Voter: NextPage = () => {
   const contractEvent2 =
     contract &&
     useContractEvent({
-      address: '0x4cfED314eadD3Dd6bAF7888BA289a2FE8F1A87fC',
+      address: '0x84c403687c0811899A97d358FDd6Ce7012B1e6C0',
       abi: SemaphoreVotingAbi,
       eventName: 'MemberAdded',
       listener(groupId, index, identityCommitment, merkleTreeRoot) {
@@ -116,56 +117,18 @@ const Voter: NextPage = () => {
     router.push('/');
   };
 
-  const createIdentity = () => {
+  const createIdentity = async () => {
     const _identity = new Identity();
     setIdentity(_identity);
     console.log(_identity.commitment);
-  };
-
-  const joinBallout = async () => {
-    if (!contract) {
-      console.error('Smart contract is not loaded');
-      return;
-    }
-
-    if (!pollId) {
-      console.error('Poll ID is missing');
-      return;
-    }
-
-    setLoadingAlert(true);
-
-    console.log(identity.commitment);
-
-    console.log(`pollID on Joining Ballot: ${pollId}`);
-
-    try {
-      const myGasLimit = BigNumber.from(5000000);
-      let result = await contract.addVoter(pollId, identity?.commitment, {
-        gasLimit: myGasLimit,
-      });
-
-      const receipt = await result.wait();
-
-      if (receipt.status === 1) {
-        setLoadingAlert(false);
-        setSuccessfulAlert(true);
-        setTimeout(() => {
-          setSuccessfulAlert(false);
-        }, 5000);
-      }
-    } catch (error) {
-      console.error('Error joining ballout:', error);
-      setLoadingAlert(false);
-      setErrorAlert(true);
-      setTimeout(() => {
-        setErrorAlert(false);
-      }, 5000);
-    }
+    // const newGroup = await createNewGroup();
+    // await makeVoteProof(newGroup);
+    // console.log(fullProof);
   };
 
   const createNewGroup = async () => {
     const newGroup = new Group(pollId.toNumber(), merkleTreeDepth.toNumber());
+    setGroup(newGroup);
     return newGroup;
   };
 
@@ -325,32 +288,7 @@ const Voter: NextPage = () => {
               errorBorderColor="red.300"
               style={{ marginBottom: '8px' }}
             />
-            <Flex flexDir={['column', 'row']} mb="4">
-              <Button
-                variant="solid"
-                bg="black"
-                _hover={{ bg: 'gray.600' }}
-                color="white"
-                onClick={joinBallout}
-                mr={[0, '4']}
-                mb={['4', 0]}
-                w={['full', 'auto']}
-              >
-                Join a Ballout On-Chain
-              </Button>
-              {/* <Button
-                variant="solid"
-                bg="black"
-                _hover={{ bg: 'gray.600' }}
-                color="white"
-                onClick={createNewGroup}
-                mr={[0, '4']}
-                mb={['4', 0]}
-                w={['full', 'auto']}
-              >
-                Create a Group Off-Chain
-              </Button> */}
-            </Flex>
+            <Flex flexDir={['column', 'row']} mb="4"></Flex>
             <Input
               id="outlined-basic"
               placeholder="Enter Your Vote"
@@ -422,7 +360,8 @@ const Voter: NextPage = () => {
                   description={poll.description}
                   votingOptions={poll.votingOptions}
                   pollId={poll.id}
-                  identityCommitment={identity.commitment}
+                  identity={identity}
+                  merkleTreeDepth={poll.merkleTreeDepth}
                 />
               )
           )}

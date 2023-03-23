@@ -198,6 +198,12 @@ export const SemaphoreVotingAbi = [
       },
       {
         indexed: false,
+        internalType: 'uint256',
+        name: 'merkleTreeDepth',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
         internalType: 'string[]',
         name: 'votingOptions',
         type: 'string[]',
