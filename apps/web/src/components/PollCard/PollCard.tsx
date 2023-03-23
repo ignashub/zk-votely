@@ -24,14 +24,14 @@ export const PollCard: React.FC<PollCardProps> = ({
   };
 
   // Use the custom hook
-  const { castVote, error } = useJoinBallot(
+  const { joinBallot, error } = useJoinBallot(
     pollId.toString(),
     identityCommitment.toString()
   );
 
   // Update the handleJoinBallot function to call castVote
   const handleJoinBallot = async () => {
-    await castVote();
+    await joinBallot();
   };
 
   return (

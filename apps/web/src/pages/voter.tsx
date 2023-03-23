@@ -68,7 +68,7 @@ const Voter: NextPage = () => {
 
   //SemaphoreVote Smart Contract
   const contract = useContract({
-    address: '0x7d685063b214f6b75CD6E3d896dc60759b950E0B',
+    address: '0x4cfED314eadD3Dd6bAF7888BA289a2FE8F1A87fC',
     abi: SemaphoreVotingAbi,
     signerOrProvider: signer,
   });
@@ -76,7 +76,7 @@ const Voter: NextPage = () => {
   const contractEvent =
     contract &&
     useContractEvent({
-      address: '0x7d685063b214f6b75CD6E3d896dc60759b950E0B',
+      address: '0x4cfED314eadD3Dd6bAF7888BA289a2FE8F1A87fC',
       abi: SemaphoreVotingAbi,
       eventName: 'VoteAdded',
       listener(pollId, vote, merkleTreeRoot, merkleTreeDepth) {
@@ -93,7 +93,7 @@ const Voter: NextPage = () => {
   const contractEvent2 =
     contract &&
     useContractEvent({
-      address: '0x7d685063b214f6b75CD6E3d896dc60759b950E0B',
+      address: '0x4cfED314eadD3Dd6bAF7888BA289a2FE8F1A87fC',
       abi: SemaphoreVotingAbi,
       eventName: 'MemberAdded',
       listener(groupId, index, identityCommitment, merkleTreeRoot) {
