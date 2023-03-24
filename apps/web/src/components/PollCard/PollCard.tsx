@@ -1,10 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { Box, VStack, Text, RadioGroup, Radio, Button } from '@chakra-ui/react';
+import {
+  Alert,
+  AlertIcon,
+  AlertDescription,
+  Spinner,
+  Box,
+  VStack,
+  Text,
+  RadioGroup,
+  Radio,
+  Button,
+} from '@chakra-ui/react';
 import { useJoinBallot } from '../../hooks/useJoinBallot';
 import { useVoteBallot } from '../../hooks/useVoteBallot';
 import { BigNumber } from 'ethers';
 import { Group } from '@semaphore-protocol/group';
 import { FullProof, generateProof } from '@semaphore-protocol/proof';
+import { useSigner } from 'wagmi';
 
 interface PollCardProps {
   title: string;
@@ -27,7 +39,13 @@ export const PollCard: React.FC<PollCardProps> = ({
   const [group, setGroup] = useState<Group | undefined>();
   const [fullProof, setFullProof] = useState<FullProof>();
   const [proofArray, setProofArray] = useState<BigNumber[]>();
-  const [voteTrigger, setVoteTrigger] = useState<boolean>(false);
+
+  //Smart Contract Signer
+  const { data: signer, isError, isLoading } = useSigner();
+
+  const [successfulAlert, setSuccessfulAlert] = useState(false);
+  const [errorAlert, setErrorAlert] = useState(false);
+  const [loadingAlert, setLoadingAlert] = useState(false);
 
   const createNewGroup = async () => {
     const newGroup = new Group(parseInt(pollId), parseInt(merkleTreeDepth));
@@ -62,10 +80,11 @@ export const PollCard: React.FC<PollCardProps> = ({
     return proofArray;
   };
 
-  const { joinBallot } = useJoinBallot(
-    pollId.toString(),
-    identity.commitment.toString()
-  );
+  const {
+    joinBallot,
+    loading: joinBallotLoading,
+    error: joinBallotError,
+  } = useJoinBallot(pollId.toString(), identity.commitment.toString());
 
   const { voteBallot } = useVoteBallot(
     selectedOption,
@@ -75,9 +94,29 @@ export const PollCard: React.FC<PollCardProps> = ({
     merkleTreeDepth.toString()
   );
 
+  useEffect(() => {
+    if (joinBallotError) {
+      setLoadingAlert(false);
+      setErrorAlert(true);
+      setTimeout(() => {
+        setErrorAlert(false);
+      }, 5000);
+    }
+  }, [joinBallotError]);
+
   const handleJoinBallot = async () => {
     console.log(pollId, identity.commitment);
-    await joinBallot();
+
+    if (joinBallotLoading) return;
+
+    setLoadingAlert(true);
+    await joinBallot().then(() => {
+      setLoadingAlert(false);
+      setSuccessfulAlert(true);
+      setTimeout(() => {
+        setSuccessfulAlert(false);
+      }, 5000);
+    });
   };
 
   const handleCreateProof = async () => {
@@ -122,6 +161,7 @@ export const PollCard: React.FC<PollCardProps> = ({
           mr={[0, '4']}
           mb={['4', 0]}
           w={['full', 'auto']}
+          isDisabled={!signer}
         >
           Join a Ballot
         </Button>
@@ -134,6 +174,7 @@ export const PollCard: React.FC<PollCardProps> = ({
           mr={[0, '4']}
           mb={['4', 0]}
           w={['full', 'auto']}
+          isDisabled={!signer}
         >
           Create Proof
         </Button>
@@ -146,9 +187,23 @@ export const PollCard: React.FC<PollCardProps> = ({
           mr={[0, '4']}
           mb={['4', 0]}
           w={['full', 'auto']}
+          isDisabled={!signer}
         >
           Vote
         </Button>
+        {successfulAlert && (
+          <Alert status="success" variant="subtle">
+            <AlertIcon />
+            <AlertDescription>Successful Transaction!</AlertDescription>
+          </Alert>
+        )}
+        {errorAlert && (
+          <Alert status="error" variant="subtle">
+            <AlertIcon />
+            <AlertDescription>Failed Transaction!</AlertDescription>
+          </Alert>
+        )}
+        {joinBallotLoading && <Spinner />}
       </VStack>
     </Box>
   );

@@ -49,7 +49,14 @@ contract SemaphoreVoting is ISemaphoreVoting, SemaphoreGroups {
     polls[pollId].description = description;
     polls[pollId].votingOptions = votingOptions;
 
-    emit PollCreated(pollId, coordinator, title, description, votingOptions);
+    emit PollCreated(
+      pollId,
+      coordinator,
+      title,
+      description,
+      merkleTreeDepth,
+      votingOptions
+    );
   }
 
   /// @dev See {ISemaphoreVoting-addVoter}.
@@ -89,16 +96,15 @@ contract SemaphoreVoting is ISemaphoreVoting, SemaphoreGroups {
     uint256[8] calldata proof,
     uint256 merkleTreeRoot
   ) public override {
-    // if (polls[pollId].state != PollState.Ongoing) {
-    //     revert Semaphore__PollIsNotOngoing();
-    // }
+    if (polls[pollId].state != PollState.Ongoing) {
+      revert Semaphore__PollIsNotOngoing();
+    }
 
-    // if (polls[pollId].nullifierHashes[nullifierHash]) {
-    //     revert Semaphore__YouAreUsingTheSameNillifierTwice();
-    // }
+    if (polls[pollId].nullifierHashes[nullifierHash]) {
+      revert Semaphore__YouAreUsingTheSameNillifierTwice();
+    }
 
     uint256 merkleTreeDepth = getMerkleTreeDepth(pollId);
-    // uint256 merkleTreeRoot = getMerkleTreeRoot(pollId);
 
     verifier.verifyProof(
       merkleTreeRoot,

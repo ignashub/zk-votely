@@ -7,7 +7,7 @@ import {
   Box,
   Heading,
   Button,
-  Input,
+  Highlight,
   Flex,
   Alert,
   AlertIcon,
@@ -19,11 +19,7 @@ import { useContract, useSigner, useContractEvent } from 'wagmi';
 import { BigNumber } from 'ethers';
 import { SemaphoreVotingAbi } from '../abis/SemaphoreVoting';
 import { Identity } from '@semaphore-protocol/identity';
-import {
-  FullProof,
-  generateProof,
-  verifyProof,
-} from '@semaphore-protocol/proof';
+import { FullProof, generateProof } from '@semaphore-protocol/proof';
 import { Group } from '@semaphore-protocol/group';
 import { PollCard } from '../components/PollCard';
 
@@ -121,9 +117,6 @@ const Voter: NextPage = () => {
     const _identity = new Identity();
     setIdentity(_identity);
     console.log(_identity.commitment);
-    // const newGroup = await createNewGroup();
-    // await makeVoteProof(newGroup);
-    // console.log(fullProof);
   };
 
   const createNewGroup = async () => {
@@ -144,17 +137,6 @@ const Voter: NextPage = () => {
     setFullProof(proof);
     console.log(proof);
     return proof;
-  };
-
-  const verifyVoteProof = async () => {
-    console.log(group);
-    console.log(group.root);
-    let result = await verifyProof(fullProof, merkleTreeDepth.toNumber());
-    console.log(result);
-    const proofArray = fullProof.proof.map(
-      (value: BigNumber | string | number | null | undefined | BN) => value
-    );
-    console.log(proofArray);
   };
 
   const postVote = async () => {
@@ -237,22 +219,28 @@ const Voter: NextPage = () => {
               Create an Identity
             </Heading>
             {identity ? (
-              <Box py="6" whiteSpace="nowrap">
+              <Box py="6">
                 <Box
                   p="5"
                   borderWidth={1}
                   borderColor="gray.500"
                   borderRadius="4px"
                 >
-                  <Text textOverflow="ellipsis" overflow="hidden">
-                    Trapdoor: {identity.trapdoor.toString()}
-                  </Text>
-                  <Text textOverflow="ellipsis" overflow="hidden">
-                    Nullifier: {identity.nullifier.toString()}
-                  </Text>
-                  <Text textOverflow="ellipsis" overflow="hidden">
-                    Commitment: {identity.commitment.toString()}
-                  </Text>
+                  <Heading size="lg" lineHeight="tall">
+                    <Text>Your Public Identity:</Text>
+                    <Text
+                      as="span"
+                      px="2"
+                      py="1"
+                      borderRadius="full"
+                      bg="teal.300"
+                      fontWeight="bold"
+                      wordBreak="break-word"
+                      fontSize="xl"
+                    >
+                      {identity.commitment.toString()}
+                    </Text>
+                  </Heading>
                 </Box>
               </Box>
             ) : (
@@ -267,74 +255,10 @@ const Voter: NextPage = () => {
               mr={[0, '4']}
               mb={['4', 4]}
               w={['full', 'auto']}
+              isDisabled={!signer}
             >
               Create an Identity
             </Button>
-            <Input
-              id="outlined-basic"
-              placeholder="Ballot Id"
-              type="number"
-              onChange={(e) => setPollId(BigNumber.from(e.target.value))}
-              errorBorderColor="red.300"
-              style={{ marginBottom: '8px' }}
-            />
-            <Input
-              id="outlined-basic"
-              placeholder="Merkle Tree Depth"
-              type="number"
-              onChange={(e) =>
-                setMerkleTreeDepth(BigNumber.from(e.target.value))
-              }
-              errorBorderColor="red.300"
-              style={{ marginBottom: '8px' }}
-            />
-            <Flex flexDir={['column', 'row']} mb="4"></Flex>
-            <Input
-              id="outlined-basic"
-              placeholder="Enter Your Vote"
-              type="number"
-              onChange={(e) => setVote(BigNumber.from(e.target.value))}
-              errorBorderColor="red.300"
-              style={{ marginBottom: '8px' }}
-            />
-            <Flex flexDir={['column', 'row']} mb="4">
-              {/* <Button
-                variant="solid"
-                bg="black"
-                _hover={{ bg: 'gray.600' }}
-                color="white"
-                onClick={makeVoteProof}
-                mr={[0, '4']}
-                mb={['4', 0]}
-                w={['full', 'auto']}
-              >
-                Generate Proof
-              </Button> */}
-              {/* <Button
-                variant="solid"
-                bg="black"
-                _hover={{ bg: 'gray.600' }}
-                color="white"
-                onClick={verifyVoteProof}
-                mr={[0, '4']}
-                mb={['4', 0]}
-                w={['full', 'auto']}
-              >
-                Verify Proof
-              </Button> */}
-              <Button
-                variant="solid"
-                bg="black"
-                _hover={{ bg: 'gray.600' }}
-                color="white"
-                onClick={postVote}
-                mr={[0, '4']}
-                mb={['4', 0]}
-                w={['full', 'auto']}
-              >
-                Vote
-              </Button>
-            </Flex>
             {successfulAlert && (
               <Alert status="success" variant="subtle">
                 <AlertIcon />
@@ -350,6 +274,9 @@ const Voter: NextPage = () => {
             {loadingAlert && <Spinner />}
           </Flex>
         </Box>
+        <Heading size="xl" mt="8" mb="4">
+          Ballots to vote on
+        </Heading>
         <SimpleGrid columns={[1, 2, 3]} spacing="8">
           {polls.map(
             (poll) =>
