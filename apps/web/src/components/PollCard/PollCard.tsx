@@ -50,35 +50,36 @@ export const PollCard: React.FC<PollCardProps> = ({
   const createNewGroup = async () => {
     const newGroup = new Group(parseInt(pollId), parseInt(merkleTreeDepth));
     setGroup(newGroup);
-    return newGroup;
+    // return newGroup;
   };
 
-  const makeVoteProof = async (newGroup) => {
-    newGroup.addMember(identity.commitment);
+  const makeVoteProof = async () => {
+    group.addMember(identity.commitment);
 
-    const proof = await generateProof(
-      identity,
-      newGroup,
-      pollId,
-      selectedOption
-    );
+    const proof = await generateProof(identity, group, pollId, selectedOption);
     setFullProof(proof);
-    console.log(proof);
-    return proof;
+    console.log(`Group members: ${group.members}`);
+    console.log(`Vote option: ${selectedOption}`);
+    console.log(`Proof NullifierHash: ${proof.nullifierHash}`);
+    console.log(`Poll ID: ${pollId}`);
+    console.log(`Proof Array ${proof.proof}`);
+    console.log(`Group Root: ${group.root}`);
+    setProofArray(proof.proof);
+    return proof.proof;
   };
 
   const handleChange = (value: string) => {
     setSelectedOption(parseInt(value));
   };
 
-  const makeProofArray = async (proof) => {
-    const proofArray = proof.proof.map(
-      (value: BigNumber | string | number | null | undefined | BN) => value
-    );
-    setProofArray(proofArray);
-    console.log(proofArray);
-    return proofArray;
-  };
+  // const makeProofArray = async () => {
+  //   const proofArray = fullProof.proof.map(
+  //     (value: BigNumber | string | number | null | undefined | BN) => value
+  //   );
+  //   setProofArray(proofArray);
+  //   console.log(proofArray);
+  //   return proofArray;
+  // };
 
   const {
     joinBallot,
@@ -86,9 +87,13 @@ export const PollCard: React.FC<PollCardProps> = ({
     error: joinBallotError,
   } = useJoinBallot(pollId.toString(), identity.commitment.toString());
 
-  const { voteBallot } = useVoteBallot(
-    selectedOption,
-    fullProof ? fullProof.nullifierHash.toString() : '',
+  const {
+    voteBallot,
+    loading: voteBallotLoading,
+    error: voteBallotError,
+  } = useVoteBallot(
+    selectedOption !== null ? selectedOption.toString() : '',
+    fullProof ? fullProof.nullifierHash.toString() : '0',
     pollId.toString(),
     proofArray || [],
     merkleTreeDepth.toString()
@@ -103,6 +108,16 @@ export const PollCard: React.FC<PollCardProps> = ({
       }, 5000);
     }
   }, [joinBallotError]);
+
+  useEffect(() => {
+    if (voteBallotError) {
+      setLoadingAlert(false);
+      setErrorAlert(true);
+      setTimeout(() => {
+        setErrorAlert(false);
+      }, 5000);
+    }
+  }, [voteBallotError]);
 
   const handleJoinBallot = async () => {
     console.log(pollId, identity.commitment);
@@ -119,18 +134,32 @@ export const PollCard: React.FC<PollCardProps> = ({
     });
   };
 
-  const handleCreateProof = async () => {
-    const newGroup = await createNewGroup();
-    const proof = await makeVoteProof(newGroup);
-    const test = await makeProofArray(proof);
-  };
+  // const handleCreateProof = async () => {
+  //   const newGroup = await createNewGroup();
+  //   const proof = await makeVoteProof(newGroup);
+  //   await makeProofArray(proof);
+  // };
 
   const handleVoteBallot = async () => {
     if (selectedOption === null) {
       alert('Please select an option before voting.');
       return;
     }
-    await voteBallot();
+
+    if (voteBallotLoading) return;
+
+    setLoadingAlert(true);
+
+    // Ensure the proofArray is created before calling voteBallot
+    // await makeProofArray();
+
+    await voteBallot().then(() => {
+      setLoadingAlert(false);
+      setSuccessfulAlert(true);
+      setTimeout(() => {
+        setSuccessfulAlert(false);
+      }, 5000);
+    });
   };
 
   return (
@@ -170,7 +199,20 @@ export const PollCard: React.FC<PollCardProps> = ({
           bg="black"
           _hover={{ bg: 'gray.600' }}
           color="white"
-          onClick={handleCreateProof}
+          onClick={createNewGroup}
+          mr={[0, '4']}
+          mb={['4', 0]}
+          w={['full', 'auto']}
+          isDisabled={!signer}
+        >
+          Create Group
+        </Button>
+        <Button
+          variant="solid"
+          bg="black"
+          _hover={{ bg: 'gray.600' }}
+          color="white"
+          onClick={makeVoteProof}
           mr={[0, '4']}
           mb={['4', 0]}
           w={['full', 'auto']}
@@ -178,6 +220,19 @@ export const PollCard: React.FC<PollCardProps> = ({
         >
           Create Proof
         </Button>
+        {/* <Button
+          variant="solid"
+          bg="black"
+          _hover={{ bg: 'gray.600' }}
+          color="white"
+          onClick={makeProofArray}
+          mr={[0, '4']}
+          mb={['4', 0]}
+          w={['full', 'auto']}
+          isDisabled={!signer}
+        >
+          Create ProofArray
+        </Button> */}
         <Button
           variant="solid"
           bg="black"
