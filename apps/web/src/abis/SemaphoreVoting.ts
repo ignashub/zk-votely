@@ -1,5 +1,16 @@
 export const SemaphoreVotingAbi = [
   {
+    inputs: [
+      {
+        internalType: 'contract ISemaphoreVerifier',
+        name: '_verifier',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'nonpayable',
+    type: 'constructor',
+  },
+  {
     inputs: [],
     name: 'Semaphore__CallerIsNotThePollCoordinator',
     type: 'error',
@@ -187,9 +198,15 @@ export const SemaphoreVotingAbi = [
       },
       {
         indexed: false,
-        internalType: 'uint256[]',
+        internalType: 'uint256',
+        name: 'merkleTreeDepth',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'string[]',
         name: 'votingOptions',
-        type: 'uint256[]',
+        type: 'string[]',
       },
     ],
     name: 'PollCreated',
@@ -355,9 +372,9 @@ export const SemaphoreVotingAbi = [
         type: 'string',
       },
       {
-        internalType: 'uint256[]',
+        internalType: 'string[]',
         name: 'votingOptions',
-        type: 'uint256[]',
+        type: 'string[]',
       },
     ],
     name: 'createPoll',
@@ -382,35 +399,6 @@ export const SemaphoreVotingAbi = [
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint256',
-        name: 'pollId',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
-        name: 'encryptionKey',
-        type: 'uint256',
-      },
-    ],
-    name: 'startPoll',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'contract ISemaphoreVerifier',
-        name: '_verifier',
-        type: 'address',
-      },
-    ],
-    stateMutability: 'nonpayable',
-    type: 'constructor',
   },
   {
     inputs: [
@@ -467,6 +455,24 @@ export const SemaphoreVotingAbi = [
       },
     ],
     stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'pollId',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'encryptionKey',
+        type: 'uint256',
+      },
+    ],
+    name: 'startPoll',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function',
   },
   {

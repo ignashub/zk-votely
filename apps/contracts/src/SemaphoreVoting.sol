@@ -30,11 +30,13 @@ contract SemaphoreVoting is ISemaphoreVoting, SemaphoreGroups {
     verifier = _verifier;
   }
 
-  /// @dev See {ISemaphoreVoting-createPoll}.
   function createPoll(
     uint256 pollId,
     address coordinator,
-    uint256 merkleTreeDepth
+    uint256 merkleTreeDepth,
+    string memory title,
+    string memory description,
+    string[] memory votingOptions
   ) public override {
     if (merkleTreeDepth < 16 || merkleTreeDepth > 32) {
       revert Semaphore__MerkleTreeDepthIsNotSupported();
@@ -43,8 +45,18 @@ contract SemaphoreVoting is ISemaphoreVoting, SemaphoreGroups {
     _createGroup(pollId, merkleTreeDepth);
 
     polls[pollId].coordinator = coordinator;
+    polls[pollId].title = title;
+    polls[pollId].description = description;
+    polls[pollId].votingOptions = votingOptions;
 
-    emit PollCreated(pollId, coordinator);
+    emit PollCreated(
+      pollId,
+      coordinator,
+      title,
+      description,
+      merkleTreeDepth,
+      votingOptions
+    );
   }
 
   /// @dev See {ISemaphoreVoting-addVoter}.
@@ -84,16 +96,15 @@ contract SemaphoreVoting is ISemaphoreVoting, SemaphoreGroups {
     uint256[8] calldata proof,
     uint256 merkleTreeRoot
   ) public override {
-    // if (polls[pollId].state != PollState.Ongoing) {
-    //     revert Semaphore__PollIsNotOngoing();
-    // }
+    if (polls[pollId].state != PollState.Ongoing) {
+      revert Semaphore__PollIsNotOngoing();
+    }
 
-    // if (polls[pollId].nullifierHashes[nullifierHash]) {
-    //     revert Semaphore__YouAreUsingTheSameNillifierTwice();
-    // }
+    if (polls[pollId].nullifierHashes[nullifierHash]) {
+      revert Semaphore__YouAreUsingTheSameNillifierTwice();
+    }
 
     uint256 merkleTreeDepth = getMerkleTreeDepth(pollId);
-    // uint256 merkleTreeRoot = getMerkleTreeRoot(pollId);
 
     verifier.verifyProof(
       merkleTreeRoot,

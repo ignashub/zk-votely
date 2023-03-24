@@ -7,7 +7,7 @@ import {
   Box,
   Heading,
   Button,
-  Input,
+  Highlight,
   Flex,
   Alert,
   AlertIcon,
@@ -16,14 +16,10 @@ import {
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { useContract, useSigner, useContractEvent } from 'wagmi';
-import { BigNumber, utils } from 'ethers';
+import { BigNumber } from 'ethers';
 import { SemaphoreVotingAbi } from '../abis/SemaphoreVoting';
 import { Identity } from '@semaphore-protocol/identity';
-import {
-  FullProof,
-  generateProof,
-  verifyProof,
-} from '@semaphore-protocol/proof';
+import { FullProof, generateProof } from '@semaphore-protocol/proof';
 import { Group } from '@semaphore-protocol/group';
 import { PollCard } from '../components/PollCard';
 
@@ -33,6 +29,7 @@ const POLLS_QUERY = gql`
       id
       title
       description
+      merkleTreeDepth
       votingOptions {
         id
         value
@@ -68,145 +65,78 @@ const Voter: NextPage = () => {
 
   //SemaphoreVote Smart Contract
   const contract = useContract({
-    address: '0x50DE78F84F8D7e5f43178523ae59f8AF42E534bF',
+    address: '0x84c403687c0811899A97d358FDd6Ce7012B1e6C0',
     abi: SemaphoreVotingAbi,
     signerOrProvider: signer,
   });
+
+  const contractEvent =
+    contract &&
+    useContractEvent({
+      address: '0x84c403687c0811899A97d358FDd6Ce7012B1e6C0',
+      abi: SemaphoreVotingAbi,
+      eventName: 'VoteAdded',
+      listener(pollId, vote, merkleTreeRoot, merkleTreeDepth) {
+        console.log('Event listener triggered');
+        console.log(
+          pollId.toString(),
+          vote.toString(),
+          merkleTreeRoot.toString(),
+          merkleTreeDepth.toString()
+        );
+      },
+    });
+
+  const contractEvent2 =
+    contract &&
+    useContractEvent({
+      address: '0x84c403687c0811899A97d358FDd6Ce7012B1e6C0',
+      abi: SemaphoreVotingAbi,
+      eventName: 'MemberAdded',
+      listener(groupId, index, identityCommitment, merkleTreeRoot) {
+        console.log('Member Event listener triggered');
+        console.log(
+          groupId.toString(),
+          index.toString(),
+          identityCommitment.toString(),
+          merkleTreeRoot.toString()
+        );
+      },
+    });
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
 
   const { polls } = pollData;
 
-  // const contractEvent = useContractEvent({
-  //   address: '0x50DE78F84F8D7e5f43178523ae59f8AF42E534bF',
-  //   abi: SemaphoreVotingAbi,
-  //   eventName: 'VoteAdded',
-  //   listener(pollId, vote, merkleTreeRoot, merkleTreeDepth) {
-  //     console.log(
-  //       pollId.toString(),
-  //       vote.toString(),
-  //       merkleTreeRoot.toString(),
-  //       merkleTreeDepth.toString()
-  //     );
-  //   },
-  // });
-
-  // const contractEvent2 = useContractEvent({
-  //   address: '0x896d9f0768F80Ea38971175AebA4479ee2a8b3D6',
-  //   abi: SemaphoreVotingAbi,
-  //   eventName: 'VoterAdded',
-  //   listener(pollId, identityCommitment) {
-  //     console.log(pollId.toString(), identityCommitment.toString());
-  //   },
-  // });
-
   const goToHomePage = () => {
     router.push('/');
   };
 
-  const createIdentity = () => {
+  const createIdentity = async () => {
     const _identity = new Identity();
     setIdentity(_identity);
     console.log(_identity.commitment);
   };
 
-  const joinBallout = async () => {
-    if (!contract) {
-      console.error('Smart contract is not loaded');
-      return;
-    }
-
-    if (!pollId) {
-      console.error('Poll ID is missing');
-      return;
-    }
-
-    setLoadingAlert(true);
-
-    console.log(identity.commitment);
-
-    console.log(`pollID on Joining Ballot: ${pollId}`);
-
-    try {
-      const myGasLimit = BigNumber.from(5000000);
-      let result = await contract.addVoter(pollId, identity?.commitment, {
-        gasLimit: myGasLimit,
-      });
-
-      const receipt = await result.wait();
-
-      if (receipt.status === 1) {
-        setLoadingAlert(false);
-        setSuccessfulAlert(true);
-        setTimeout(() => {
-          setSuccessfulAlert(false);
-        }, 5000);
-      }
-    } catch (error) {
-      console.error('Error joining ballout:', error);
-      setLoadingAlert(false);
-      setErrorAlert(true);
-      setTimeout(() => {
-        setErrorAlert(false);
-      }, 5000);
-    }
-  };
-
   const createNewGroup = async () => {
     const newGroup = new Group(pollId.toNumber(), merkleTreeDepth.toNumber());
     setGroup(newGroup);
+    return newGroup;
   };
 
-  const makeVoteProof = async () => {
-    console.log(group);
-    console.log(`Group members: ${group.members}`);
-    console.log(`Group root: ${group.root}`);
-    group.addMember(identity.commitment);
-    console.log(group);
-    console.log(`Group members: ${group.members}`);
-    console.log(`Group root: ${group.root}`);
+  const makeVoteProof = async (newGroup) => {
+    // console.log('Making vote proof');
+    // console.log(`Group members: ${group.members}`);
+    // console.log(`Group root: ${group.root}`);
+    newGroup.addMember(identity.commitment);
+    // console.log(`Group members: ${group.members}`);
+    // console.log(`Group root: ${group.root}`);
 
-    const proof = await generateProof(identity, group, pollId, vote);
+    const proof = await generateProof(identity, newGroup, pollId, vote);
     setFullProof(proof);
     console.log(proof);
-    console.log(pollId.toNumber());
-  };
-
-  // useEffect(() => {
-  //   const createNewGroup = async () => {
-  //     console.log(`Group members: ${group?.members}`);
-  //     console.log(`Group root: ${group?.root}`);
-  //     const newGroup = new Group(pollId.toNumber(), merkleTreeDepth.toNumber());
-  //     setGroup(newGroup);
-  //   };
-
-  //   const makeVoteProof = async () => {
-  //     console.log(`Group members: ${group?.members}`);
-  //     console.log(`Group root: ${group?.root}`);
-  //     if (!group) {
-  //       await createNewGroup();
-  //     }
-  //     console.log(`Group members: ${group?.members}`);
-  //     console.log(`Group root: ${group?.root}`);
-  //     group?.addMember(identity?.commitment);
-  //     console.log(`Group members: ${group?.members}`);
-  //     console.log(`Group root: ${group?.root}`);
-
-  //     const proof = await generateProof(identity, group!, pollId!, vote!);
-  //     setFullProof(proof);
-  //     console.log(proof);
-  //     console.log(pollId?.toNumber());
-  //   };
-
-  //   makeVoteProof();
-  // }, [identity, vote, pollId, merkleTreeDepth, group]);
-
-  const verifyVoteProof = async () => {
-    console.log(group);
-    console.log(group.root);
-    let result = await verifyProof(fullProof, merkleTreeDepth.toNumber());
-    console.log(result);
+    return proof;
   };
 
   const postVote = async () => {
@@ -220,14 +150,17 @@ const Voter: NextPage = () => {
     }
     setLoadingAlert(true);
 
-    console.log(fullProof.proof);
+    const newGroup = await createNewGroup();
+    const fullProof = await makeVoteProof(newGroup);
 
     const proofArray = fullProof.proof.map(
       (value: BigNumber | string | number | null | undefined | BN) => value
     );
     console.log(proofArray);
 
-    console.log(`pollID on Vote: ${pollId}`);
+    console.log(`vote on postVote: ${vote}`);
+    console.log(`pollID on postVote: ${pollId}`);
+    console.log(`Group root on postVote: ${newGroup.root}`);
 
     try {
       const myGasLimit = BigNumber.from(5000000);
@@ -238,7 +171,7 @@ const Voter: NextPage = () => {
         nullifierHash,
         pollId,
         proofArray,
-        group.root,
+        newGroup.root,
         {
           gasLimit: myGasLimit,
         }
@@ -286,22 +219,28 @@ const Voter: NextPage = () => {
               Create an Identity
             </Heading>
             {identity ? (
-              <Box py="6" whiteSpace="nowrap">
+              <Box py="6">
                 <Box
                   p="5"
                   borderWidth={1}
                   borderColor="gray.500"
                   borderRadius="4px"
                 >
-                  <Text textOverflow="ellipsis" overflow="hidden">
-                    Trapdoor: {identity.trapdoor.toString()}
-                  </Text>
-                  <Text textOverflow="ellipsis" overflow="hidden">
-                    Nullifier: {identity.nullifier.toString()}
-                  </Text>
-                  <Text textOverflow="ellipsis" overflow="hidden">
-                    Commitment: {identity.commitment.toString()}
-                  </Text>
+                  <Heading size="lg" lineHeight="tall">
+                    <Text>Your Public Identity:</Text>
+                    <Text
+                      as="span"
+                      px="2"
+                      py="1"
+                      borderRadius="full"
+                      bg="teal.300"
+                      fontWeight="bold"
+                      wordBreak="break-word"
+                      fontSize="xl"
+                    >
+                      {identity.commitment.toString()}
+                    </Text>
+                  </Heading>
                 </Box>
               </Box>
             ) : (
@@ -316,99 +255,10 @@ const Voter: NextPage = () => {
               mr={[0, '4']}
               mb={['4', 4]}
               w={['full', 'auto']}
+              isDisabled={!signer}
             >
               Create an Identity
             </Button>
-            <Input
-              id="outlined-basic"
-              placeholder="Ballot Id"
-              type="number"
-              onChange={(e) => setPollId(BigNumber.from(e.target.value))}
-              errorBorderColor="red.300"
-              style={{ marginBottom: '8px' }}
-            />
-            <Input
-              id="outlined-basic"
-              placeholder="Merkle Tree Depth"
-              type="number"
-              onChange={(e) =>
-                setMerkleTreeDepth(BigNumber.from(e.target.value))
-              }
-              errorBorderColor="red.300"
-              style={{ marginBottom: '8px' }}
-            />
-            <Flex flexDir={['column', 'row']} mb="4">
-              <Button
-                variant="solid"
-                bg="black"
-                _hover={{ bg: 'gray.600' }}
-                color="white"
-                onClick={joinBallout}
-                mr={[0, '4']}
-                mb={['4', 0]}
-                w={['full', 'auto']}
-              >
-                Join a Ballout On-Chain
-              </Button>
-              <Button
-                variant="solid"
-                bg="black"
-                _hover={{ bg: 'gray.600' }}
-                color="white"
-                onClick={createNewGroup}
-                mr={[0, '4']}
-                mb={['4', 0]}
-                w={['full', 'auto']}
-              >
-                Create a Group Off-Chain
-              </Button>
-            </Flex>
-            <Input
-              id="outlined-basic"
-              placeholder="Enter Your Vote"
-              type="number"
-              onChange={(e) => setVote(BigNumber.from(e.target.value))}
-              errorBorderColor="red.300"
-              style={{ marginBottom: '8px' }}
-            />
-            <Flex flexDir={['column', 'row']} mb="4">
-              <Button
-                variant="solid"
-                bg="black"
-                _hover={{ bg: 'gray.600' }}
-                color="white"
-                onClick={makeVoteProof}
-                mr={[0, '4']}
-                mb={['4', 0]}
-                w={['full', 'auto']}
-              >
-                Generate Proof
-              </Button>
-              <Button
-                variant="solid"
-                bg="black"
-                _hover={{ bg: 'gray.600' }}
-                color="white"
-                onClick={verifyVoteProof}
-                mr={[0, '4']}
-                mb={['4', 0]}
-                w={['full', 'auto']}
-              >
-                Verify Proof
-              </Button>
-              <Button
-                variant="solid"
-                bg="black"
-                _hover={{ bg: 'gray.600' }}
-                color="white"
-                onClick={postVote}
-                mr={[0, '4']}
-                mb={['4', 0]}
-                w={['full', 'auto']}
-              >
-                Vote
-              </Button>
-            </Flex>
             {successfulAlert && (
               <Alert status="success" variant="subtle">
                 <AlertIcon />
@@ -424,16 +274,24 @@ const Voter: NextPage = () => {
             {loadingAlert && <Spinner />}
           </Flex>
         </Box>
+        <Heading size="xl" mt="8" mb="4">
+          Ballots to vote on
+        </Heading>
         <SimpleGrid columns={[1, 2, 3]} spacing="8">
-          {polls.map((poll) => (
-            <PollCard
-              key={poll.id}
-              title={poll.title}
-              description={poll.description}
-              votingOptions={poll.votingOptions.map((option) => option.value)}
-              pollId={poll.id}
-            />
-          ))}
+          {polls.map(
+            (poll) =>
+              identity && (
+                <PollCard
+                  key={poll.id}
+                  title={poll.title}
+                  description={poll.description}
+                  votingOptions={poll.votingOptions}
+                  pollId={poll.id}
+                  identity={identity}
+                  merkleTreeDepth={poll.merkleTreeDepth}
+                />
+              )
+          )}
         </SimpleGrid>
         {/* </Section> */}
       </main>
