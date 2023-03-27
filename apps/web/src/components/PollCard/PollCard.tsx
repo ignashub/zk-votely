@@ -51,16 +51,34 @@ export const PollCard: React.FC<PollCardProps> = ({
 
   const [joinedBallot, setJoinedBallot] = useState(false);
 
+  const [groups, setGroups] = useState<{ [key: string]: Group }>({});
+
   const createNewGroup = async () => {
+    const existingGroup = groups[pollId];
+
+    if (existingGroup) {
+      console.log('using existing group for poll:', pollId);
+      setGroup(existingGroup);
+      return existingGroup;
+    }
+
     const newGroup = new Group(parseInt(pollId), parseInt(merkleTreeDepth));
+    setGroups({ ...groups, [pollId]: newGroup });
     setGroup(newGroup);
-    console.log('group was created');
+
+    console.log('new group created for poll:', pollId);
+
     return newGroup;
   };
 
   const makeVoteProof = async () => {
     console.log('making vote proof');
-    group.addMember(identity.commitment);
+    group?.addMember(identity.commitment);
+
+    if (!group) {
+      console.log('group is undefined');
+      return;
+    }
 
     const proof = await generateProof(identity, group, pollId, selectedOption);
     console.log('proof:', proof);
@@ -125,6 +143,12 @@ export const PollCard: React.FC<PollCardProps> = ({
     }
   }, [fullProof, proofArray, group]);
 
+  useEffect(() => {
+    if (selectedOption !== null) {
+      makeVoteProof();
+    }
+  }, [selectedOption]);
+
   const handleJoinBallot = async () => {
     console.log(pollId, identity.commitment);
 
@@ -154,8 +178,6 @@ export const PollCard: React.FC<PollCardProps> = ({
 
     setLoadingAlert(true);
 
-    await makeVoteProof();
-
     try {
       await voteBallot();
       setLoadingAlert(false);
@@ -176,6 +198,19 @@ export const PollCard: React.FC<PollCardProps> = ({
   return (
     <Box borderWidth="1px" borderRadius="lg" padding="4">
       <VStack align="start">
+        <Button
+          variant="solid"
+          bg="black"
+          _hover={{ bg: 'gray.600' }}
+          color="white"
+          onClick={handleJoinBallot}
+          mr={[0, '4']}
+          mb={['4', 0]}
+          w={['full', 'auto']}
+          isDisabled={!signer}
+        >
+          Join a Ballot
+        </Button>
         <Text fontSize="2xl" fontWeight="bold">
           {title}
         </Text>
@@ -192,45 +227,7 @@ export const PollCard: React.FC<PollCardProps> = ({
             );
           })}
         </RadioGroup>
-        <Button
-          variant="solid"
-          bg="black"
-          _hover={{ bg: 'gray.600' }}
-          color="white"
-          onClick={handleJoinBallot}
-          mr={[0, '4']}
-          mb={['4', 0]}
-          w={['full', 'auto']}
-          isDisabled={!signer}
-        >
-          Join a Ballot
-        </Button>
-        {/* <Button
-          variant="solid"
-          bg="black"
-          _hover={{ bg: 'gray.600' }}
-          color="white"
-          onClick={createNewGroup}
-          mr={[0, '4']}
-          mb={['4', 0]}
-          w={['full', 'auto']}
-          isDisabled={!signer}
-        >
-          Create Group
-        </Button>
-        <Button
-          variant="solid"
-          bg="black"
-          _hover={{ bg: 'gray.600' }}
-          color="white"
-          onClick={makeVoteProof}
-          mr={[0, '4']}
-          mb={['4', 0]}
-          w={['full', 'auto']}
-          isDisabled={!signer}
-        >
-          Create Proof
-        </Button> */}
+
         <Button
           variant="solid"
           bg="black"
@@ -240,7 +237,7 @@ export const PollCard: React.FC<PollCardProps> = ({
           mr={[0, '4']}
           mb={['4', 0]}
           w={['full', 'auto']}
-          isDisabled={!signer || !group || !joinedBallot}
+          isDisabled={!signer || !group || !joinedBallot || !readyToVote}
         >
           Vote
         </Button>
@@ -257,7 +254,7 @@ export const PollCard: React.FC<PollCardProps> = ({
             <AlertDescription>Failed Transaction!</AlertDescription>
           </Alert>
         )}
-        {joinBallotLoading && <Spinner />}
+        {joinBallotLoading || voteBallotLoading ? <Spinner /> : null}
       </VStack>
     </Box>
   );

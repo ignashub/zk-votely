@@ -7,21 +7,9 @@ import React, { useState } from 'react';
 import { useSigner } from 'wagmi';
 import { Identity } from '@semaphore-protocol/identity';
 import { PollCard } from '../components/PollCard';
+import { POLLS_QUERY } from '../queries/polls';
+import { VOTE_COUNTS_QUERY } from '../queries/polls';
 
-const POLLS_QUERY = gql`
-  query GetAllPolls {
-    polls {
-      id
-      title
-      description
-      merkleTreeDepth
-      votingOptions {
-        id
-        value
-      }
-    }
-  }
-`;
 const Voter: NextPage = () => {
   const router = useRouter();
   //SEMAPHORE STUFF
@@ -33,10 +21,21 @@ const Voter: NextPage = () => {
   //Smart Contract Signer
   const { data: signer, isError, isLoading } = useSigner();
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  const {
+    data: pollCountData,
+    loading: pollCountLoading,
+    error: pollCountError,
+  } = useQuery(VOTE_COUNTS_QUERY);
+
+  console.log('Poll count data:', pollCountData);
+
+  if (loading || pollCountLoading) return <p>Loading...</p>;
+  if (error || pollCountError)
+    return <p>Error: {error?.message ?? pollCountError?.message}</p>;
 
   const { polls } = pollData;
+
+  const { pollsVoteCount } = pollCountData;
 
   const goToHomePage = () => {
     router.push('/');
@@ -189,6 +188,7 @@ const Voter: NextPage = () => {
                   pollId={poll.id}
                   identity={identity}
                   merkleTreeDepth={poll.merkleTreeDepth}
+                  pollCountData={pollCountData}
                 />
               )
           )}
