@@ -50,6 +50,7 @@ export const PollCard: React.FC<PollCardProps> = ({
   const createNewGroup = async () => {
     const newGroup = new Group(parseInt(pollId), parseInt(merkleTreeDepth));
     setGroup(newGroup);
+    console.log('group was created');
     // return newGroup;
   };
 
@@ -72,15 +73,6 @@ export const PollCard: React.FC<PollCardProps> = ({
     setSelectedOption(parseInt(value));
   };
 
-  // const makeProofArray = async () => {
-  //   const proofArray = fullProof.proof.map(
-  //     (value: BigNumber | string | number | null | undefined | BN) => value
-  //   );
-  //   setProofArray(proofArray);
-  //   console.log(proofArray);
-  //   return proofArray;
-  // };
-
   const {
     joinBallot,
     loading: joinBallotLoading,
@@ -96,7 +88,10 @@ export const PollCard: React.FC<PollCardProps> = ({
     fullProof ? fullProof.nullifierHash.toString() : '0',
     pollId.toString(),
     proofArray || [],
-    merkleTreeDepth.toString()
+    group.root.toString(),
+    {
+      gasLimit: BigNumber.from(5000000),
+    }
   );
 
   useEffect(() => {
@@ -141,6 +136,12 @@ export const PollCard: React.FC<PollCardProps> = ({
   // };
 
   const handleVoteBallot = async () => {
+    console.log(`Group members: ${group.members}`);
+    console.log(`Vote option: ${selectedOption}`);
+    console.log(`Proof NullifierHash: ${fullProof.nullifierHash}`);
+    console.log(`Poll ID: ${pollId}`);
+    console.log(`Proof Array ${fullProof.proof}`);
+    console.log(`Group Root: ${group.root}`);
     if (selectedOption === null) {
       alert('Please select an option before voting.');
       return;
@@ -150,8 +151,8 @@ export const PollCard: React.FC<PollCardProps> = ({
 
     setLoadingAlert(true);
 
-    // Ensure the proofArray is created before calling voteBallot
-    // await makeProofArray();
+    await createNewGroup();
+    await makeVoteProof();
 
     await voteBallot().then(() => {
       setLoadingAlert(false);

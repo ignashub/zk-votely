@@ -22,7 +22,7 @@ export const useVoteBallot = (
     functionName: 'castVote',
     args: [vote, nullifierHash, pollId, proofArray, merkleTreeRoot],
     gasLimit: BigNumber.from(5000000),
-    manualGas: true,
+    // manualGas: true,
   });
 
   const voteBallot = async () => {
