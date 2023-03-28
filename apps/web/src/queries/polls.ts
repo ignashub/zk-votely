@@ -19,6 +19,10 @@ export const POLLS_QUERY = gql`
       votingOptions {
         id
         value
+        voteCounts {
+          id
+          count
+        }
       }
     }
   }
