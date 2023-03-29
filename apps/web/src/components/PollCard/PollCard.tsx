@@ -8,7 +8,9 @@ import {
   VStack,
   Text,
   RadioGroup,
+  Radio,
   Button,
+  Tag,
 } from '@chakra-ui/react';
 import { useJoinBallot } from '../../hooks/useJoinBallot';
 import { useVoteBallot } from '../../hooks/useVoteBallot';
@@ -40,28 +42,28 @@ export const PollCard: React.FC<PollCardProps> = ({
   const [group, setGroup] = useState<Group | undefined>();
   const [fullProof, setFullProof] = useState<FullProof>();
   const [proofArray, setProofArray] = useState<BigNumber[]>();
-
-  //Smart Contract Signer
   const { data: signer, isError, isLoading } = useSigner();
-
   const [successfulAlert, setSuccessfulAlert] = useState(false);
   const [errorAlert, setErrorAlert] = useState(false);
-  const [loadingAlert, setLoadingAlert] = useState(false);
-
   const [readyToVote, setReadyToVote] = useState(false);
-
   const [joinedBallot, setJoinedBallot] = useState(false);
+  const [voteProofLoading, setVoteProofLoading] = useState(false);
+  const [showVoteButton, setShowVoteButton] = useState(false);
+  const [voteButtonPressed, setVoteButtonPressed] = useState(false);
+  const [joinButtonPressed, setJoinButtonPressed] = useState(false);
+  const [joinTransactionCompleted, setJoinTransactionCompleted] =
+    useState(false);
+  const [voteTransactionCompleted, setVoteTransactionCompleted] =
+    useState(false);
 
   const [groups, setGroups] = useState<{ [key: string]: Group }>({});
 
-  const { loading, error, data } = useQuery(GET_VOTE_COUNTS_BY_POLL_ID, {
-    variables: { pollId },
-  });
-
-  useEffect(() => {
-    console.log('PollId:', pollId);
-    console.log('Data:', data);
-  }, [data]);
+  const { loading, error, data, refetch } = useQuery(
+    GET_VOTE_COUNTS_BY_POLL_ID,
+    {
+      variables: { pollId },
+    }
+  );
 
   const createNewGroup = async () => {
     const existingGroup = groups[pollId];
@@ -83,10 +85,12 @@ export const PollCard: React.FC<PollCardProps> = ({
 
   const makeVoteProof = async () => {
     console.log('making vote proof');
+    setVoteProofLoading(true);
     group?.addMember(identity.commitment);
 
     if (!group) {
       console.log('group is undefined');
+      setVoteProofLoading(false);
       return;
     }
 
@@ -98,6 +102,8 @@ export const PollCard: React.FC<PollCardProps> = ({
     setProofArray(proof.proof);
 
     console.log('proof was created');
+    setVoteProofLoading(false);
+    setShowVoteButton(true);
   };
 
   const handleChange = (value: string) => {
@@ -127,7 +133,6 @@ export const PollCard: React.FC<PollCardProps> = ({
 
   useEffect(() => {
     if (joinBallotError) {
-      setLoadingAlert(false);
       setErrorAlert(true);
       setTimeout(() => {
         setErrorAlert(false);
@@ -137,7 +142,6 @@ export const PollCard: React.FC<PollCardProps> = ({
 
   useEffect(() => {
     if (voteBallotError) {
-      setLoadingAlert(false);
       setErrorAlert(true);
       setTimeout(() => {
         setErrorAlert(false);
@@ -164,18 +168,26 @@ export const PollCard: React.FC<PollCardProps> = ({
 
     if (joinBallotLoading) return;
 
-    setLoadingAlert(true);
+    setJoinButtonPressed(true); // Set to true when the button is pressed
 
     await createNewGroup();
-    await joinBallot().then(() => {
-      setLoadingAlert(false);
-      setSuccessfulAlert(true);
-      setTimeout(() => {
-        setSuccessfulAlert(false);
-      }, 5000);
+    await joinBallot()
+      .then(() => {
+        setSuccessfulAlert(true);
+        setTimeout(() => {
+          setSuccessfulAlert(false);
+        }, 5000);
 
-      setJoinedBallot(true);
-    });
+        setJoinedBallot(true);
+        setJoinTransactionCompleted(true); // Set to true if the transaction is successful
+      })
+      .catch(() => {
+        setErrorAlert(true);
+        setTimeout(() => {
+          setErrorAlert(false);
+        }, 5000);
+        setJoinButtonPressed(false); // Set to false if the transaction fails
+      });
   };
 
   const handleVoteBallot = async () => {
@@ -186,26 +198,29 @@ export const PollCard: React.FC<PollCardProps> = ({
 
     if (voteBallotLoading) return;
 
-    setLoadingAlert(true);
+    setVoteButtonPressed(true);
 
     try {
       await voteBallot();
-      setLoadingAlert(false);
       setSuccessfulAlert(true);
       setTimeout(() => {
         setSuccessfulAlert(false);
       }, 5000);
+      refetch();
+      setShowVoteButton(false);
+      setVoteTransactionCompleted(true); // Add this line
     } catch (error) {
       console.error('Error voting:', error);
-      setLoadingAlert(false);
       setErrorAlert(true);
       setTimeout(() => {
         setErrorAlert(false);
       }, 5000);
+      setVoteButtonPressed(false);
+      setShowVoteButton(true);
     }
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <Spinner />;
   if (error) return <p>Error :(</p>;
 
   return (
@@ -220,9 +235,13 @@ export const PollCard: React.FC<PollCardProps> = ({
           mr={[0, '4']}
           mb={['4', 0]}
           w={['full', 'auto']}
-          isDisabled={!signer}
+          isDisabled={!signer || joinedBallot || joinButtonPressed}
         >
-          Join a Ballot
+          {joinButtonPressed && !joinTransactionCompleted ? (
+            <Spinner />
+          ) : (
+            'Join a Ballot'
+          )}
         </Button>
         <Text fontSize="2xl" fontWeight="bold">
           {title}
@@ -238,10 +257,12 @@ export const PollCard: React.FC<PollCardProps> = ({
             )?.count;
             return (
               <div key={index}>
-                <span>
-                  Option {index + 1}: {option}
-                </span>
-                <span>Vote count: {parseInt(voteCount) || 0}</span>
+                <Radio value={index.toString()} colorScheme="teal" mr={2}>
+                  {option}
+                </Radio>
+                <Tag bg="teal.300" borderRadius="full">
+                  {parseInt(voteCount) || 0}
+                </Tag>
               </div>
             );
           })}
@@ -256,9 +277,24 @@ export const PollCard: React.FC<PollCardProps> = ({
           mr={[0, '4']}
           mb={['4', 0]}
           w={['full', 'auto']}
-          isDisabled={!signer || !group || !joinedBallot || !readyToVote}
+          isDisabled={
+            !signer ||
+            !group ||
+            !joinedBallot ||
+            !readyToVote ||
+            voteButtonPressed ||
+            voteTransactionCompleted
+          }
         >
-          Vote
+          {voteButtonPressed || voteProofLoading ? (
+            voteTransactionCompleted ? (
+              'Vote'
+            ) : (
+              <Spinner />
+            )
+          ) : (
+            'Vote'
+          )}
         </Button>
 
         {successfulAlert && (
@@ -273,7 +309,6 @@ export const PollCard: React.FC<PollCardProps> = ({
             <AlertDescription>Failed Transaction!</AlertDescription>
           </Alert>
         )}
-        {joinBallotLoading || voteBallotLoading ? <Spinner /> : null}
       </VStack>
     </Box>
   );

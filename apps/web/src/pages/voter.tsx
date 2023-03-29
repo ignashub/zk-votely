@@ -11,13 +11,8 @@ import { POLLS_QUERY } from '../queries/polls';
 
 const Voter: NextPage = () => {
   const router = useRouter();
-  //SEMAPHORE STUFF
   const [identity, setIdentity] = useState<Identity>();
-
-  //Get all polls
   const { data: pollData, loading, error } = useQuery(POLLS_QUERY);
-
-  //Smart Contract Signer
   const { data: signer, isError, isLoading } = useSigner();
 
   if (loading) return <p>Loading...</p>;
@@ -91,19 +86,21 @@ const Voter: NextPage = () => {
             ) : (
               <div></div>
             )}
-            <Button
-              variant="solid"
-              bg="black"
-              _hover={{ bg: 'gray.600' }}
-              color="white"
-              onClick={createIdentity}
-              mr={[0, '4']}
-              mb={['4', 4]}
-              w={['full', 'auto']}
-              isDisabled={!signer}
-            >
-              Create an Identity
-            </Button>
+            {!identity && (
+              <Button
+                variant="solid"
+                bg="black"
+                _hover={{ bg: 'gray.600' }}
+                color="white"
+                onClick={createIdentity}
+                mr={[0, '4']}
+                mb={['4', 4]}
+                w={['full', 'auto']}
+                isDisabled={!signer}
+              >
+                Create an Identity
+              </Button>
+            )}
           </Flex>
         </Box>
         <Heading size="xl" mt="8" mb="4">
