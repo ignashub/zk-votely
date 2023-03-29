@@ -1,5 +1,8 @@
-import { usePrepareContractWrite, useContractWrite } from 'wagmi';
+import { useState } from 'react';
+import { usePrepareContractWrite } from 'wagmi';
 import { SemaphoreVotingAbi } from '../abis/SemaphoreVoting';
+import { useSigner } from 'wagmi';
+import { ethers } from 'ethers';
 import { BigNumber } from 'ethers';
 
 export const useVoteBallot = (
@@ -9,6 +12,10 @@ export const useVoteBallot = (
   proofArray: BigNumber[],
   merkleTreeRoot: string
 ) => {
+  const [loading, setLoading] = useState(false);
+  const [hookError, setHookError] = useState(null);
+  const { data: signer } = useSigner();
+
   const { config, error } = usePrepareContractWrite({
     address: '0x84c403687c0811899A97d358FDd6Ce7012B1e6C0',
     abi: SemaphoreVotingAbi,
@@ -17,27 +24,29 @@ export const useVoteBallot = (
     gasLimit: BigNumber.from(5000000),
   });
 
-  // console.log('usePrepareContractWrite config:', config);
-  // console.log('usePrepareContractWrite error:', error);
-
-  const contractWriteObject = useContractWrite(config);
-  console.log('useVoteBallot:', contractWriteObject);
-  const { write } = contractWriteObject;
-
   const voteBallot = async () => {
+    if (!signer || !config) {
+      return null;
+    }
+
+    setLoading(true);
+    setHookError(null);
+
     try {
-      if (write) {
-        const response = await write();
-        console.log('Transaction response:', response);
-      } else {
-        console.error('Write function is not available');
-      }
-    } catch (err) {
-      console.error('Error in voteBallot:', err);
+      const contract = new ethers.Contract(config.address, config.abi, signer);
+      const transaction = await contract[config.functionName](...config.args);
+      await transaction.wait();
+      setLoading(false);
+    } catch (error) {
+      console.error('Error in voteBallot:', error);
+      setLoading(false);
+      setHookError(error);
     }
   };
 
   return {
     voteBallot,
+    loading,
+    error: hookError,
   };
 };

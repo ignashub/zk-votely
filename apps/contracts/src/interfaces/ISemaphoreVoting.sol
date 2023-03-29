@@ -37,6 +37,7 @@ interface ISemaphoreVoting {
     address indexed coordinator,
     string title,
     string description,
+    uint256 merkleTreeDepth,
     string[] votingOptions
   );
 

@@ -105,6 +105,7 @@ contract SemaphoreVoting is ISemaphoreVoting, SemaphoreGroups {
     }
 
     uint256 merkleTreeDepth = getMerkleTreeDepth(pollId);
+    // uint256 merkleTreeRoot = getMerkleTreeRoot(pollId);
 
     verifier.verifyProof(
       merkleTreeRoot,
