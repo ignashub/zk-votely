@@ -8,7 +8,6 @@ import { useSigner } from 'wagmi';
 import { Identity } from '@semaphore-protocol/identity';
 import { PollCard } from '../components/PollCard';
 import { POLLS_QUERY } from '../queries/polls';
-import { VOTE_COUNTS_QUERY } from '../queries/polls';
 
 const Voter: NextPage = () => {
   const router = useRouter();
@@ -21,21 +20,10 @@ const Voter: NextPage = () => {
   //Smart Contract Signer
   const { data: signer, isError, isLoading } = useSigner();
 
-  const {
-    data: pollCountData,
-    loading: pollCountLoading,
-    error: pollCountError,
-  } = useQuery(VOTE_COUNTS_QUERY);
-
-  console.log('Poll count data:', pollCountData);
-
-  if (loading || pollCountLoading) return <p>Loading...</p>;
-  if (error || pollCountError)
-    return <p>Error: {error?.message ?? pollCountError?.message}</p>;
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error :(</p>;
 
   const { polls } = pollData;
-
-  const { pollsVoteCount } = pollCountData;
 
   const goToHomePage = () => {
     router.push('/');
@@ -50,61 +38,6 @@ const Voter: NextPage = () => {
       console.error('Error creating identity:', error);
     }
   };
-
-  // const postVote = async () => {
-  //   if (!contract) {
-  //     console.error('Smart contract is not loaded');
-  //     return;
-  //   }
-  //   if (!pollId) {
-  //     console.error('Poll ID is missing');
-  //     return;
-  //   }
-  //   setLoadingAlert(true);
-
-  //   const newGroup = await createNewGroup();
-  //   const fullProof = await makeVoteProof(newGroup);
-
-  //   const proofArray = fullProof.proof.map(
-  //     (value: BigNumber | string | number | null | undefined | BN) => value
-  //   );
-  //   console.log(proofArray);
-
-  //   console.log(`vote on postVote: ${vote}`);
-  //   console.log(`pollID on postVote: ${pollId}`);
-  //   console.log(`Group root on postVote: ${newGroup.root}`);
-
-  //   try {
-  //     const myGasLimit = BigNumber.from(5000000);
-  //     const nullifierHash = BigNumber.from(fullProof.nullifierHash);
-  //     console.log(nullifierHash);
-  //     let result = await contract.castVote(
-  //       vote,
-  //       nullifierHash,
-  //       pollId,
-  //       proofArray,
-  //       newGroup.root,
-  //       {
-  //         gasLimit: myGasLimit,
-  //       }
-  //     );
-  //     const receipt = await result.wait();
-  //     if (receipt.status === 1) {
-  //       setLoadingAlert(false);
-  //       setSuccessfulAlert(true);
-  //       setTimeout(() => {
-  //         setSuccessfulAlert(false);
-  //       }, 5000);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error voting:', error);
-  //     setLoadingAlert(false);
-  //     setErrorAlert(true);
-  //     setTimeout(() => {
-  //       setErrorAlert(false);
-  //     }, 5000);
-  //   }
-  // };
 
   return (
     <>
@@ -188,7 +121,6 @@ const Voter: NextPage = () => {
                   pollId={poll.id}
                   identity={identity}
                   merkleTreeDepth={poll.merkleTreeDepth}
-                  pollCountData={pollCountData}
                 />
               )
           )}

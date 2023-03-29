@@ -27,17 +27,3 @@ export const POLLS_QUERY = gql`
     }
   }
 `;
-
-export const VOTE_COUNTS_QUERY = gql`
-  query VoteCounts {
-    voteCounts {
-      id
-      option
-      count
-      poll {
-        id
-        title
-      }
-    }
-  }
-`;

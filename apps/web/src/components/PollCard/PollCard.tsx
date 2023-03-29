@@ -8,7 +8,6 @@ import {
   VStack,
   Text,
   RadioGroup,
-  Radio,
   Button,
 } from '@chakra-ui/react';
 import { useJoinBallot } from '../../hooks/useJoinBallot';
@@ -17,6 +16,8 @@ import { BigNumber } from 'ethers';
 import { Group } from '@semaphore-protocol/group';
 import { FullProof, generateProof } from '@semaphore-protocol/proof';
 import { useSigner } from 'wagmi';
+import { useQuery } from '@apollo/client';
+import { GET_VOTE_COUNTS_BY_POLL_ID } from '../../queries/polls';
 
 interface PollCardProps {
   title: string;
@@ -52,6 +53,15 @@ export const PollCard: React.FC<PollCardProps> = ({
   const [joinedBallot, setJoinedBallot] = useState(false);
 
   const [groups, setGroups] = useState<{ [key: string]: Group }>({});
+
+  const { loading, error, data } = useQuery(GET_VOTE_COUNTS_BY_POLL_ID, {
+    variables: { pollId },
+  });
+
+  useEffect(() => {
+    console.log('PollId:', pollId);
+    console.log('Data:', data);
+  }, [data]);
 
   const createNewGroup = async () => {
     const existingGroup = groups[pollId];
@@ -195,6 +205,9 @@ export const PollCard: React.FC<PollCardProps> = ({
     }
   };
 
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error :(</p>;
+
   return (
     <Box borderWidth="1px" borderRadius="lg" padding="4">
       <VStack align="start">
@@ -220,10 +233,16 @@ export const PollCard: React.FC<PollCardProps> = ({
           onChange={handleChange}
         >
           {votingOptions.map((option, index) => {
+            const voteCount = data.voteCounts.find(
+              (voteCount) => parseInt(voteCount.option) === index
+            )?.count;
             return (
-              <Radio key={`${pollId}-${index}`} value={index.toString()}>
-                <Text>{option}</Text>
-              </Radio>
+              <div key={index}>
+                <span>
+                  Option {index + 1}: {option}
+                </span>
+                <span>Vote count: {parseInt(voteCount) || 0}</span>
+              </div>
             );
           })}
         </RadioGroup>
