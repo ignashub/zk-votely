@@ -28,6 +28,7 @@ interface PollCardProps {
   pollId: string;
   identity: string;
   merkleTreeDepth: string;
+  state: string;
 }
 
 export const PollCard: React.FC<PollCardProps> = ({
@@ -37,6 +38,7 @@ export const PollCard: React.FC<PollCardProps> = ({
   identity,
   pollId,
   merkleTreeDepth,
+  state,
 }) => {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [group, setGroup] = useState<Group | undefined>();
@@ -224,29 +226,64 @@ export const PollCard: React.FC<PollCardProps> = ({
   if (error) return <p>Error :(</p>;
 
   return (
-    <Box borderWidth="1px" borderRadius="lg" padding="4">
+    <Box
+      borderWidth="1px"
+      borderRadius="lg"
+      padding="12"
+      m="5"
+      boxShadow="dark-lg"
+    >
       <VStack align="start">
-        <Button
-          variant="solid"
-          bg="black"
-          _hover={{ bg: 'gray.600' }}
-          color="white"
-          onClick={handleJoinBallot}
-          mr={[0, '4']}
-          mb={['4', 0]}
-          w={['full', 'auto']}
-          isDisabled={!signer || joinedBallot || joinButtonPressed}
+        <Box
+          borderWidth="1px"
+          borderRadius="lg"
+          padding="4"
+          display="flex"
+          justifyContent="space-between"
         >
-          {joinButtonPressed && !joinTransactionCompleted ? (
-            <Spinner />
-          ) : (
-            'Join a Ballot'
-          )}
-        </Button>
+          <Button
+            variant="solid"
+            bg="black"
+            _hover={{ bg: 'gray.600' }}
+            color="white"
+            onClick={handleJoinBallot}
+            mr={[0, '4']}
+            mb={['4', 0]}
+            w={['full', 'auto']}
+            isDisabled={!signer || joinedBallot || joinButtonPressed}
+            alignSelf="flex-start"
+          >
+            {joinButtonPressed && !joinTransactionCompleted ? (
+              <Spinner />
+            ) : (
+              'Join a Ballot'
+            )}
+          </Button>
+          <Text
+            fontSize="md"
+            color={state === 'CREATED' ? 'black' : 'white'}
+            bg={
+              state === 'CREATED'
+                ? 'yellow.400'
+                : state === 'ENDED'
+                ? 'red.400'
+                : 'green.400'
+            }
+            borderRadius="full"
+            px={2}
+            py={1}
+            fontWeight="bold"
+            display="inline-block"
+            alignSelf="flex-end"
+          >
+            {state === 'CREATED' ? 'NOT STARTED' : state}
+          </Text>
+        </Box>
         <Text fontSize="2xl" fontWeight="bold">
           {title}
         </Text>
         <Text fontSize="md">{description}</Text>
+
         <RadioGroup
           value={selectedOption?.toString() || ''}
           onChange={handleChange}

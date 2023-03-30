@@ -59,7 +59,7 @@ const Coordinator: NextPage = () => {
 
   //SemaphoreVote Smart Contract
   const contract = useContract({
-    address: '0x84c403687c0811899A97d358FDd6Ce7012B1e6C0',
+    address: '0xE484f866900994b9Bcd31552162Ba1380F66442d',
     abi: SemaphoreVotingAbi,
     signerOrProvider: signer,
   });
@@ -236,7 +236,7 @@ const Coordinator: NextPage = () => {
       id="maincontent"
       className="flex flex-col items-center justify-center flex-grow mt-4 mb-8 space-y-8 md:space-y-16 md:mt-8 md:mb-16"
     >
-      <Box maxW="xl" w="full" p="6" rounded="lg" shadow="md">
+      <Box maxW="xl" w="full" p="6" rounded="lg" boxShadow="dark-lg">
         <Flex flexDir="column" alignItems="center">
           <Button
             variant="solid"

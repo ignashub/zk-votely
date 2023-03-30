@@ -42,7 +42,7 @@ const Voter: NextPage = () => {
         className="flex flex-col items-center justify-center flex-grow mt-4 mb-8 space-y-8 md:space-y-16 md:mt-8 md:mb-16"
       >
         {/* <Section> */}
-        <Box maxW="xl" w="full" p="6" rounded="lg" shadow="md">
+        <Box maxW="xl" w="full" p="6" rounded="lg" boxShadow="dark-lg">
           <Flex flexDir="column" alignItems="center">
             <Button
               variant="solid"
@@ -118,6 +118,7 @@ const Voter: NextPage = () => {
                   pollId={poll.id}
                   identity={identity}
                   merkleTreeDepth={poll.merkleTreeDepth}
+                  state={poll.state}
                 />
               )
           )}
