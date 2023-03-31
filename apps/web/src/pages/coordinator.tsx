@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
+import { useQuery } from '@apollo/client';
 import { useRouter } from 'next/router';
 import {
-  Text,
   Box,
   Heading,
   Button,
@@ -11,25 +11,18 @@ import {
   AlertIcon,
   AlertDescription,
   Spinner,
+  Textarea,
+  SimpleGrid,
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
-import { BigNumber, utils, ethers } from 'ethers';
+import { BigNumber } from 'ethers';
 import { SemaphoreVotingAbi } from '../abis/SemaphoreVoting';
+import { PollCard } from '../components/PollCard';
 import { useContract, useSigner } from 'wagmi';
+import { POLLS_QUERY } from '../queries/polls';
 
 const Coordinator: NextPage = () => {
   const router = useRouter();
-
-  //   const {
-  //     query: { walletSigner },
-  //   } = router;
-
-  //   const props = {
-  //     walletSigner,
-  //   };
-
-  //SEMAPHORE STUFF
-  //For creating pool
   const [pollId, setPollId] = useState<BigNumber | undefined>(
     BigNumber.from(0)
   );
@@ -39,7 +32,7 @@ const Coordinator: NextPage = () => {
   const [title, setTitle] = useState<string | undefined>();
   const [description, setDescription] = useState<string | undefined>();
   const [votingOptions, setVotingOptions] = useState<string | undefined>('');
-
+  const { data: pollData, loading, error } = useQuery(POLLS_QUERY);
   //Input Validation
   const [inputErrors, setInputErrors] = useState({
     pollId: false,
@@ -48,18 +41,16 @@ const Coordinator: NextPage = () => {
     description: false,
     votingOptions: false,
   });
-
   //Alerts
   const [successfulAlert, setSuccessfulAlert] = useState(false);
   const [errorAlert, setErrorAlert] = useState(false);
   const [loadingAlert, setLoadingAlert] = useState(false);
-
   //Signer
   const { data: signer, isError, isLoading } = useSigner();
 
   //SemaphoreVote Smart Contract
   const contract = useContract({
-    address: '0xE484f866900994b9Bcd31552162Ba1380F66442d',
+    address: '0x6A0cCb2be9edC44842142DA12a865477ea1103A5',
     abi: SemaphoreVotingAbi,
     signerOrProvider: signer,
   });
@@ -67,6 +58,11 @@ const Coordinator: NextPage = () => {
   const goToHomePage = () => {
     router.push('/');
   };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error :(</p>;
+
+  const { polls } = pollData;
 
   function isValidInput(value) {
     // You can also add more validation rules depending on your requirements
@@ -276,13 +272,13 @@ const Coordinator: NextPage = () => {
             mb="4"
             isInvalid={inputErrors.title}
           />
-          <Input
+          <Textarea
             placeholder="Description"
-            type="text"
             onChange={handleDescriptionChange}
             errorBorderColor="red.300"
             mb="4"
             isInvalid={inputErrors.description}
+            resize="vertical"
           />
           <Input
             placeholder="Voting Options (comma-separated)"
@@ -346,6 +342,20 @@ const Coordinator: NextPage = () => {
           {loadingAlert && <Spinner mt="4" />}
         </Flex>
       </Box>
+      <SimpleGrid columns={[1, 2, 3]} spacing="8">
+        {polls.map((poll) => (
+          <PollCard
+            key={poll.id}
+            title={poll.title}
+            description={poll.description}
+            votingOptions={poll.votingOptions}
+            pollId={poll.id}
+            merkleTreeDepth={poll.merkleTreeDepth}
+            state={poll.state}
+            userType="coordinator"
+          />
+        ))}
+      </SimpleGrid>
     </main>
   );
 };

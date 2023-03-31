@@ -17,7 +17,7 @@ export const useVoteBallot = (
   const { data: signer } = useSigner();
 
   const { config, error } = usePrepareContractWrite({
-    address: '0xE484f866900994b9Bcd31552162Ba1380F66442d',
+    address: '0x6A0cCb2be9edC44842142DA12a865477ea1103A5',
     abi: SemaphoreVotingAbi,
     functionName: 'castVote',
     args: [vote, nullifierHash, pollId, proofArray, merkleTreeRoot],

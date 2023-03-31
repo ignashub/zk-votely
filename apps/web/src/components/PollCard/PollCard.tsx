@@ -12,6 +12,9 @@ import {
   Button,
   Tag,
   useDisclosure,
+  HStack,
+  Spacer,
+  Flex,
 } from '@chakra-ui/react';
 import { useJoinBallot } from '../../hooks/useJoinBallot';
 import { useVoteBallot } from '../../hooks/useVoteBallot';
@@ -31,6 +34,7 @@ interface PollCardProps {
   identity: string;
   merkleTreeDepth: string;
   state: string;
+  userType: 'voter' | 'coordinator';
 }
 
 export const PollCard: React.FC<PollCardProps> = ({
@@ -41,6 +45,7 @@ export const PollCard: React.FC<PollCardProps> = ({
   pollId,
   merkleTreeDepth,
   state,
+  userType,
 }) => {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [group, setGroup] = useState<Group | undefined>();
@@ -125,7 +130,10 @@ export const PollCard: React.FC<PollCardProps> = ({
     joinBallot,
     loading: joinBallotLoading,
     error: joinBallotError,
-  } = useJoinBallot(pollId.toString(), identity.commitment.toString());
+  } = useJoinBallot(
+    pollId?.toString() ?? '',
+    identity?.commitment?.toString() ?? ''
+  );
 
   const {
     voteBallot,
@@ -246,38 +254,30 @@ export const PollCard: React.FC<PollCardProps> = ({
       m="5"
       boxShadow="dark-lg"
     >
-      <VStack align="start">
-        <Box
-          borderWidth="1px"
-          borderRadius="lg"
-          padding="4"
-          display="flex"
-          justifyContent="space-between"
-        >
-          <Button
-            variant="solid"
-            bg="black"
-            _hover={{ bg: 'gray.600' }}
-            color="white"
-            onClick={handleJoinBallot}
-            mr={[0, '4']}
-            mb={['4', 0]}
-            w={['full', 'auto']}
-            isDisabled={
-              !signer ||
-              joinedBallot ||
-              joinButtonPressed ||
-              state === 'CREATED' ||
-              state === 'ENDED'
-            }
-            alignSelf="flex-start"
-          >
-            {joinButtonPressed && !joinTransactionCompleted ? (
-              <Spinner />
-            ) : (
-              'Join a Ballot'
-            )}
-          </Button>
+      <VStack align="start" spacing={6}>
+        <HStack alignItems="center">
+          {userType === 'voter' && (
+            <Button
+              variant="solid"
+              bg="black"
+              _hover={{ bg: 'gray.600' }}
+              color="white"
+              onClick={handleJoinBallot}
+              isDisabled={
+                !signer ||
+                joinedBallot ||
+                joinButtonPressed ||
+                state === 'CREATED' ||
+                state === 'ENDED'
+              }
+            >
+              {joinButtonPressed && !joinTransactionCompleted ? (
+                <Spinner />
+              ) : (
+                'Join a Ballot'
+              )}
+            </Button>
+          )}
           <Text
             fontSize="md"
             color={state === 'CREATED' ? 'black' : 'white'}
@@ -293,91 +293,127 @@ export const PollCard: React.FC<PollCardProps> = ({
             py={1}
             fontWeight="bold"
             display="inline-block"
-            alignSelf="flex-end"
           >
             {state === 'CREATED' ? 'NOT STARTED' : state}
           </Text>
-        </Box>
+        </HStack>
         <Text fontSize="2xl" fontWeight="bold">
           {title}
         </Text>
-        <Button
-          variant="solid"
-          bg="black"
-          _hover={{ bg: 'gray.600' }}
-          color="white"
-          onClick={onOpen}
-          mr={[0, '4']}
-          mb={['4', 4]}
-          w={['full', 'auto']}
-          isDisabled={!signer}
-        >
-          View Description
-        </Button>
-        <Modal
-          title={
-            <Text fontSize="2xl" fontWeight="bold">
-              {title}
+        <Flex direction="column" flex="1">
+          <Spacer />
+          <Button
+            variant="solid"
+            bg="black"
+            _hover={{ bg: 'gray.600' }}
+            color="white"
+            onClick={onOpen}
+            mb={['4', 4]}
+            w={['full', 'auto']}
+            isDisabled={!signer}
+          >
+            View Description
+          </Button>
+          <Modal
+            title={
+              <Text fontSize="2xl" fontWeight="bold">
+                {title}
+              </Text>
+            }
+            isOpen={isOpen}
+            onClose={onClose}
+            content={description}
+          />
+          {userType === 'voter' && (
+            <Text fontSize="lg" fontWeight="bold">
+              Voting Options
             </Text>
-          }
-          isOpen={isOpen}
-          onClose={onClose}
-          content={description}
-        />
-
-        <Text fontSize="lg" fontWeight="bold">
-          Voting Options
-        </Text>
-
-        <RadioGroup
-          value={selectedOption?.toString() || ''}
-          onChange={handleChange}
-        >
-          {votingOptions.map((option, index) => {
-            const voteCount = data.voteCounts.find(
-              (voteCount) => parseInt(voteCount.option) === index
-            )?.count;
-            return (
-              <div key={index}>
-                <Radio value={index.toString()} colorScheme="teal" mr={2}>
-                  {option}
-                </Radio>
-                <Tag bg="teal.300" borderRadius="full">
-                  {parseInt(voteCount) || 0}
-                </Tag>
-              </div>
-            );
-          })}
-        </RadioGroup>
-
-        <Button
-          variant="solid"
-          bg="black"
-          _hover={{ bg: 'gray.600' }}
-          color="white"
-          onClick={handleVoteBallot}
-          mr={[0, '4']}
-          mb={['4', 0]}
-          w={['full', 'auto']}
-          isDisabled={
-            !signer ||
-            !group ||
-            !joinedBallot ||
-            !readyToVote ||
-            voteButtonPressed ||
-            voteTransactionCompleted
-          }
-        >
-          {voteButtonPressed || voteProofLoading ? (
-            voteTransactionCompleted ? (
-              'Vote'
-            ) : (
-              <Spinner />
-            )
-          ) : (
-            'Vote'
           )}
-        </Button>
+          <VStack spacing={6}>
+            {userType === 'voter' ? (
+              <>
+                <RadioGroup
+                  value={selectedOption?.toString() || ''}
+                  onChange={handleChange}
+                >
+                  {votingOptions.map((option, index) => {
+                    const voteCount = data.voteCounts.find(
+                      (voteCount) => parseInt(voteCount.option) === index
+                    )?.count;
+                    return (
+                      <div key={index}>
+                        <Radio
+                          value={index.toString()}
+                          colorScheme="teal"
+                          mr={2}
+                        >
+                          {option}
+                        </Radio>
+                        <Tag bg="teal.300" borderRadius="full">
+                          {parseInt(voteCount) || 0}
+                        </Tag>
+                      </div>
+                    );
+                  })}
+                </RadioGroup>
+
+                <Button
+                  variant="solid"
+                  bg="black"
+                  _hover={{ bg: 'gray.600' }}
+                  color="white"
+                  onClick={handleVoteBallot}
+                  mr={[0, '4']}
+                  mb={['4', 0]}
+                  w={['full', 'auto']}
+                  isDisabled={
+                    !signer ||
+                    !group ||
+                    !joinedBallot ||
+                    !readyToVote ||
+                    voteButtonPressed ||
+                    voteTransactionCompleted
+                  }
+                >
+                  {voteButtonPressed || voteProofLoading ? (
+                    voteTransactionCompleted ? (
+                      'Vote'
+                    ) : (
+                      <Spinner />
+                    )
+                  ) : (
+                    'Vote'
+                  )}
+                </Button>
+              </>
+            ) : (
+              userType === 'coordinator' && (
+                <>
+                  <HStack spacing={4}>
+                    <Button
+                      colorScheme="green"
+                      // onClick={handleStartBallot}
+                      mr={[0, '4']}
+                      mb={['4', 0]}
+                      w={['full', 'auto']}
+                    >
+                      Start a Ballot
+                    </Button>
+                    <Button
+                      colorScheme="red"
+                      // onClick={handleEndBallot}
+                      mr={[0, '4']}
+                      mb={['4', 0]}
+                      w={['full', 'auto']}
+                    >
+                      Stop a Ballot
+                    </Button>
+                  </HStack>
+                </>
+              )
+            )}
+          </VStack>
+        </Flex>
 
         {successfulAlert && (
           <Alert status="success" variant="subtle">

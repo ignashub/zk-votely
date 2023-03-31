@@ -1,6 +1,5 @@
 import type { NextPage } from 'next';
 import { useQuery } from '@apollo/client';
-import { SimpleGrid } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import {
   Text,
@@ -8,6 +7,7 @@ import {
   Heading,
   Button,
   Flex,
+  SimpleGrid,
   useDisclosure,
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
@@ -50,7 +50,6 @@ const Voter: NextPage = () => {
         id="maincontent"
         className="flex flex-col items-center justify-center flex-grow mt-4 mb-8 space-y-8 md:space-y-16 md:mt-8 md:mb-16"
       >
-        {/* <Section> */}
         <Box maxW="xl" w="full" p="6" rounded="lg" boxShadow="dark-lg">
           <Flex flexDir="column" alignItems="center">
             <Button
@@ -68,45 +67,41 @@ const Voter: NextPage = () => {
               Create an Identity
             </Heading>
             {identity ? (
-              <Box py="6">
-                <Box p="5" borderWidth={1} borderRadius="4px">
-                  <Heading size="lg" lineHeight="tall">
-                    <Button
-                      variant="solid"
-                      bg="black"
-                      _hover={{ bg: 'gray.600' }}
-                      color="white"
-                      onClick={onOpen}
-                      mr={[0, '4']}
-                      mb={['4', 4]}
-                      w={['full', 'auto']}
+              <>
+                <Button
+                  variant="solid"
+                  bg="black"
+                  _hover={{ bg: 'gray.600' }}
+                  color="white"
+                  onClick={onOpen}
+                  mr={[0, '4']}
+                  mb={['4', 4]}
+                  w={['full', 'auto']}
+                >
+                  View Your Public Identity
+                </Button>
+                <Modal
+                  title="Public Identity"
+                  isOpen={isOpen}
+                  onClose={onClose}
+                  content={
+                    <Text
+                      as="span"
+                      px="2"
+                      py="1"
+                      borderRadius="full"
+                      bg="teal.300"
+                      fontWeight="bold"
+                      wordBreak="break-word"
+                      fontSize="xl"
                     >
-                      View Your Public Identity
-                    </Button>
-                    <Modal
-                      title="Public Identity"
-                      isOpen={isOpen}
-                      onClose={onClose}
-                      content={
-                        <Text
-                          as="span"
-                          px="2"
-                          py="1"
-                          borderRadius="full"
-                          bg="teal.300"
-                          fontWeight="bold"
-                          wordBreak="break-word"
-                          fontSize="xl"
-                        >
-                          {identity.commitment.toString()}
-                        </Text>
-                      }
-                    />
-                  </Heading>
-                </Box>
-              </Box>
+                      {identity.commitment.toString()}
+                    </Text>
+                  }
+                />
+              </>
             ) : (
-              <div></div>
+              <></>
             )}
             {!identity && (
               <Button
@@ -141,11 +136,11 @@ const Voter: NextPage = () => {
                   identity={identity}
                   merkleTreeDepth={poll.merkleTreeDepth}
                   state={poll.state}
+                  userType="voter"
                 />
               )
           )}
         </SimpleGrid>
-        {/* </Section> */}
       </main>
     </>
   );
