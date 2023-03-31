@@ -1,12 +1,20 @@
 import type { NextPage } from 'next';
-import { useQuery, gql } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { SimpleGrid } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import { Text, Box, Heading, Button, Flex } from '@chakra-ui/react';
+import {
+  Text,
+  Box,
+  Heading,
+  Button,
+  Flex,
+  useDisclosure,
+} from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { useSigner } from 'wagmi';
 import { Identity } from '@semaphore-protocol/identity';
 import { PollCard } from '../components/PollCard';
+import { Modal } from '../components/Modal';
 import { POLLS_QUERY } from '../queries/polls';
 
 const Voter: NextPage = () => {
@@ -14,6 +22,7 @@ const Voter: NextPage = () => {
   const [identity, setIdentity] = useState<Identity>();
   const { data: pollData, loading, error } = useQuery(POLLS_QUERY);
   const { data: signer, isError, isLoading } = useSigner();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
@@ -55,31 +64,44 @@ const Voter: NextPage = () => {
             >
               Back
             </Button>
-            <Heading size="xl" mt="8" mb="4">
+            <Heading size="xl" mb="10">
               Create an Identity
             </Heading>
             {identity ? (
               <Box py="6">
-                <Box
-                  p="5"
-                  borderWidth={1}
-                  borderColor="gray.500"
-                  borderRadius="4px"
-                >
+                <Box p="5" borderWidth={1} borderRadius="4px">
                   <Heading size="lg" lineHeight="tall">
-                    <Text>Your Public Identity:</Text>
-                    <Text
-                      as="span"
-                      px="2"
-                      py="1"
-                      borderRadius="full"
-                      bg="teal.300"
-                      fontWeight="bold"
-                      wordBreak="break-word"
-                      fontSize="xl"
+                    <Button
+                      variant="solid"
+                      bg="black"
+                      _hover={{ bg: 'gray.600' }}
+                      color="white"
+                      onClick={onOpen}
+                      mr={[0, '4']}
+                      mb={['4', 4]}
+                      w={['full', 'auto']}
                     >
-                      {identity.commitment.toString()}
-                    </Text>
+                      View Your Public Identity
+                    </Button>
+                    <Modal
+                      title="Public Identity"
+                      isOpen={isOpen}
+                      onClose={onClose}
+                      content={
+                        <Text
+                          as="span"
+                          px="2"
+                          py="1"
+                          borderRadius="full"
+                          bg="teal.300"
+                          fontWeight="bold"
+                          wordBreak="break-word"
+                          fontSize="xl"
+                        >
+                          {identity.commitment.toString()}
+                        </Text>
+                      }
+                    />
                   </Heading>
                 </Box>
               </Box>

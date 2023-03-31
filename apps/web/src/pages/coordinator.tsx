@@ -244,12 +244,12 @@ const Coordinator: NextPage = () => {
             _hover={{ bg: 'gray.600' }}
             color="white"
             onClick={goToHomePage}
-            mb="4"
-            alignSelf="flex-start" // Added to align the button to the left
+            alignSelf="flex-start"
+            mb="4" // Added to align the button to the left
           >
             Back
           </Button>
-          <Heading size="xl" mt="8" mb="4">
+          <Heading size="xl" mb="10">
             Create a Ballot
           </Heading>
           <Input
@@ -288,7 +288,7 @@ const Coordinator: NextPage = () => {
             placeholder="Voting Options (comma-separated)"
             onChange={handleVotingOptionsChange}
             errorBorderColor="red.300"
-            mb="4"
+            mb="9"
             isInvalid={inputErrors.votingOptions}
           />
           <Flex flexDir={['column', 'row']} mb="4">

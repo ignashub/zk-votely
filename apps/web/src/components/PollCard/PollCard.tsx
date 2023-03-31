@@ -11,6 +11,7 @@ import {
   Radio,
   Button,
   Tag,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { useJoinBallot } from '../../hooks/useJoinBallot';
 import { useVoteBallot } from '../../hooks/useVoteBallot';
@@ -20,6 +21,7 @@ import { FullProof, generateProof } from '@semaphore-protocol/proof';
 import { useSigner } from 'wagmi';
 import { useQuery } from '@apollo/client';
 import { GET_VOTE_COUNTS_BY_POLL_ID } from '../../queries/polls';
+import { Modal } from '../Modal';
 
 interface PollCardProps {
   title: string;
@@ -57,7 +59,14 @@ export const PollCard: React.FC<PollCardProps> = ({
     useState(false);
   const [voteTransactionCompleted, setVoteTransactionCompleted] =
     useState(false);
-
+  const [inputErrors, setInputErrors] = useState({
+    pollId: false,
+    merkleTreeDepth: false,
+    title: false,
+    description: false,
+    votingOptions: false,
+  });
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [groups, setGroups] = useState<{ [key: string]: Group }>({});
 
   const { loading, error, data, refetch } = useQuery(
@@ -222,8 +231,12 @@ export const PollCard: React.FC<PollCardProps> = ({
     }
   };
 
-  if (loading) return <Spinner />;
-  if (error) return <p>Error :(</p>;
+  // if (loading) return <Spinner />;
+  // if (error) return <p>Error :(</p>;
+
+  if (loading || !description) {
+    return <Spinner />;
+  }
 
   return (
     <Box
@@ -250,7 +263,13 @@ export const PollCard: React.FC<PollCardProps> = ({
             mr={[0, '4']}
             mb={['4', 0]}
             w={['full', 'auto']}
-            isDisabled={!signer || joinedBallot || joinButtonPressed}
+            isDisabled={
+              !signer ||
+              joinedBallot ||
+              joinButtonPressed ||
+              state === 'CREATED' ||
+              state === 'ENDED'
+            }
             alignSelf="flex-start"
           >
             {joinButtonPressed && !joinTransactionCompleted ? (
@@ -282,7 +301,33 @@ export const PollCard: React.FC<PollCardProps> = ({
         <Text fontSize="2xl" fontWeight="bold">
           {title}
         </Text>
-        <Text fontSize="md">{description}</Text>
+        <Button
+          variant="solid"
+          bg="black"
+          _hover={{ bg: 'gray.600' }}
+          color="white"
+          onClick={onOpen}
+          mr={[0, '4']}
+          mb={['4', 4]}
+          w={['full', 'auto']}
+          isDisabled={!signer}
+        >
+          View Description
+        </Button>
+        <Modal
+          title={
+            <Text fontSize="2xl" fontWeight="bold">
+              {title}
+            </Text>
+          }
+          isOpen={isOpen}
+          onClose={onClose}
+          content={description}
+        />
+
+        <Text fontSize="lg" fontWeight="bold">
+          Voting Options
+        </Text>
 
         <RadioGroup
           value={selectedOption?.toString() || ''}
