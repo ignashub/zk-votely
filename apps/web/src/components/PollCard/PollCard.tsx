@@ -18,6 +18,8 @@ import {
 } from '@chakra-ui/react';
 import { useJoinBallot } from '../../hooks/useJoinBallot';
 import { useVoteBallot } from '../../hooks/useVoteBallot';
+import { useStartBallot } from '../../hooks/useStartBallot';
+import { useEndBallot } from '../../hooks/useEndBallot';
 import { BigNumber } from 'ethers';
 import { Group } from '@semaphore-protocol/group';
 import { FullProof, generateProof } from '@semaphore-protocol/proof';
@@ -35,6 +37,7 @@ interface PollCardProps {
   merkleTreeDepth: string;
   state: string;
   userType: 'voter' | 'coordinator';
+  // coordinator: string;
 }
 
 export const PollCard: React.FC<PollCardProps> = ({
@@ -46,6 +49,7 @@ export const PollCard: React.FC<PollCardProps> = ({
   merkleTreeDepth,
   state,
   userType,
+  // coordinator,
 }) => {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [group, setGroup] = useState<Group | undefined>();

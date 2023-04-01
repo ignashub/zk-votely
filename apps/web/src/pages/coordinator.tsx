@@ -14,9 +14,10 @@ import {
   Textarea,
   SimpleGrid,
 } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { BigNumber } from 'ethers';
 import { SemaphoreVotingAbi } from '../abis/SemaphoreVoting';
+import { useCreateBallot } from '../hooks/useCreateBallot';
 import { PollCard } from '../components/PollCard';
 import { useContract, useSigner } from 'wagmi';
 import { POLLS_QUERY } from '../queries/polls';
@@ -31,8 +32,15 @@ const Coordinator: NextPage = () => {
   >();
   const [title, setTitle] = useState<string | undefined>();
   const [description, setDescription] = useState<string | undefined>();
-  const [votingOptions, setVotingOptions] = useState<string | undefined>('');
-  const { data: pollData, loading, error } = useQuery(POLLS_QUERY);
+  const [votingOptions, setVotingOptions] = useState<string[]>([]);
+
+  const {
+    data: pollData,
+    loading: pollDataLoading,
+    error: pollDataError,
+    refetch: pollDataRefetch,
+  } = useQuery(POLLS_QUERY);
+
   //Input Validation
   const [inputErrors, setInputErrors] = useState({
     pollId: false,
@@ -49,25 +57,15 @@ const Coordinator: NextPage = () => {
   const { data: signer, isError, isLoading } = useSigner();
 
   //SemaphoreVote Smart Contract
-  const contract = useContract({
-    address: '0x6A0cCb2be9edC44842142DA12a865477ea1103A5',
-    abi: SemaphoreVotingAbi,
-    signerOrProvider: signer,
-  });
+  // const contract = useContract({
+  //   address: '0x6A0cCb2be9edC44842142DA12a865477ea1103A5',
+  //   abi: SemaphoreVotingAbi,
+  //   signerOrProvider: signer,
+  // });
 
   const goToHomePage = () => {
     router.push('/');
   };
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error :(</p>;
-
-  const { polls } = pollData;
-
-  function isValidInput(value) {
-    // You can also add more validation rules depending on your requirements
-    return value.trim() !== '';
-  }
 
   const convertVotingOptions = (optionsString: string) => {
     const optionsArray = optionsString
@@ -75,6 +73,11 @@ const Coordinator: NextPage = () => {
       .map((option) => option.trim());
     return optionsArray;
   };
+
+  function isValidInput(value) {
+    // You can also add more validation rules depending on your requirements
+    return value.trim() !== '';
+  }
 
   const handlePollIdChange = (e) => {
     const value = e.target.value;
@@ -105,65 +108,43 @@ const Coordinator: NextPage = () => {
 
   const handleVotingOptionsChange = (e) => {
     const value = e.target.value;
+    const optionsArray = convertVotingOptions(value);
     setInputErrors((prev) => ({
       ...prev,
-      votingOptions: !isValidInput(value),
+      votingOptions: optionsArray.length === 0,
     }));
-    setVotingOptions(value);
-    console.log(votingOptions);
+    setVotingOptions(optionsArray);
   };
 
-  const createBallot = async () => {
-    if (!contract) {
-      console.error('Smart contract is not loaded');
+  const {
+    createBallot,
+    loading: createBallotLoading,
+    error: createBallotError,
+  } = useCreateBallot(
+    pollId,
+    signer?.getAddress(),
+    merkleTreeDepth,
+    title,
+    description,
+    votingOptions
+  );
+
+  const handleCreateBallot = async () => {
+    if (!signer) {
+      console.error('Signer is not available');
       return;
     }
-
-    // if (!pollId || !merkleTreeDepth) {
-    //   console.error('Poll ID or Merkle tree depth is missing');
-    //   return;
-    // }
-
-    setLoadingAlert(true);
-
-    console.log(`Title: ${title}`);
-    console.log(`Description: ${description}`);
-    console.log(`Voting Options: ${votingOptions}`);
-    console.log(votingOptions);
-    console.log(votingOptions.split(',').map((option) => option.trim()));
-
-    console.log(`pollID on Creating Ballot: ${pollId}`);
+    if (createBallotLoading) return;
 
     try {
-      const optionsArray = convertVotingOptions(votingOptions);
-      const coordinator = await signer?.getAddress();
-      const myGasLimit = BigNumber.from(5000000);
-      console.log(coordinator);
-      let result = await contract.createPoll(
-        pollId,
-        coordinator,
-        merkleTreeDepth,
-        title,
-        description,
-        optionsArray,
-        {
-          gasLimit: myGasLimit,
-        }
-      );
-
-      const receipt = await result.wait();
-
-      if (receipt.status === 1) {
-        setLoadingAlert(false);
-        setSuccessfulAlert(true);
-        setTimeout(() => {
-          setSuccessfulAlert(false);
-        }, 5000);
-        // const group1 = new Group(pollId.toNumber(), merkleTreeDepth.toNumber());
-      }
+      await createBallot();
+      setSuccessfulAlert(true);
+      setTimeout(() => {
+        setSuccessfulAlert(false);
+      }, 5000);
+      pollDataRefetch();
     } catch (error) {
-      console.error('Error creating poll:', error);
-      setLoadingAlert(false);
+      console.error('Error creating ballot:', error);
       setErrorAlert(true);
       setTimeout(() => {
         setErrorAlert(false);
@@ -171,60 +152,123 @@ const Coordinator: NextPage = () => {
     }
   };
 
-  const startBallot = async () => {
-    console.log(`pollID on Starting Ballot: ${pollId}`);
-    setLoadingAlert(true);
-    try {
-      const myGasLimit = BigNumber.from(5000000);
-      const encryptionKey = BigNumber.from(123456789);
-      let result = await contract.startPoll(pollId, encryptionKey, {
-        gasLimit: myGasLimit,
-      });
+  // const createBallot = async () => {
+  //   if (!contract) {
+  //     console.error('Smart contract is not loaded');
+  //     return;
+  //   }
 
-      const receipt = await result.wait();
-      if (receipt.status === 1) {
-        setLoadingAlert(false);
-        setSuccessfulAlert(true);
-        setTimeout(() => {
-          setSuccessfulAlert(false);
-        }, 5000);
-      }
-    } catch (error) {
-      console.error('Error starting poll:', error);
-      setLoadingAlert(false);
-      setErrorAlert(true);
-      setTimeout(() => {
-        setErrorAlert(false);
-      }, 5000);
-    }
-  };
+  //   // if (!pollId || !merkleTreeDepth) {
+  //   //   console.error('Poll ID or Merkle tree depth is missing');
+  //   //   return;
+  //   // }
 
-  const stopBallot = async () => {
-    setLoadingAlert(true);
-    try {
-      const myGasLimit = BigNumber.from(5000000);
-      const encryptionKey = BigNumber.from(123456789);
-      let result = await contract.endPoll(pollId, encryptionKey, {
-        gasLimit: myGasLimit,
-      });
+  //   setLoadingAlert(true);
 
-      const receipt = await result.wait();
-      if (receipt.status === 1) {
-        setLoadingAlert(false);
-        setSuccessfulAlert(true);
-        setTimeout(() => {
-          setSuccessfulAlert(false);
-        }, 5000);
-      }
-    } catch (error) {
-      console.error('Error ending poll:', error);
-      setLoadingAlert(false);
-      setErrorAlert(true);
-      setTimeout(() => {
-        setErrorAlert(false);
-      }, 5000);
-    }
-  };
+  //   console.log(`Title: ${title}`);
+  //   console.log(`Description: ${description}`);
+  //   console.log(`Voting Options: ${votingOptions}`);
+  //   console.log(votingOptions);
+  //   console.log(votingOptions.split(',').map((option) => option.trim()));
+
+  //   console.log(`pollID on Creating Ballot: ${pollId}`);
+
+  //   try {
+  //     const optionsArray = convertVotingOptions(votingOptions);
+  //     const coordinator = await signer?.getAddress();
+  //     const myGasLimit = BigNumber.from(5000000);
+  //     console.log(coordinator);
+  //     let result = await contract.createPoll(
+  //       pollId,
+  //       coordinator,
+  //       merkleTreeDepth,
+  //       title,
+  //       description,
+  //       optionsArray,
+  //       {
+  //         gasLimit: myGasLimit,
+  //       }
+  //     );
+
+  //     const receipt = await result.wait();
+
+  //     if (receipt.status === 1) {
+  //       setLoadingAlert(false);
+  //       setSuccessfulAlert(true);
+  //       setTimeout(() => {
+  //         setSuccessfulAlert(false);
+  //       }, 5000);
+  //       // const group1 = new Group(pollId.toNumber(), merkleTreeDepth.toNumber());
+  //     }
+  //   } catch (error) {
+  //     console.error('Error creating poll:', error);
+  //     setLoadingAlert(false);
+  //     setErrorAlert(true);
+  //     setTimeout(() => {
+  //       setErrorAlert(false);
+  //     }, 5000);
+  //   }
+  // };
+
+  // const startBallot = async () => {
+  //   console.log(`pollID on Starting Ballot: ${pollId}`);
+  //   setLoadingAlert(true);
+  //   try {
+  //     const myGasLimit = BigNumber.from(5000000);
+  //     const encryptionKey = BigNumber.from(123456789);
+  //     let result = await contract.startPoll(pollId, encryptionKey, {
+  //       gasLimit: myGasLimit,
+  //     });
+
+  //     const receipt = await result.wait();
+  //     if (receipt.status === 1) {
+  //       setLoadingAlert(false);
+  //       setSuccessfulAlert(true);
+  //       setTimeout(() => {
+  //         setSuccessfulAlert(false);
+  //       }, 5000);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error starting poll:', error);
+  //     setLoadingAlert(false);
+  //     setErrorAlert(true);
+  //     setTimeout(() => {
+  //       setErrorAlert(false);
+  //     }, 5000);
+  //   }
+  // };
+
+  // const stopBallot = async () => {
+  //   setLoadingAlert(true);
+  //   try {
+  //     const myGasLimit = BigNumber.from(5000000);
+  //     const encryptionKey = BigNumber.from(123456789);
+  //     let result = await contract.endPoll(pollId, encryptionKey, {
+  //       gasLimit: myGasLimit,
+  //     });
+
+  //     const receipt = await result.wait();
+  //     if (receipt.status === 1) {
+  //       setLoadingAlert(false);
+  //       setSuccessfulAlert(true);
+  //       setTimeout(() => {
+  //         setSuccessfulAlert(false);
+  //       }, 5000);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error ending poll:', error);
+  //     setLoadingAlert(false);
+  //     setErrorAlert(true);
+  //     setTimeout(() => {
+  //       setErrorAlert(false);
+  //     }, 5000);
+  //   }
+  // };
+
+  if (pollDataLoading) return <p>Loading...</p>;
+  if (pollDataError) return <p>Error :(</p>;
+
+  const { polls } = pollData;
 
   return (
     <main
@@ -293,7 +337,7 @@ const Coordinator: NextPage = () => {
               bg="black"
               _hover={{ bg: 'gray.600' }}
               color="white"
-              onClick={signer ? createBallot : undefined}
+              onClick={signer ? handleCreateBallot : undefined}
               mr={[0, '4']}
               mb={['4', 0]}
               w={['full', 'auto']}
@@ -302,7 +346,7 @@ const Coordinator: NextPage = () => {
               Create a Ballot
             </Button>
 
-            <Button
+            {/* <Button
               variant="solid"
               bg="black"
               _hover={{ bg: 'gray.600' }}
@@ -325,7 +369,7 @@ const Coordinator: NextPage = () => {
               isDisabled={!signer}
             >
               Stop a Ballot
-            </Button>
+            </Button> */}
           </Flex>
           {successfulAlert && (
             <Alert status="success" variant="subtle" w="full" mb="4">
@@ -350,6 +394,7 @@ const Coordinator: NextPage = () => {
             description={poll.description}
             votingOptions={poll.votingOptions}
             pollId={poll.id}
+            identity=""
             merkleTreeDepth={poll.merkleTreeDepth}
             state={poll.state}
             userType="coordinator"

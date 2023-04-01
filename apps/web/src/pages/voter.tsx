@@ -16,6 +16,7 @@ import { Identity } from '@semaphore-protocol/identity';
 import { PollCard } from '../components/PollCard';
 import { Modal } from '../components/Modal';
 import { POLLS_QUERY } from '../queries/polls';
+import { BigNumber } from 'ethers';
 
 const Voter: NextPage = () => {
   const router = useRouter();
@@ -34,6 +35,7 @@ const Voter: NextPage = () => {
   };
 
   const createIdentity = async () => {
+    console.log(BigNumber.from(123456789));
     try {
       const _identity = new Identity();
       setIdentity(_identity);
