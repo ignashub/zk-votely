@@ -64,6 +64,8 @@ export const PollCard: React.FC<PollCardProps> = ({
   const [showVoteButton, setShowVoteButton] = useState(false);
   const [voteButtonPressed, setVoteButtonPressed] = useState(false);
   const [joinButtonPressed, setJoinButtonPressed] = useState(false);
+  const [startButtonPressed, setStartButtonPressed] = useState(false);
+  const [endButtonPressed, setEndButtonPressed] = useState(false);
   const [joinTransactionCompleted, setJoinTransactionCompleted] =
     useState(false);
   const [voteTransactionCompleted, setVoteTransactionCompleted] =
@@ -148,11 +150,23 @@ export const PollCard: React.FC<PollCardProps> = ({
     fullProof ? fullProof.nullifierHash.toString() : '0',
     pollId.toString() == undefined ? '' : pollId.toString(),
     proofArray || [],
-    group?.root?.toString() || '0x0', // provide default value '0x0' if group or group.root is undefined
-    {
-      gasLimit: BigNumber.from(5000000),
-    }
+    group?.root?.toString() || '0x0' // provide default value '0x0' if group or group.root is undefined
+    // {
+    //   gasLimit: BigNumber.from(5000000),
+    // }
   );
+
+  const {
+    startBallot,
+    loading: startBallotLoading,
+    error: startBallotError,
+  } = useStartBallot(pollId?.toString() ?? '', BigNumber.from(5000000));
+
+  const {
+    endBallot,
+    loading: endBallotLoading,
+    error: endBallotError,
+  } = useEndBallot(pollId?.toString() ?? '', BigNumber.from(5000000));
 
   useEffect(() => {
     if (joinBallotError) {
@@ -243,6 +257,52 @@ export const PollCard: React.FC<PollCardProps> = ({
     }
   };
 
+  const handleStartBallot = async () => {
+    if (startBallotLoading) return;
+
+    setStartButtonPressed(true);
+
+    try {
+      await startBallot();
+      setSuccessfulAlert(true);
+      setTimeout(() => {
+        setSuccessfulAlert(false);
+      }, 5000);
+      refetch();
+      setStartButtonPressed(false);
+    } catch (error) {
+      console.error('Error starting ballot:', error);
+      setErrorAlert(true);
+      setTimeout(() => {
+        setErrorAlert(false);
+      }, 5000);
+      setStartButtonPressed(false);
+    }
+  };
+
+  const handleEndBallot = async () => {
+    if (endBallotLoading) return;
+
+    setEndButtonPressed(true);
+
+    try {
+      await endBallot();
+      setSuccessfulAlert(true);
+      setTimeout(() => {
+        setSuccessfulAlert(false);
+      }, 5000);
+      refetch();
+      setEndButtonPressed(false);
+    } catch (error) {
+      console.error('Error ending ballot:', error);
+      setErrorAlert(true);
+      setTimeout(() => {
+        setErrorAlert(false);
+      }, 5000);
+      setEndButtonPressed(false);
+    }
+  };
+
   // if (loading) return <Spinner />;
   // if (error) return <p>Error :(</p>;
 
@@ -300,6 +360,16 @@ export const PollCard: React.FC<PollCardProps> = ({
           >
             {state === 'CREATED' ? 'NOT STARTED' : state}
           </Text>
+          <Text
+            fontSize="md"
+            borderRadius="full"
+            px={2}
+            py={1}
+            fontWeight="bold"
+            display="inline-block"
+          >
+            ID: {pollId}
+          </Text>
         </HStack>
         <Text fontSize="2xl" fontWeight="bold">
           {title}
@@ -353,7 +423,7 @@ export const PollCard: React.FC<PollCardProps> = ({
                         >
                           {option}
                         </Radio>
-                        <Tag bg="teal.300" borderRadius="full">
+                        <Tag borderRadius="full">
                           {parseInt(voteCount) || 0}
                         </Tag>
                       </div>
@@ -393,22 +463,43 @@ export const PollCard: React.FC<PollCardProps> = ({
             ) : (
               userType === 'coordinator' && (
                 <>
+                  <Box alignSelf="start">
+                    <Text fontSize="lg" fontWeight="bold">
+                      Voting Options
+                    </Text>
+                    {votingOptions.map((option, index) => {
+                      const voteCount = data.voteCounts.find(
+                        (voteCount) => parseInt(voteCount.option) === index
+                      )?.count;
+                      return (
+                        <Flex key={index} alignItems="start">
+                          <Text mr={2}>{option}</Text>
+                          <Tag borderRadius="full">
+                            {parseInt(voteCount) || 0}
+                          </Tag>
+                        </Flex>
+                      );
+                    })}
+                  </Box>
                   <HStack spacing={4}>
                     <Button
                       colorScheme="green"
-                      // onClick={handleStartBallot}
+                      onClick={handleStartBallot}
                       mr={[0, '4']}
                       mb={['4', 0]}
                       w={['full', 'auto']}
+                      isLoading={startButtonPressed}
+                      isDisabled={state === 'ONGOING'}
                     >
                       Start a Ballot
                     </Button>
                     <Button
                       colorScheme="red"
-                      // onClick={handleEndBallot}
+                      onClick={handleEndBallot}
                       mr={[0, '4']}
                       mb={['4', 0]}
                       w={['full', 'auto']}
+                      isLoading={endButtonPressed}
                     >
                       Stop a Ballot
                     </Button>

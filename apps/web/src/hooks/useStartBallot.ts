@@ -3,6 +3,7 @@ import { usePrepareContractWrite } from 'wagmi';
 import { SemaphoreVotingAbi } from '../abis/SemaphoreVoting';
 import { useSigner } from 'wagmi';
 import { ethers } from 'ethers';
+import { BigNumber } from 'ethers';
 
 export const useStartBallot = (pollId, encryptionKey) => {
   const [loading, setLoading] = useState(false);
@@ -14,6 +15,7 @@ export const useStartBallot = (pollId, encryptionKey) => {
     abi: SemaphoreVotingAbi,
     functionName: 'startPoll',
     args: [pollId, encryptionKey],
+    gasLimit: BigNumber.from(5000000),
   });
 
   const startBallot = async () => {

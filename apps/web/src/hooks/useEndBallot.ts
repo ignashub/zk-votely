@@ -4,7 +4,7 @@ import { SemaphoreVotingAbi } from '../abis/SemaphoreVoting';
 import { useSigner } from 'wagmi';
 import { ethers } from 'ethers';
 
-export const useEndBallot = (pollId: string) => {
+export const useEndBallot = (pollId, encryptionKey) => {
   // State variables for loading and error
   const [loading, setLoading] = useState(false);
   const [hookError, setHookError] = useState(null);
@@ -17,7 +17,7 @@ export const useEndBallot = (pollId: string) => {
     address: '0x6A0cCb2be9edC44842142DA12a865477ea1103A5', // Smart contract address
     abi: SemaphoreVotingAbi, // Smart contract ABI
     functionName: 'endPoll', // Smart contract function name
-    args: [pollId], // Arguments for the smart contract function
+    args: [pollId, encryptionKey],
   });
 
   const endBallot = async () => {
