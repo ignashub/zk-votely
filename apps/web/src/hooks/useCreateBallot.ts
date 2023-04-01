@@ -3,18 +3,19 @@ import { useState } from 'react';
 import { SemaphoreVotingAbi } from '../abis/SemaphoreVoting';
 import { useSigner } from 'wagmi';
 import { ethers } from 'ethers';
+import { BigNumber } from 'ethers';
 
 export const useCreateBallot = (
   pollId: string,
-  coordinator: string,
-  merkleTreeDepth: number,
-  title: string,
-  description: string,
+  coordinator: string | undefined,
+  merkleTreeDepth: BigNumber | undefined,
+  title: string | undefined,
+  description: string | undefined,
   votingOptions: string[]
 ) => {
   const [loading, setLoading] = useState(false);
   const [hookError, setHookError] = useState(null);
-  const signer = useSigner(); // move this outside of createBallot
+  const { data: signer } = useSigner();
 
   const { config, error } = usePrepareContractWrite({
     address: '0x6A0cCb2be9edC44842142DA12a865477ea1103A5',
@@ -28,9 +29,21 @@ export const useCreateBallot = (
       description,
       votingOptions,
     ],
+    gasLimit: BigNumber.from(5000000),
   });
 
   const createBallot = async () => {
+    if (
+      !pollId ||
+      !coordinator || // change this line
+      !merkleTreeDepth ||
+      !title ||
+      !description ||
+      votingOptions.length === 0
+    ) {
+      console.error('Some input data is missing');
+      return;
+    }
     if (!signer || !config) {
       return null;
     }

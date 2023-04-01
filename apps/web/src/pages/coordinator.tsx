@@ -16,7 +16,6 @@ import {
 } from '@chakra-ui/react';
 import React, { useState, useEffect, useMemo } from 'react';
 import { BigNumber } from 'ethers';
-import { SemaphoreVotingAbi } from '../abis/SemaphoreVoting';
 import { useCreateBallot } from '../hooks/useCreateBallot';
 import { PollCard } from '../components/PollCard';
 import { useContract, useSigner } from 'wagmi';
@@ -53,15 +52,20 @@ const Coordinator: NextPage = () => {
   const [successfulAlert, setSuccessfulAlert] = useState(false);
   const [errorAlert, setErrorAlert] = useState(false);
   const [loadingAlert, setLoadingAlert] = useState(false);
+  const [signerAddress, setSignerAddress] = useState<string | undefined>();
   //Signer
   const { data: signer, isError, isLoading } = useSigner();
 
-  //SemaphoreVote Smart Contract
-  // const contract = useContract({
-  //   address: '0x6A0cCb2be9edC44842142DA12a865477ea1103A5',
-  //   abi: SemaphoreVotingAbi,
-  //   signerOrProvider: signer,
-  // });
+  useEffect(() => {
+    const updateSignerAddress = async () => {
+      if (signer) {
+        const address = await signer.getAddress();
+        setSignerAddress(address);
+      }
+    };
+
+    updateSignerAddress();
+  }, [signer]);
 
   const goToHomePage = () => {
     router.push('/');
@@ -121,8 +125,8 @@ const Coordinator: NextPage = () => {
     loading: createBallotLoading,
     error: createBallotError,
   } = useCreateBallot(
-    pollId,
-    signer?.getAddress(),
+    pollId.toString(),
+    signerAddress,
     merkleTreeDepth,
     title,
     description,
@@ -264,6 +268,9 @@ const Coordinator: NextPage = () => {
   //     }, 5000);
   //   }
   // };
+
+  if (isLoading) return <p>Loading...</p>;
+  if (isError) return <p>Error :(</p>;
 
   if (pollDataLoading) return <p>Loading...</p>;
   if (pollDataError) return <p>Error :(</p>;
