@@ -22,7 +22,7 @@ Before getting started, we suggest reading our [Contributing Guidelines](/CONTRI
 
 Besides, installing tooling from [WEB3 Template](https://github.com/Byont-Ventures/web3-template). It would be a good practice to get acquainted with the Zero-Knowledge Proofs and the research done:
 
-- [DAO Analysis](/documentation/dao_analysis_v2)
+- [DAO Analysis](/documentation/dao_analysis_v2.docx)
 
 You need several dependencies in your system to run [circom](https://github.com/iden3/circom) and its associated tools:
 
