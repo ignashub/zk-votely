@@ -1,38 +1,50 @@
 import type { NextPage } from 'next';
-import { useQuery, gql } from '@apollo/client';
-import { SimpleGrid } from '@chakra-ui/react';
+import { useQuery } from '@apollo/client';
 import { useRouter } from 'next/router';
-import { Text, Box, Heading, Button, Flex } from '@chakra-ui/react';
+import {
+  Text,
+  Box,
+  Heading,
+  Button,
+  Flex,
+  SimpleGrid,
+  useDisclosure,
+} from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { useSigner } from 'wagmi';
 import { Identity } from '@semaphore-protocol/identity';
 import { PollCard } from '../components/PollCard';
+import { Modal } from '../components/Modal';
 import { POLLS_QUERY } from '../queries/polls';
+import { BigNumber } from 'ethers';
 
 const Voter: NextPage = () => {
   const router = useRouter();
   const [identity, setIdentity] = useState<Identity>();
   const { data: pollData, loading, error } = useQuery(POLLS_QUERY);
   const { data: signer, isError, isLoading } = useSigner();
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error :(</p>;
-
-  const { polls } = pollData;
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const goToHomePage = () => {
     router.push('/');
   };
 
   const createIdentity = async () => {
+    console.log(BigNumber.from(123456789));
     try {
       const _identity = new Identity();
       setIdentity(_identity);
+      console.log(_identity);
       console.log(_identity.commitment);
     } catch (error) {
       console.error('Error creating identity:', error);
     }
   };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error :(</p>;
+
+  const { polls } = pollData;
 
   return (
     <>
@@ -41,8 +53,7 @@ const Voter: NextPage = () => {
         id="maincontent"
         className="flex flex-col items-center justify-center flex-grow mt-4 mb-8 space-y-8 md:space-y-16 md:mt-8 md:mb-16"
       >
-        {/* <Section> */}
-        <Box maxW="xl" w="full" p="6" rounded="lg" shadow="md">
+        <Box maxW="xl" w="full" p="6" rounded="lg" boxShadow="dark-lg">
           <Flex flexDir="column" alignItems="center">
             <Button
               variant="solid"
@@ -55,36 +66,44 @@ const Voter: NextPage = () => {
             >
               Back
             </Button>
-            <Heading size="xl" mt="8" mb="4">
+            <Heading size="xl" mb="10">
               Create an Identity
             </Heading>
             {identity ? (
-              <Box py="6">
-                <Box
-                  p="5"
-                  borderWidth={1}
-                  borderColor="gray.500"
-                  borderRadius="4px"
+              <>
+                <Button
+                  variant="solid"
+                  bg="black"
+                  _hover={{ bg: 'gray.600' }}
+                  color="white"
+                  onClick={onOpen}
+                  mr={[0, '4']}
+                  mb={['4', 4]}
+                  w={['full', 'auto']}
                 >
-                  <Heading size="lg" lineHeight="tall">
-                    <Text>Your Public Identity:</Text>
+                  View Your Public Identity
+                </Button>
+                <Modal
+                  title="Public Identity"
+                  isOpen={isOpen}
+                  onClose={onClose}
+                  content={
                     <Text
                       as="span"
                       px="2"
                       py="1"
                       borderRadius="full"
-                      bg="teal.300"
                       fontWeight="bold"
                       wordBreak="break-word"
                       fontSize="xl"
                     >
                       {identity.commitment.toString()}
                     </Text>
-                  </Heading>
-                </Box>
-              </Box>
+                  }
+                />
+              </>
             ) : (
-              <div></div>
+              <></>
             )}
             {!identity && (
               <Button
@@ -118,11 +137,12 @@ const Voter: NextPage = () => {
                   pollId={poll.id}
                   identity={identity}
                   merkleTreeDepth={poll.merkleTreeDepth}
+                  state={poll.state}
+                  userType="voter"
                 />
               )
           )}
         </SimpleGrid>
-        {/* </Section> */}
       </main>
     </>
   );

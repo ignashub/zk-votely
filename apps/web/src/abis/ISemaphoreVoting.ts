@@ -1,7 +1,28 @@
 export const ISemaphoreVotingAbi = [
   {
+    inputs: [
+      {
+        internalType: 'contract ISemaphoreVerifier',
+        name: '_verifier',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'nonpayable',
+    type: 'constructor',
+  },
+  {
     inputs: [],
     name: 'Semaphore__CallerIsNotThePollCoordinator',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'Semaphore__GroupAlreadyExists',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'Semaphore__GroupDoesNotExist',
     type: 'error',
   },
   {
@@ -28,6 +49,130 @@ export const ISemaphoreVotingAbi = [
     anonymous: false,
     inputs: [
       {
+        indexed: true,
+        internalType: 'uint256',
+        name: 'groupId',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'merkleTreeDepth',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'zeroValue',
+        type: 'uint256',
+      },
+    ],
+    name: 'GroupCreated',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'uint256',
+        name: 'groupId',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'index',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'identityCommitment',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'merkleTreeRoot',
+        type: 'uint256',
+      },
+    ],
+    name: 'MemberAdded',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'uint256',
+        name: 'groupId',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'index',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'identityCommitment',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'merkleTreeRoot',
+        type: 'uint256',
+      },
+    ],
+    name: 'MemberRemoved',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'uint256',
+        name: 'groupId',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'index',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'identityCommitment',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'newIdentityCommitment',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'merkleTreeRoot',
+        type: 'uint256',
+      },
+    ],
+    name: 'MemberUpdated',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: false,
         internalType: 'uint256',
         name: 'pollId',
@@ -38,6 +183,30 @@ export const ISemaphoreVotingAbi = [
         internalType: 'address',
         name: 'coordinator',
         type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'string',
+        name: 'title',
+        type: 'string',
+      },
+      {
+        indexed: false,
+        internalType: 'string',
+        name: 'description',
+        type: 'string',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'merkleTreeDepth',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'string[]',
+        name: 'votingOptions',
+        type: 'string[]',
       },
     ],
     name: 'PollCreated',
@@ -108,6 +277,18 @@ export const ISemaphoreVotingAbi = [
         name: 'vote',
         type: 'uint256',
       },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'merkleTreeRoot',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'merkleTreeDepth',
+        type: 'uint256',
+      },
     ],
     name: 'VoteAdded',
     type: 'event',
@@ -152,6 +333,11 @@ export const ISemaphoreVotingAbi = [
         name: 'proof',
         type: 'uint256[8]',
       },
+      {
+        internalType: 'uint256',
+        name: 'merkleTreeRoot',
+        type: 'uint256',
+      },
     ],
     name: 'castVote',
     outputs: [],
@@ -174,6 +360,21 @@ export const ISemaphoreVotingAbi = [
         internalType: 'uint256',
         name: 'merkleTreeDepth',
         type: 'uint256',
+      },
+      {
+        internalType: 'string',
+        name: 'title',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: 'description',
+        type: 'string',
+      },
+      {
+        internalType: 'string[]',
+        name: 'votingOptions',
+        type: 'string[]',
       },
     ],
     name: 'createPoll',
@@ -203,6 +404,63 @@ export const ISemaphoreVotingAbi = [
     inputs: [
       {
         internalType: 'uint256',
+        name: 'groupId',
+        type: 'uint256',
+      },
+    ],
+    name: 'getMerkleTreeDepth',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'groupId',
+        type: 'uint256',
+      },
+    ],
+    name: 'getMerkleTreeRoot',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'groupId',
+        type: 'uint256',
+      },
+    ],
+    name: 'getNumberOfMerkleTreeLeaves',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
         name: 'pollId',
         type: 'uint256',
       },
@@ -215,6 +473,19 @@ export const ISemaphoreVotingAbi = [
     name: 'startPoll',
     outputs: [],
     stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'verifier',
+    outputs: [
+      {
+        internalType: 'contract ISemaphoreVerifier',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
     type: 'function',
   },
 ] as const;

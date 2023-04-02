@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
+import { useQuery } from '@apollo/client';
 import { useRouter } from 'next/router';
 import {
-  Text,
   Box,
   Heading,
   Button,
@@ -11,25 +11,18 @@ import {
   AlertIcon,
   AlertDescription,
   Spinner,
+  Textarea,
+  SimpleGrid,
 } from '@chakra-ui/react';
-import React, { useState } from 'react';
-import { BigNumber, utils, ethers } from 'ethers';
-import { SemaphoreVotingAbi } from '../abis/SemaphoreVoting';
+import React, { useState, useEffect, useMemo } from 'react';
+import { BigNumber } from 'ethers';
+import { useCreateBallot } from '../hooks/useCreateBallot';
+import { PollCard } from '../components/PollCard';
 import { useContract, useSigner } from 'wagmi';
+import { POLLS_QUERY } from '../queries/polls';
 
 const Coordinator: NextPage = () => {
   const router = useRouter();
-
-  //   const {
-  //     query: { walletSigner },
-  //   } = router;
-
-  //   const props = {
-  //     walletSigner,
-  //   };
-
-  //SEMAPHORE STUFF
-  //For creating pool
   const [pollId, setPollId] = useState<BigNumber | undefined>(
     BigNumber.from(0)
   );
@@ -38,7 +31,15 @@ const Coordinator: NextPage = () => {
   >();
   const [title, setTitle] = useState<string | undefined>();
   const [description, setDescription] = useState<string | undefined>();
-  const [votingOptions, setVotingOptions] = useState<string | undefined>('');
+  const [votingOptions, setVotingOptions] = useState<string[]>([]);
+  const [createButtonPressed, setCreateButtonPressed] = useState(false);
+
+  const {
+    data: pollData,
+    loading: pollDataLoading,
+    error: pollDataError,
+    refetch: pollDataRefetch,
+  } = useQuery(POLLS_QUERY);
 
   //Input Validation
   const [inputErrors, setInputErrors] = useState({
@@ -48,30 +49,28 @@ const Coordinator: NextPage = () => {
     description: false,
     votingOptions: false,
   });
-
   //Alerts
   const [successfulAlert, setSuccessfulAlert] = useState(false);
   const [errorAlert, setErrorAlert] = useState(false);
   const [loadingAlert, setLoadingAlert] = useState(false);
-
+  const [signerAddress, setSignerAddress] = useState<string | undefined>();
   //Signer
   const { data: signer, isError, isLoading } = useSigner();
 
-  //SemaphoreVote Smart Contract
-  const contract = useContract({
-    address: '0x84c403687c0811899A97d358FDd6Ce7012B1e6C0',
-    abi: SemaphoreVotingAbi,
-    signerOrProvider: signer,
-  });
+  useEffect(() => {
+    const updateSignerAddress = async () => {
+      if (signer) {
+        const address = await signer.getAddress();
+        setSignerAddress(address);
+      }
+    };
+
+    updateSignerAddress();
+  }, [signer]);
 
   const goToHomePage = () => {
     router.push('/');
   };
-
-  function isValidInput(value) {
-    // You can also add more validation rules depending on your requirements
-    return value.trim() !== '';
-  }
 
   const convertVotingOptions = (optionsString: string) => {
     const optionsArray = optionsString
@@ -79,6 +78,11 @@ const Coordinator: NextPage = () => {
       .map((option) => option.trim());
     return optionsArray;
   };
+
+  function isValidInput(value) {
+    // You can also add more validation rules depending on your requirements
+    return value.trim() !== '';
+  }
 
   const handlePollIdChange = (e) => {
     const value = e.target.value;
@@ -109,126 +113,61 @@ const Coordinator: NextPage = () => {
 
   const handleVotingOptionsChange = (e) => {
     const value = e.target.value;
+    const optionsArray = convertVotingOptions(value);
     setInputErrors((prev) => ({
       ...prev,
-      votingOptions: !isValidInput(value),
+      votingOptions: optionsArray.length === 0,
     }));
-    setVotingOptions(value);
-    console.log(votingOptions);
+    setVotingOptions(optionsArray);
   };
 
-  const createBallot = async () => {
-    if (!contract) {
-      console.error('Smart contract is not loaded');
+  const {
+    createBallot,
+    loading: createBallotLoading,
+    error: createBallotError,
+  } = useCreateBallot(
+    pollId.toString(),
+    signerAddress,
+    merkleTreeDepth,
+    title,
+    description,
+    votingOptions
+  );
+
+  const handleCreateBallot = async () => {
+    if (!signer) {
+      console.error('Signer is not available');
       return;
     }
+    if (createBallotLoading) return;
 
-    // if (!pollId || !merkleTreeDepth) {
-    //   console.error('Poll ID or Merkle tree depth is missing');
-    //   return;
-    // }
-
-    setLoadingAlert(true);
-
-    console.log(`Title: ${title}`);
-    console.log(`Description: ${description}`);
-    console.log(`Voting Options: ${votingOptions}`);
-    console.log(votingOptions);
-    console.log(votingOptions.split(',').map((option) => option.trim()));
-
-    console.log(`pollID on Creating Ballot: ${pollId}`);
+    setCreateButtonPressed(true);
 
     try {
-      const optionsArray = convertVotingOptions(votingOptions);
-      const coordinator = await signer?.getAddress();
-      const myGasLimit = BigNumber.from(5000000);
-      console.log(coordinator);
-      let result = await contract.createPoll(
-        pollId,
-        coordinator,
-        merkleTreeDepth,
-        title,
-        description,
-        optionsArray,
-        {
-          gasLimit: myGasLimit,
-        }
-      );
-
-      const receipt = await result.wait();
-
-      if (receipt.status === 1) {
-        setLoadingAlert(false);
-        setSuccessfulAlert(true);
-        setTimeout(() => {
-          setSuccessfulAlert(false);
-        }, 5000);
-        // const group1 = new Group(pollId.toNumber(), merkleTreeDepth.toNumber());
-      }
+      await createBallot();
+      setSuccessfulAlert(true);
+      setTimeout(() => {
+        setSuccessfulAlert(false);
+      }, 5000);
+      pollDataRefetch();
+      setCreateButtonPressed(false);
     } catch (error) {
-      console.error('Error creating poll:', error);
-      setLoadingAlert(false);
+      console.error('Error creating ballot:', error);
       setErrorAlert(true);
       setTimeout(() => {
         setErrorAlert(false);
       }, 5000);
+      setCreateButtonPressed(false);
     }
   };
 
-  const startBallot = async () => {
-    console.log(`pollID on Starting Ballot: ${pollId}`);
-    setLoadingAlert(true);
-    try {
-      const myGasLimit = BigNumber.from(5000000);
-      const encryptionKey = BigNumber.from(123456789);
-      let result = await contract.startPoll(pollId, encryptionKey, {
-        gasLimit: myGasLimit,
-      });
+  if (isLoading) return <p>Loading...</p>;
+  if (isError) return <p>Error :(</p>;
 
-      const receipt = await result.wait();
-      if (receipt.status === 1) {
-        setLoadingAlert(false);
-        setSuccessfulAlert(true);
-        setTimeout(() => {
-          setSuccessfulAlert(false);
-        }, 5000);
-      }
-    } catch (error) {
-      console.error('Error starting poll:', error);
-      setLoadingAlert(false);
-      setErrorAlert(true);
-      setTimeout(() => {
-        setErrorAlert(false);
-      }, 5000);
-    }
-  };
+  if (pollDataLoading) return <p>Loading...</p>;
+  if (pollDataError) return <p>Error :(</p>;
 
-  const stopBallot = async () => {
-    setLoadingAlert(true);
-    try {
-      const myGasLimit = BigNumber.from(5000000);
-      const encryptionKey = BigNumber.from(123456789);
-      let result = await contract.endPoll(pollId, encryptionKey, {
-        gasLimit: myGasLimit,
-      });
-
-      const receipt = await result.wait();
-      if (receipt.status === 1) {
-        setLoadingAlert(false);
-        setSuccessfulAlert(true);
-        setTimeout(() => {
-          setSuccessfulAlert(false);
-        }, 5000);
-      }
-    } catch (error) {
-      console.error('Error ending poll:', error);
-      setLoadingAlert(false);
-      setErrorAlert(true);
-      setTimeout(() => {
-        setErrorAlert(false);
-      }, 5000);
-    }
-  };
+  const { polls } = pollData;
 
   return (
     <main
@@ -236,7 +175,7 @@ const Coordinator: NextPage = () => {
       id="maincontent"
       className="flex flex-col items-center justify-center flex-grow mt-4 mb-8 space-y-8 md:space-y-16 md:mt-8 md:mb-16"
     >
-      <Box maxW="xl" w="full" p="6" rounded="lg" shadow="md">
+      <Box maxW="xl" w="full" p="6" rounded="lg" boxShadow="dark-lg">
         <Flex flexDir="column" alignItems="center">
           <Button
             variant="solid"
@@ -244,12 +183,12 @@ const Coordinator: NextPage = () => {
             _hover={{ bg: 'gray.600' }}
             color="white"
             onClick={goToHomePage}
+            alignSelf="flex-start"
             mb="4"
-            alignSelf="flex-start" // Added to align the button to the left
           >
             Back
           </Button>
-          <Heading size="xl" mt="8" mb="4">
+          <Heading size="xl" mb="10">
             Create a Ballot
           </Heading>
           <Input
@@ -276,19 +215,19 @@ const Coordinator: NextPage = () => {
             mb="4"
             isInvalid={inputErrors.title}
           />
-          <Input
+          <Textarea
             placeholder="Description"
-            type="text"
             onChange={handleDescriptionChange}
             errorBorderColor="red.300"
             mb="4"
             isInvalid={inputErrors.description}
+            resize="vertical"
           />
           <Input
             placeholder="Voting Options (comma-separated)"
             onChange={handleVotingOptionsChange}
             errorBorderColor="red.300"
-            mb="4"
+            mb="9"
             isInvalid={inputErrors.votingOptions}
           />
           <Flex flexDir={['column', 'row']} mb="4">
@@ -297,38 +236,14 @@ const Coordinator: NextPage = () => {
               bg="black"
               _hover={{ bg: 'gray.600' }}
               color="white"
-              onClick={signer ? createBallot : undefined}
+              onClick={signer ? handleCreateBallot : undefined}
               mr={[0, '4']}
               mb={['4', 0]}
               w={['full', 'auto']}
+              isLoading={createButtonPressed}
               isDisabled={!signer}
             >
               Create a Ballot
-            </Button>
-
-            <Button
-              variant="solid"
-              bg="black"
-              _hover={{ bg: 'gray.600' }}
-              color="white"
-              onClick={signer ? startBallot : undefined}
-              mr={[0, '4']}
-              mb={['4', 0]}
-              w={['full', 'auto']}
-              isDisabled={!signer}
-            >
-              Start a Ballot
-            </Button>
-            <Button
-              variant="solid"
-              bg="black"
-              _hover={{ bg: 'gray.600' }}
-              color="white"
-              onClick={signer ? stopBallot : undefined}
-              w={['full', 'auto']}
-              isDisabled={!signer}
-            >
-              Stop a Ballot
             </Button>
           </Flex>
           {successfulAlert && (
@@ -346,6 +261,21 @@ const Coordinator: NextPage = () => {
           {loadingAlert && <Spinner mt="4" />}
         </Flex>
       </Box>
+      <SimpleGrid columns={[1, 2, 3]} spacing="8">
+        {polls.map((poll) => (
+          <PollCard
+            key={poll.id}
+            title={poll.title}
+            description={poll.description}
+            votingOptions={poll.votingOptions}
+            pollId={poll.id}
+            identity=""
+            merkleTreeDepth={poll.merkleTreeDepth}
+            state={poll.state}
+            userType="coordinator"
+          />
+        ))}
+      </SimpleGrid>
     </main>
   );
 };

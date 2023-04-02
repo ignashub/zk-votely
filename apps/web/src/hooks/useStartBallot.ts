@@ -5,13 +5,7 @@ import { useSigner } from 'wagmi';
 import { ethers } from 'ethers';
 import { BigNumber } from 'ethers';
 
-export const useVoteBallot = (
-  vote: string,
-  nullifierHash: string,
-  pollId: string,
-  proofArray: BigNumber[],
-  merkleTreeRoot: string
-) => {
+export const useStartBallot = (pollId, encryptionKey) => {
   const [loading, setLoading] = useState(false);
   const [hookError, setHookError] = useState(null);
   const { data: signer } = useSigner();
@@ -19,12 +13,12 @@ export const useVoteBallot = (
   const { config, error } = usePrepareContractWrite({
     address: '0x4F3CB2EEBE4648d314F40d2Ec8BfE7243326a71E',
     abi: SemaphoreVotingAbi,
-    functionName: 'castVote',
-    args: [vote, nullifierHash, pollId, proofArray, merkleTreeRoot],
-    gasLimit: BigNumber.from(10000000),
+    functionName: 'startPoll',
+    args: [pollId, encryptionKey],
+    gasLimit: BigNumber.from(5000000),
   });
 
-  const voteBallot = async () => {
+  const startBallot = async () => {
     if (!signer || !config) {
       return null;
     }
@@ -38,14 +32,14 @@ export const useVoteBallot = (
       await transaction.wait();
       setLoading(false);
     } catch (error) {
-      console.error('Error in voteBallot:', error);
+      console.error('Error in startBallot:', error);
       setLoading(false);
       setHookError(error);
     }
   };
 
   return {
-    voteBallot,
+    startBallot,
     loading,
     error: hookError,
   };

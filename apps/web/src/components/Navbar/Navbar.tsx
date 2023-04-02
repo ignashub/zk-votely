@@ -25,7 +25,8 @@ export const Navbar: React.FC = () => {
       paddingX={4}
       bg={bgColor[colorMode]}
       color={color[colorMode]}
-      boxShadow="sm"
+      boxShadow="md"
+      borderBottom="1px black"
     >
       <Flex align="center" mr={5}>
         <Box fontWeight="bold" fontSize="3xl">

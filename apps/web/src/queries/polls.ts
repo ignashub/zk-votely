@@ -24,6 +24,7 @@ export const POLLS_QUERY = gql`
           count
         }
       }
+      state
     }
   }
 `;

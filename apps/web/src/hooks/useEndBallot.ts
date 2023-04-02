@@ -4,9 +4,7 @@ import { SemaphoreVotingAbi } from '../abis/SemaphoreVoting';
 import { useSigner } from 'wagmi';
 import { ethers } from 'ethers';
 
-// This hook returns joinBallot function which can be called to join a ballot,
-// and loading and error state variables for the joinBallot function.
-export const useJoinBallot = (pollId: string, identityCommitment: string) => {
+export const useEndBallot = (pollId, encryptionKey) => {
   // State variables for loading and error
   const [loading, setLoading] = useState(false);
   const [hookError, setHookError] = useState(null);
@@ -18,12 +16,11 @@ export const useJoinBallot = (pollId: string, identityCommitment: string) => {
   const { config, error } = usePrepareContractWrite({
     address: '0x4F3CB2EEBE4648d314F40d2Ec8BfE7243326a71E', // Smart contract address
     abi: SemaphoreVotingAbi, // Smart contract ABI
-    functionName: 'addVoter', // Smart contract function name
-    args: [pollId, identityCommitment], // Arguments for the smart contract function
+    functionName: 'endPoll', // Smart contract function name
+    args: [pollId, encryptionKey],
   });
 
-  // Join ballot function which will call smart contract function to add the voter
-  const joinBallot = async () => {
+  const endBallot = async () => {
     if (!signer || !config) {
       return null;
     }
@@ -42,16 +39,16 @@ export const useJoinBallot = (pollId: string, identityCommitment: string) => {
       // Set loading to false
       setLoading(false);
     } catch (error) {
-      console.error('Error in joinBallot:', error);
+      console.error('Error in endBallot:', error);
       setLoading(false);
       // Set error state
       setHookError(error);
     }
   };
 
-  // Return joinBallot function and loading and error state variables
+  // Return endBallot function and loading and error state variables
   return {
-    joinBallot,
+    endBallot,
     loading,
     error: hookError,
   };

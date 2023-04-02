@@ -1,16 +1,17 @@
-import { useState } from 'react';
 import { usePrepareContractWrite } from 'wagmi';
+import { useState } from 'react';
 import { SemaphoreVotingAbi } from '../abis/SemaphoreVoting';
 import { useSigner } from 'wagmi';
 import { ethers } from 'ethers';
 import { BigNumber } from 'ethers';
 
-export const useVoteBallot = (
-  vote: string,
-  nullifierHash: string,
+export const useCreateBallot = (
   pollId: string,
-  proofArray: BigNumber[],
-  merkleTreeRoot: string
+  coordinator: string | undefined,
+  merkleTreeDepth: BigNumber | undefined,
+  title: string | undefined,
+  description: string | undefined,
+  votingOptions: string[]
 ) => {
   const [loading, setLoading] = useState(false);
   const [hookError, setHookError] = useState(null);
@@ -19,12 +20,30 @@ export const useVoteBallot = (
   const { config, error } = usePrepareContractWrite({
     address: '0x4F3CB2EEBE4648d314F40d2Ec8BfE7243326a71E',
     abi: SemaphoreVotingAbi,
-    functionName: 'castVote',
-    args: [vote, nullifierHash, pollId, proofArray, merkleTreeRoot],
-    gasLimit: BigNumber.from(10000000),
+    functionName: 'createPoll',
+    args: [
+      pollId,
+      coordinator,
+      merkleTreeDepth,
+      title,
+      description,
+      votingOptions,
+    ],
+    gasLimit: BigNumber.from(5000000),
   });
 
-  const voteBallot = async () => {
+  const createBallot = async () => {
+    if (
+      !pollId ||
+      !coordinator || // change this line
+      !merkleTreeDepth ||
+      !title ||
+      !description ||
+      votingOptions.length === 0
+    ) {
+      console.error('Some input data is missing');
+      return;
+    }
     if (!signer || !config) {
       return null;
     }
@@ -38,14 +57,14 @@ export const useVoteBallot = (
       await transaction.wait();
       setLoading(false);
     } catch (error) {
-      console.error('Error in voteBallot:', error);
+      console.error('Error in createBallot:', error);
       setLoading(false);
       setHookError(error);
     }
   };
 
   return {
-    voteBallot,
+    createBallot,
     loading,
     error: hookError,
   };
