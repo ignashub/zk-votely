@@ -1,13 +1,18 @@
 # About
 
-This is a Proof of Concept project which uses Zero-Knowledge Proofs to verify whether a person voted yes or no without revealing it. The project also consists of simple arithmetic [circuit](https://docs.circom.io/getting-started/writing-circuits/) example. It also involves scripts for managing [Trusted setup](https://blog.pantherprotocol.io/a-guide-to-understanding-trusted-setups/) phase faster.
+This is a Proof of Concept v2 of Zero-Knowledge Voting system - ZK Votely. Check old-version branch for v1. This project uses Zero-Knowledge Proofs - [Semaphore protocol](https://semaphore.appliedzkp.org/).
 
-# Zero-Knowledge Proofs template
+# Proof of Concept - Flow
 
-ZK-Proofs template is an extension of [WEB3 Template](https://github.com/Byont-Ventures/web3-template) which is a boilerplate for developing Dapps. This project is using 2 libraries for its ZK-Proofs:
+ZK Votely is an extension of [WEB3 Template](https://github.com/Byont-Ventures/web3-template) which is a boilerplate for developing Dapps. Stack Summary:
 
-- [Circom](https://github.com/iden3/circom) - compiler to write circuits (problem statements).
-- [SnarkJS](https://github.com/iden3/snarkjs) - JavaScript implementation of zkSNARK schemes.
+Front-end
+
+- NextJS, Typescript, WAGMI, Rainbowkit, Semaphore Javascript Libraries
+
+Back-end
+
+- The Graph, Apollo client, Solidity, Semaphore Smart contracts.
 
 ## Getting Started
 
@@ -15,35 +20,11 @@ Before getting started, we suggest reading our [Contributing Guidelines](/CONTRI
 
 ### Prerequisites
 
-Besides, installing tooling from [WEB3 Template](https://github.com/Byont-Ventures/web3-template). You'll need the following compiler:
+Besides, installing tooling from [WEB3 Template](https://github.com/Byont-Ventures/web3-template). It would be a good practice to get acquainted with the Zero-Knowledge Proofs and the research done:
 
-- [Circom](https://github.com/iden3/circom)
+- [DAO Analysis](/documentation/dao_analysis_v2)
 
 You need several dependencies in your system to run [circom](https://github.com/iden3/circom) and its associated tools:
-
-### Installing Circom
-
-If you want to follow official [Circom](https://docs.circom.io/getting-started/installation/#installing-circom) installation, follow [this](https://docs.circom.io/getting-started/installation/#installing-circom).
-
-Make a new directory anywhere in your system. You need to do so because Circom is a compiler which is needed to be installed on your system and it's not part of the project.
-
-Then install from sources, and clone the [circom](https://github.com/iden3/circom) repository:
-
-```
-git clone https://github.com/iden3/circom.git
-```
-
-Enter the [circom](https://github.com/iden3/circom) directory and use the cargo build to compile:
-
-```
-cargo build --release
-```
-
-The installation takes around 3 minutes to be completed. When the command successfully finishes, it generates the [circom](https://github.com/iden3/circom) binary in the directory target/release. You can install this binary as follows:
-
-```
-cargo install --path circom
-```
 
 ## Installing Application
 
