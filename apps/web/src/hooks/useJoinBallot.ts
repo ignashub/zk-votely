@@ -16,7 +16,7 @@ export const useJoinBallot = (pollId: string, identityCommitment: string) => {
 
   // Prepare contract call configuration using Wagmi hook usePrepareContractWrite
   const { config, error } = usePrepareContractWrite({
-    address: '0x6A0cCb2be9edC44842142DA12a865477ea1103A5', // Smart contract address
+    address: '0x4F3CB2EEBE4648d314F40d2Ec8BfE7243326a71E', // Smart contract address
     abi: SemaphoreVotingAbi, // Smart contract ABI
     functionName: 'addVoter', // Smart contract function name
     args: [pollId, identityCommitment], // Arguments for the smart contract function

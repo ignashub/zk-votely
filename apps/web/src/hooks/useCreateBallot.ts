@@ -18,7 +18,7 @@ export const useCreateBallot = (
   const { data: signer } = useSigner();
 
   const { config, error } = usePrepareContractWrite({
-    address: '0x6A0cCb2be9edC44842142DA12a865477ea1103A5',
+    address: '0x4F3CB2EEBE4648d314F40d2Ec8BfE7243326a71E',
     abi: SemaphoreVotingAbi,
     functionName: 'createPoll',
     args: [

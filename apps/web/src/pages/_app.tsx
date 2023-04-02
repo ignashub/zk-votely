@@ -21,7 +21,7 @@ import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { ApolloProvider } from '@apollo/client';
 
 const apolloClient = new ApolloClient({
-  uri: 'https://api.thegraph.com/subgraphs/name/ignashub/zkvotely3', // Replace with your actual GraphQL API endpoint
+  uri: 'https://api.thegraph.com/subgraphs/name/ignashub/zkvotely4', // Replace with your actual GraphQL API endpoint
   cache: new InMemoryCache(),
 });
 

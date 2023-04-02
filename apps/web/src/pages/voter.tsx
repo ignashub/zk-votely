@@ -25,11 +25,6 @@ const Voter: NextPage = () => {
   const { data: signer, isError, isLoading } = useSigner();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error :(</p>;
-
-  const { polls } = pollData;
-
   const goToHomePage = () => {
     router.push('/');
   };
@@ -39,11 +34,17 @@ const Voter: NextPage = () => {
     try {
       const _identity = new Identity();
       setIdentity(_identity);
+      console.log(_identity);
       console.log(_identity.commitment);
     } catch (error) {
       console.error('Error creating identity:', error);
     }
   };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error :(</p>;
+
+  const { polls } = pollData;
 
   return (
     <>
@@ -92,7 +93,6 @@ const Voter: NextPage = () => {
                       px="2"
                       py="1"
                       borderRadius="full"
-                      bg="teal.300"
                       fontWeight="bold"
                       wordBreak="break-word"
                       fontSize="xl"

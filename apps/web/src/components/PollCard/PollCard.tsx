@@ -27,13 +27,14 @@ import { useSigner } from 'wagmi';
 import { useQuery } from '@apollo/client';
 import { GET_VOTE_COUNTS_BY_POLL_ID } from '../../queries/polls';
 import { Modal } from '../Modal';
+import { Identity } from '@semaphore-protocol/identity';
 
 interface PollCardProps {
   title: string;
   description: string;
   votingOptions: string[];
   pollId: string;
-  identity: string;
+  identity: Identity;
   merkleTreeDepth: string;
   state: string;
   userType: 'voter' | 'coordinator';
@@ -150,7 +151,7 @@ export const PollCard: React.FC<PollCardProps> = ({
     fullProof ? fullProof.nullifierHash.toString() : '0',
     pollId.toString() == undefined ? '' : pollId.toString(),
     proofArray || [],
-    group?.root?.toString() || '0x0' // provide default value '0x0' if group or group.root is undefined
+    group?.root?.toString() || '0x0'
     // {
     //   gasLimit: BigNumber.from(5000000),
     // }
@@ -236,6 +237,12 @@ export const PollCard: React.FC<PollCardProps> = ({
     if (voteBallotLoading) return;
 
     setVoteButtonPressed(true);
+
+    console.log(selectedOption);
+    console.log(fullProof.nullifierHash.toString());
+    console.log(pollId);
+    console.log(proofArray);
+    console.log(group.root.toString());
 
     try {
       await voteBallot();
@@ -399,72 +406,71 @@ export const PollCard: React.FC<PollCardProps> = ({
             content={description}
           />
           {userType === 'voter' && (
-            <Text fontSize="lg" fontWeight="bold">
+            <Text fontSize="lg" fontWeight="bold" mb={['4', 4]}>
               Voting Options
             </Text>
           )}
           <VStack spacing={6}>
             {userType === 'voter' ? (
               <>
-                <RadioGroup
-                  value={selectedOption?.toString() || ''}
-                  onChange={handleChange}
-                >
-                  {votingOptions.map((option, index) => {
-                    const voteCount = data.voteCounts.find(
-                      (voteCount) => parseInt(voteCount.option) === index
-                    )?.count;
-                    return (
-                      <div key={index}>
-                        <Radio
-                          value={index.toString()}
-                          colorScheme="teal"
-                          mr={2}
-                        >
-                          {option}
-                        </Radio>
-                        <Tag borderRadius="full">
-                          {parseInt(voteCount) || 0}
-                        </Tag>
-                      </div>
-                    );
-                  })}
-                </RadioGroup>
+                <Box alignSelf="start">
+                  <RadioGroup
+                    value={selectedOption?.toString() || ''}
+                    onChange={handleChange}
+                    mb={['4', 4]}
+                  >
+                    {votingOptions.map((option, index) => {
+                      const voteCount = data.voteCounts.find(
+                        (voteCount) => parseInt(voteCount.option) === index
+                      )?.count;
+                      return (
+                        <div key={index}>
+                          <Radio value={index.toString()} mr={2}>
+                            {option}
+                          </Radio>
+                          <Tag borderRadius="full">
+                            {parseInt(voteCount) || 0}
+                          </Tag>
+                        </div>
+                      );
+                    })}
+                  </RadioGroup>
 
-                <Button
-                  variant="solid"
-                  bg="black"
-                  _hover={{ bg: 'gray.600' }}
-                  color="white"
-                  onClick={handleVoteBallot}
-                  mr={[0, '4']}
-                  mb={['4', 0]}
-                  w={['full', 'auto']}
-                  isDisabled={
-                    !signer ||
-                    !group ||
-                    !joinedBallot ||
-                    !readyToVote ||
-                    voteButtonPressed ||
-                    voteTransactionCompleted
-                  }
-                >
-                  {voteButtonPressed || voteProofLoading ? (
-                    voteTransactionCompleted ? (
-                      'Vote'
+                  <Button
+                    variant="solid"
+                    bg="black"
+                    _hover={{ bg: 'gray.600' }}
+                    color="white"
+                    onClick={handleVoteBallot}
+                    mr={[0, '4']}
+                    mb={['4', 0]}
+                    w={['full', 'auto']}
+                    isDisabled={
+                      !signer ||
+                      !group ||
+                      !joinedBallot ||
+                      !readyToVote ||
+                      voteButtonPressed ||
+                      voteTransactionCompleted
+                    }
+                  >
+                    {voteButtonPressed || voteProofLoading ? (
+                      voteTransactionCompleted ? (
+                        'Vote'
+                      ) : (
+                        <Spinner />
+                      )
                     ) : (
-                      <Spinner />
-                    )
-                  ) : (
-                    'Vote'
-                  )}
-                </Button>
+                      'Vote'
+                    )}
+                  </Button>
+                </Box>
               </>
             ) : (
               userType === 'coordinator' && (
                 <>
                   <Box alignSelf="start">
-                    <Text fontSize="lg" fontWeight="bold">
+                    <Text fontSize="lg" fontWeight="bold" mb={['4', 4]}>
                       Voting Options
                     </Text>
                     {votingOptions.map((option, index) => {
@@ -489,7 +495,9 @@ export const PollCard: React.FC<PollCardProps> = ({
                       mb={['4', 0]}
                       w={['full', 'auto']}
                       isLoading={startButtonPressed}
-                      isDisabled={state === 'ONGOING'}
+                      isDisabled={
+                        !signer || state === 'ONGOING' || state === 'ENDED'
+                      }
                     >
                       Start a Ballot
                     </Button>
@@ -500,6 +508,9 @@ export const PollCard: React.FC<PollCardProps> = ({
                       mb={['4', 0]}
                       w={['full', 'auto']}
                       isLoading={endButtonPressed}
+                      isDisabled={
+                        !signer || state === 'CREATED' || state === 'ENDED'
+                      }
                     >
                       Stop a Ballot
                     </Button>
