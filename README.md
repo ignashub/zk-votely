@@ -69,5 +69,3 @@ On the other hand, the voter will be able to:
 - Cast their vote anonymously using the Semaphore protocol.
 
 By having these features, users can ensure their privacy and vote without fear of repercussions or discrimination.
-
-![alt text](documentation/flow_diagram.jpeg)
