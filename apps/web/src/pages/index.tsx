@@ -1,6 +1,10 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { Text, Box, Button, Flex,
+import {
+  Text,
+  Box,
+  Button,
+  Flex,
   IconButton,
   Stack,
   Collapse,
@@ -11,14 +15,15 @@ import { Text, Box, Button, Flex,
   PopoverContent,
   useColorModeValue,
   useBreakpointValue,
-  useDisclosure } from '@chakra-ui/react';
+  useDisclosure,
+} from '@chakra-ui/react';
 import {
-    HamburgerIcon,
-    CloseIcon,
-    ChevronDownIcon,
-    ChevronRightIcon,
-  } from '@chakra-ui/icons';
-import React, from 'react';
+  HamburgerIcon,
+  CloseIcon,
+  ChevronDownIcon,
+  ChevronRightIcon,
+} from '@chakra-ui/icons';
+import React from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const Home: NextPage = () => {
@@ -64,7 +69,9 @@ const Home: NextPage = () => {
                 color={useColorModeValue('gray.500', 'gray.300')}
                 mt={3}
               >
-                ZK Votely is a voting platform based on zero-knowledge proofs technology. It is built using Next.js, TypeScript, Semaphore Protocol and Solidity.
+                ZK Votely is a voting platform based on zero-knowledge proofs
+                technology. It is built using Next.js, TypeScript, Semaphore
+                Protocol and Solidity.
               </Text>
             </Box>
           </Box>
