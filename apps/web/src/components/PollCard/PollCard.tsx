@@ -26,6 +26,7 @@ import { FullProof, generateProof } from '@semaphore-protocol/proof';
 import { useSigner } from 'wagmi';
 import { useQuery } from '@apollo/client';
 import { GET_VOTE_COUNTS_BY_POLL_ID } from '../../queries/polls';
+import { POLLS_QUERY } from '../../queries/polls';
 import { Modal } from '../Modal';
 import { Identity } from '@semaphore-protocol/identity';
 
@@ -87,6 +88,13 @@ export const PollCard: React.FC<PollCardProps> = ({
       variables: { pollId },
     }
   );
+
+  const {
+    data: pollData,
+    loading: pollDataLoading,
+    error: pollDataError,
+    refetch: pollDataRefetch,
+  } = useQuery(POLLS_QUERY);
 
   const createNewGroup = async () => {
     const existingGroup = groups[pollId];
@@ -275,7 +283,7 @@ export const PollCard: React.FC<PollCardProps> = ({
       setTimeout(() => {
         setSuccessfulAlert(false);
       }, 5000);
-      refetch();
+      pollDataRefetch();
       setStartButtonPressed(false);
     } catch (error) {
       console.error('Error starting ballot:', error);
@@ -298,7 +306,7 @@ export const PollCard: React.FC<PollCardProps> = ({
       setTimeout(() => {
         setSuccessfulAlert(false);
       }, 5000);
-      refetch();
+      pollDataRefetch();
       setEndButtonPressed(false);
     } catch (error) {
       console.error('Error ending ballot:', error);
