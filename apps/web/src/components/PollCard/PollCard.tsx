@@ -57,7 +57,7 @@ export const PollCard: React.FC<PollCardProps> = ({
   const [group, setGroup] = useState<Group | undefined>();
   const [fullProof, setFullProof] = useState<FullProof>();
   const [proofArray, setProofArray] = useState<BigNumber[]>();
-  const { data: signer, isError, isLoading } = useSigner();
+  const { data: signer } = useSigner();
   const [successfulAlert, setSuccessfulAlert] = useState(false);
   const [errorAlert, setErrorAlert] = useState(false);
   const [readyToVote, setReadyToVote] = useState(false);
@@ -72,13 +72,6 @@ export const PollCard: React.FC<PollCardProps> = ({
     useState(false);
   const [voteTransactionCompleted, setVoteTransactionCompleted] =
     useState(false);
-  const [inputErrors, setInputErrors] = useState({
-    pollId: false,
-    merkleTreeDepth: false,
-    title: false,
-    description: false,
-    votingOptions: false,
-  });
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [groups, setGroups] = useState<{ [key: string]: Group }>({});
 
@@ -89,12 +82,7 @@ export const PollCard: React.FC<PollCardProps> = ({
     }
   );
 
-  const {
-    data: pollData,
-    loading: pollDataLoading,
-    error: pollDataError,
-    refetch: pollDataRefetch,
-  } = useQuery(POLLS_QUERY);
+  const { refetch: pollDataRefetch } = useQuery(POLLS_QUERY);
 
   const createNewGroup = async () => {
     const existingGroup = groups[pollId];
@@ -165,17 +153,15 @@ export const PollCard: React.FC<PollCardProps> = ({
     // }
   );
 
-  const {
-    startBallot,
-    loading: startBallotLoading,
-    error: startBallotError,
-  } = useStartBallot(pollId?.toString() ?? '', BigNumber.from(5000000));
+  const { startBallot, loading: startBallotLoading } = useStartBallot(
+    pollId?.toString() ?? '',
+    BigNumber.from(5000000)
+  );
 
-  const {
-    endBallot,
-    loading: endBallotLoading,
-    error: endBallotError,
-  } = useEndBallot(pollId?.toString() ?? '', BigNumber.from(5000000));
+  const { endBallot, loading: endBallotLoading } = useEndBallot(
+    pollId?.toString() ?? '',
+    BigNumber.from(5000000)
+  );
 
   useEffect(() => {
     if (joinBallotError) {

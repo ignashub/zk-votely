@@ -14,11 +14,11 @@ import {
   Textarea,
   SimpleGrid,
 } from '@chakra-ui/react';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BigNumber } from 'ethers';
 import { useCreateBallot } from '../hooks/useCreateBallot';
 import { PollCard } from '../components/PollCard';
-import { useContract, useSigner } from 'wagmi';
+import { useSigner } from 'wagmi';
 import { POLLS_QUERY } from '../queries/polls';
 
 const Coordinator: NextPage = () => {
@@ -52,7 +52,7 @@ const Coordinator: NextPage = () => {
   //Alerts
   const [successfulAlert, setSuccessfulAlert] = useState(false);
   const [errorAlert, setErrorAlert] = useState(false);
-  const [loadingAlert, setLoadingAlert] = useState(false);
+  const [loadingAlert] = useState(false);
   const [signerAddress, setSignerAddress] = useState<string | undefined>();
   //Signer
   const { data: signer, isError, isLoading } = useSigner();
@@ -121,11 +121,7 @@ const Coordinator: NextPage = () => {
     setVotingOptions(optionsArray);
   };
 
-  const {
-    createBallot,
-    loading: createBallotLoading,
-    error: createBallotError,
-  } = useCreateBallot(
+  const { createBallot, loading: createBallotLoading } = useCreateBallot(
     pollId.toString(),
     signerAddress,
     merkleTreeDepth,
