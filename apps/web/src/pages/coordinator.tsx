@@ -26,9 +26,7 @@ const Coordinator: NextPage = () => {
   const [pollId, setPollId] = useState<BigNumber | undefined>(
     BigNumber.from(0)
   );
-  const [merkleTreeDepth, setMerkleTreeDepth] = useState<BigNumber | undefined>(
-    BigNumber.from(20)
-  );
+  const [merkleTreeDepth] = useState<BigNumber | undefined>(BigNumber.from(20));
   const [title, setTitle] = useState<string | undefined>();
   const [description, setDescription] = useState<string | undefined>();
   const [votingOptions, setVotingOptions] = useState<string[]>([]);
