@@ -1,10 +1,8 @@
 import type { NextPage } from 'next';
 import { Text, Box, useColorModeValue } from '@chakra-ui/react';
-import React, from 'react';
+import React from 'react';
 
 const Home: NextPage = () => {
-  
-
   return (
     <>
       <main
@@ -37,7 +35,9 @@ const Home: NextPage = () => {
                 color={useColorModeValue('gray.500', 'gray.300')}
                 mt={3}
               >
-                ZK Votely is a voting platform based on zero-knowledge proofs technology. It is built using Next.js, TypeScript, Semaphore Protocol and Solidity.
+                ZK Votely is a voting platform based on zero-knowledge proofs
+                technology. It is built using Next.js, TypeScript, Semaphore
+                Protocol and Solidity.
               </Text>
             </Box>
           </Box>

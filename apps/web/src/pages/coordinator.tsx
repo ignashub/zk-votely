@@ -26,13 +26,14 @@ const Coordinator: NextPage = () => {
   const [pollId, setPollId] = useState<BigNumber | undefined>(
     BigNumber.from(0)
   );
-  const [merkleTreeDepth, setMerkleTreeDepth] = useState<
-    BigNumber | undefined
-  >();
+  const [merkleTreeDepth, setMerkleTreeDepth] = useState<BigNumber | undefined>(
+    BigNumber.from(20)
+  );
   const [title, setTitle] = useState<string | undefined>();
   const [description, setDescription] = useState<string | undefined>();
   const [votingOptions, setVotingOptions] = useState<string[]>([]);
   const [createButtonPressed, setCreateButtonPressed] = useState(false);
+  const [pollsList, setPollsList] = useState([]);
 
   const {
     data: pollData,
@@ -72,6 +73,16 @@ const Coordinator: NextPage = () => {
     router.push('/');
   };
 
+  useEffect(() => {
+    generatePollId();
+  }, []);
+
+  useEffect(() => {
+    if (pollData) {
+      setPollsList(pollData.polls);
+    }
+  }, [pollData]);
+
   const generatePollId = () => {
     const newPollId = BigNumber.from(Math.floor(Math.random() * 10000) + 1);
     setPollId(newPollId);
@@ -88,15 +99,6 @@ const Coordinator: NextPage = () => {
     // You can also add more validation rules depending on your requirements
     return value.trim() !== '';
   }
-
-  const handleMerkleTreeDepthChange = (e) => {
-    const value = e.target.value;
-    setInputErrors((prev) => ({
-      ...prev,
-      merkleTreeDepth: !isValidInput(value),
-    }));
-    setMerkleTreeDepth(BigNumber.from(value));
-  };
 
   const handleTitleChange = (e) => {
     const value = e.target.value;
@@ -134,26 +136,30 @@ const Coordinator: NextPage = () => {
       console.error('Signer is not available');
       return;
     }
-    if (createBallotLoading) return;
 
     setCreateButtonPressed(true);
 
+    if (pollId === BigNumber.from(0)) {
+      await generatePollId(); // Call generatePollId() if pollId is undefined
+    }
+
+    if (createBallotLoading) return;
+
     try {
-      generatePollId();
       await createBallot();
-      setSuccessfulAlert(true);
+      setSuccessfulAlert(true); // set the successful alert only if the transaction was successful
       setTimeout(() => {
         setSuccessfulAlert(false);
       }, 5000);
       pollDataRefetch();
-      setCreateButtonPressed(false);
+      setCreateButtonPressed(false); // set this to false, not true
     } catch (error) {
       console.error('Error creating ballot:', error);
       setErrorAlert(true);
       setTimeout(() => {
         setErrorAlert(false);
       }, 5000);
-      setCreateButtonPressed(false);
+      setCreateButtonPressed(false); // set this to false
     }
   };
 
@@ -187,14 +193,6 @@ const Coordinator: NextPage = () => {
           <Heading size="xl" mb="10">
             Create a Ballot
           </Heading>
-          <Input
-            placeholder="Set Merkle Tree Depth"
-            type="number"
-            onChange={handleMerkleTreeDepthChange}
-            errorBorderColor="red.300"
-            mb="4"
-            isInvalid={inputErrors.merkleTreeDepth}
-          />
           <Input
             placeholder="Title"
             type="text"

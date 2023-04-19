@@ -63,7 +63,7 @@ export const PollCard: React.FC<PollCardProps> = ({
   const [readyToVote, setReadyToVote] = useState(false);
   const [joinedBallot, setJoinedBallot] = useState(false);
   const [voteProofLoading, setVoteProofLoading] = useState(false);
-  const [setShowVoteButton] = useState(false);
+  // const [setShowVoteButton] = useState(false);
   const [voteButtonPressed, setVoteButtonPressed] = useState(false);
   const [joinButtonPressed, setJoinButtonPressed] = useState(false);
   const [startButtonPressed, setStartButtonPressed] = useState(false);
@@ -75,12 +75,9 @@ export const PollCard: React.FC<PollCardProps> = ({
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [groups, setGroups] = useState<{ [key: string]: Group }>({});
 
-  const { loading, error, data, refetch } = useQuery(
-    GET_VOTE_COUNTS_BY_POLL_ID,
-    {
-      variables: { pollId },
-    }
-  );
+  const { loading, data, refetch } = useQuery(GET_VOTE_COUNTS_BY_POLL_ID, {
+    variables: { pollId },
+  });
 
   const { refetch: pollDataRefetch } = useQuery(POLLS_QUERY);
 
@@ -122,7 +119,7 @@ export const PollCard: React.FC<PollCardProps> = ({
 
     console.log('proof was created');
     setVoteProofLoading(false);
-    setShowVoteButton(true);
+    // setShowVoteButton(true);
   };
 
   const handleChange = (value: string) => {
@@ -245,7 +242,7 @@ export const PollCard: React.FC<PollCardProps> = ({
         setSuccessfulAlert(false);
       }, 5000);
       refetch();
-      setShowVoteButton(false);
+      // setShowVoteButton(false);
       setVoteTransactionCompleted(true); // Add this line
     } catch (error) {
       console.error('Error voting:', error);
@@ -254,7 +251,7 @@ export const PollCard: React.FC<PollCardProps> = ({
         setErrorAlert(false);
       }, 5000);
       setVoteButtonPressed(false);
-      setShowVoteButton(true);
+      // setShowVoteButton(true);
     }
   };
 
