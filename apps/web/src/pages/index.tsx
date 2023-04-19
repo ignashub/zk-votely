@@ -1,36 +1,9 @@
 import type { NextPage } from 'next';
-import { useRouter } from 'next/router';
-import { Text, Box, Button, Flex,
-  IconButton,
-  Stack,
-  Collapse,
-  Icon,
-  Link,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  useColorModeValue,
-  useBreakpointValue,
-  useDisclosure } from '@chakra-ui/react';
-import {
-    HamburgerIcon,
-    CloseIcon,
-    ChevronDownIcon,
-    ChevronRightIcon,
-  } from '@chakra-ui/icons';
+import { Text, Box, useColorModeValue } from '@chakra-ui/react';
 import React, from 'react';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const Home: NextPage = () => {
-  const router = useRouter();
-
-  const goToCoordinatorPage = () => {
-    router.push('/coordinator');
-  };
-
-  const goToVoterPage = () => {
-    router.push('/voter');
-  };
+  
 
   return (
     <>
