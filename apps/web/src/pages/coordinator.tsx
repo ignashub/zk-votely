@@ -14,11 +14,11 @@ import {
   Textarea,
   SimpleGrid,
 } from '@chakra-ui/react';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BigNumber } from 'ethers';
 import { useCreateBallot } from '../hooks/useCreateBallot';
 import { PollCard } from '../components/PollCard';
-import { useContract, useSigner } from 'wagmi';
+import { useSigner } from 'wagmi';
 import { POLLS_QUERY } from '../queries/polls';
 
 const Coordinator: NextPage = () => {
@@ -26,13 +26,12 @@ const Coordinator: NextPage = () => {
   const [pollId, setPollId] = useState<BigNumber | undefined>(
     BigNumber.from(0)
   );
-  const [merkleTreeDepth, setMerkleTreeDepth] = useState<
-    BigNumber | undefined
-  >();
+  const [merkleTreeDepth] = useState<BigNumber | undefined>(BigNumber.from(20));
   const [title, setTitle] = useState<string | undefined>();
   const [description, setDescription] = useState<string | undefined>();
   const [votingOptions, setVotingOptions] = useState<string[]>([]);
   const [createButtonPressed, setCreateButtonPressed] = useState(false);
+  const [pollsList, setPollsList] = useState([]);
 
   const {
     data: pollData,
@@ -52,7 +51,7 @@ const Coordinator: NextPage = () => {
   //Alerts
   const [successfulAlert, setSuccessfulAlert] = useState(false);
   const [errorAlert, setErrorAlert] = useState(false);
-  const [loadingAlert, setLoadingAlert] = useState(false);
+  const [loadingAlert] = useState(false);
   const [signerAddress, setSignerAddress] = useState<string | undefined>();
   //Signer
   const { data: signer, isError, isLoading } = useSigner();
@@ -72,6 +71,21 @@ const Coordinator: NextPage = () => {
     router.push('/');
   };
 
+  useEffect(() => {
+    generatePollId();
+  }, []);
+
+  useEffect(() => {
+    if (pollData) {
+      setPollsList(pollData.polls);
+    }
+  }, [pollData]);
+
+  const generatePollId = () => {
+    const newPollId = BigNumber.from(Math.floor(Math.random() * 10000) + 1);
+    setPollId(newPollId);
+  };
+
   const convertVotingOptions = (optionsString: string) => {
     const optionsArray = optionsString
       .split(',')
@@ -83,21 +97,6 @@ const Coordinator: NextPage = () => {
     // You can also add more validation rules depending on your requirements
     return value.trim() !== '';
   }
-
-  const handlePollIdChange = (e) => {
-    const value = e.target.value;
-    setInputErrors((prev) => ({ ...prev, pollId: !isValidInput(value) }));
-    setPollId(BigNumber.from(value));
-  };
-
-  const handleMerkleTreeDepthChange = (e) => {
-    const value = e.target.value;
-    setInputErrors((prev) => ({
-      ...prev,
-      merkleTreeDepth: !isValidInput(value),
-    }));
-    setMerkleTreeDepth(BigNumber.from(value));
-  };
 
   const handleTitleChange = (e) => {
     const value = e.target.value;
@@ -121,11 +120,7 @@ const Coordinator: NextPage = () => {
     setVotingOptions(optionsArray);
   };
 
-  const {
-    createBallot,
-    loading: createBallotLoading,
-    error: createBallotError,
-  } = useCreateBallot(
+  const { createBallot, loading: createBallotLoading } = useCreateBallot(
     pollId.toString(),
     signerAddress,
     merkleTreeDepth,
@@ -139,25 +134,30 @@ const Coordinator: NextPage = () => {
       console.error('Signer is not available');
       return;
     }
-    if (createBallotLoading) return;
 
     setCreateButtonPressed(true);
 
+    if (pollId === BigNumber.from(0)) {
+      await generatePollId(); // Call generatePollId() if pollId is undefined
+    }
+
+    if (createBallotLoading) return;
+
     try {
       await createBallot();
-      setSuccessfulAlert(true);
+      setSuccessfulAlert(true); // set the successful alert only if the transaction was successful
       setTimeout(() => {
         setSuccessfulAlert(false);
       }, 5000);
-      pollDataRefetch();
-      setCreateButtonPressed(false);
+      await pollDataRefetch();
+      setCreateButtonPressed(false); // set this to false, not true
     } catch (error) {
       console.error('Error creating ballot:', error);
       setErrorAlert(true);
       setTimeout(() => {
         setErrorAlert(false);
       }, 5000);
-      setCreateButtonPressed(false);
+      setCreateButtonPressed(false); // set this to false
     }
   };
 
@@ -167,7 +167,7 @@ const Coordinator: NextPage = () => {
   if (pollDataLoading) return <p>Loading...</p>;
   if (pollDataError) return <p>Error :(</p>;
 
-  const { polls } = pollData;
+  // const { polls } = pollData;
 
   return (
     <main
@@ -191,22 +191,6 @@ const Coordinator: NextPage = () => {
           <Heading size="xl" mb="10">
             Create a Ballot
           </Heading>
-          <Input
-            placeholder="Set Ballot Id (do not use the same one)"
-            type="number"
-            onChange={handlePollIdChange}
-            errorBorderColor="red.300"
-            mb="4"
-            isInvalid={inputErrors.pollId}
-          />
-          <Input
-            placeholder="Set Merkle Tree Depth"
-            type="number"
-            onChange={handleMerkleTreeDepthChange}
-            errorBorderColor="red.300"
-            mb="4"
-            isInvalid={inputErrors.merkleTreeDepth}
-          />
           <Input
             placeholder="Title"
             type="text"
@@ -262,7 +246,7 @@ const Coordinator: NextPage = () => {
         </Flex>
       </Box>
       <SimpleGrid columns={[1, 2, 3]} spacing="8">
-        {polls.map((poll) => (
+        {pollsList.map((poll) => (
           <PollCard
             key={poll.id}
             title={poll.title}

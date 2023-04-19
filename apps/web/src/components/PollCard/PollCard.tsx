@@ -26,6 +26,7 @@ import { FullProof, generateProof } from '@semaphore-protocol/proof';
 import { useSigner } from 'wagmi';
 import { useQuery } from '@apollo/client';
 import { GET_VOTE_COUNTS_BY_POLL_ID } from '../../queries/polls';
+import { POLLS_QUERY } from '../../queries/polls';
 import { Modal } from '../Modal';
 import { Identity } from '@semaphore-protocol/identity';
 
@@ -56,13 +57,13 @@ export const PollCard: React.FC<PollCardProps> = ({
   const [group, setGroup] = useState<Group | undefined>();
   const [fullProof, setFullProof] = useState<FullProof>();
   const [proofArray, setProofArray] = useState<BigNumber[]>();
-  const { data: signer, isError, isLoading } = useSigner();
+  const { data: signer } = useSigner();
   const [successfulAlert, setSuccessfulAlert] = useState(false);
   const [errorAlert, setErrorAlert] = useState(false);
   const [readyToVote, setReadyToVote] = useState(false);
   const [joinedBallot, setJoinedBallot] = useState(false);
   const [voteProofLoading, setVoteProofLoading] = useState(false);
-  const [showVoteButton, setShowVoteButton] = useState(false);
+  // const [setShowVoteButton] = useState(false);
   const [voteButtonPressed, setVoteButtonPressed] = useState(false);
   const [joinButtonPressed, setJoinButtonPressed] = useState(false);
   const [startButtonPressed, setStartButtonPressed] = useState(false);
@@ -71,22 +72,14 @@ export const PollCard: React.FC<PollCardProps> = ({
     useState(false);
   const [voteTransactionCompleted, setVoteTransactionCompleted] =
     useState(false);
-  const [inputErrors, setInputErrors] = useState({
-    pollId: false,
-    merkleTreeDepth: false,
-    title: false,
-    description: false,
-    votingOptions: false,
-  });
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [groups, setGroups] = useState<{ [key: string]: Group }>({});
 
-  const { loading, error, data, refetch } = useQuery(
-    GET_VOTE_COUNTS_BY_POLL_ID,
-    {
-      variables: { pollId },
-    }
-  );
+  const { loading, data, refetch } = useQuery(GET_VOTE_COUNTS_BY_POLL_ID, {
+    variables: { pollId },
+  });
+
+  const { refetch: pollDataRefetch } = useQuery(POLLS_QUERY);
 
   const createNewGroup = async () => {
     const existingGroup = groups[pollId];
@@ -126,7 +119,7 @@ export const PollCard: React.FC<PollCardProps> = ({
 
     console.log('proof was created');
     setVoteProofLoading(false);
-    setShowVoteButton(true);
+    // setShowVoteButton(true);
   };
 
   const handleChange = (value: string) => {
@@ -157,17 +150,15 @@ export const PollCard: React.FC<PollCardProps> = ({
     // }
   );
 
-  const {
-    startBallot,
-    loading: startBallotLoading,
-    error: startBallotError,
-  } = useStartBallot(pollId?.toString() ?? '', BigNumber.from(5000000));
+  const { startBallot, loading: startBallotLoading } = useStartBallot(
+    pollId?.toString() ?? '',
+    BigNumber.from(5000000)
+  );
 
-  const {
-    endBallot,
-    loading: endBallotLoading,
-    error: endBallotError,
-  } = useEndBallot(pollId?.toString() ?? '', BigNumber.from(5000000));
+  const { endBallot, loading: endBallotLoading } = useEndBallot(
+    pollId?.toString() ?? '',
+    BigNumber.from(5000000)
+  );
 
   useEffect(() => {
     if (joinBallotError) {
@@ -251,7 +242,7 @@ export const PollCard: React.FC<PollCardProps> = ({
         setSuccessfulAlert(false);
       }, 5000);
       refetch();
-      setShowVoteButton(false);
+      // setShowVoteButton(false);
       setVoteTransactionCompleted(true); // Add this line
     } catch (error) {
       console.error('Error voting:', error);
@@ -260,7 +251,7 @@ export const PollCard: React.FC<PollCardProps> = ({
         setErrorAlert(false);
       }, 5000);
       setVoteButtonPressed(false);
-      setShowVoteButton(true);
+      // setShowVoteButton(true);
     }
   };
 
@@ -275,7 +266,7 @@ export const PollCard: React.FC<PollCardProps> = ({
       setTimeout(() => {
         setSuccessfulAlert(false);
       }, 5000);
-      refetch();
+      pollDataRefetch();
       setStartButtonPressed(false);
     } catch (error) {
       console.error('Error starting ballot:', error);
@@ -298,7 +289,7 @@ export const PollCard: React.FC<PollCardProps> = ({
       setTimeout(() => {
         setSuccessfulAlert(false);
       }, 5000);
-      refetch();
+      pollDataRefetch();
       setEndButtonPressed(false);
     } catch (error) {
       console.error('Error ending ballot:', error);

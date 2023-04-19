@@ -16,7 +16,7 @@ export const useVoteBallot = (
   const [hookError, setHookError] = useState(null);
   const { data: signer } = useSigner();
 
-  const { config, error } = usePrepareContractWrite({
+  const { config } = usePrepareContractWrite({
     address: '0x4F3CB2EEBE4648d314F40d2Ec8BfE7243326a71E',
     abi: SemaphoreVotingAbi,
     functionName: 'castVote',

@@ -22,7 +22,7 @@ const Voter: NextPage = () => {
   const router = useRouter();
   const [identity, setIdentity] = useState<Identity>();
   const { data: pollData, loading, error } = useQuery(POLLS_QUERY);
-  const { data: signer, isError, isLoading } = useSigner();
+  const { data: signer } = useSigner();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const goToHomePage = () => {
