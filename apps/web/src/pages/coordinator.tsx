@@ -149,7 +149,7 @@ const Coordinator: NextPage = () => {
       setTimeout(() => {
         setSuccessfulAlert(false);
       }, 5000);
-      pollDataRefetch();
+      await pollDataRefetch();
       setCreateButtonPressed(false); // set this to false, not true
     } catch (error) {
       console.error('Error creating ballot:', error);
@@ -246,7 +246,7 @@ const Coordinator: NextPage = () => {
         </Flex>
       </Box>
       <SimpleGrid columns={[1, 2, 3]} spacing="8">
-        {polls.map((poll) => (
+        {pollsList.map((poll) => (
           <PollCard
             key={poll.id}
             title={poll.title}
