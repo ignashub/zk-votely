@@ -167,7 +167,7 @@ const Coordinator: NextPage = () => {
   if (pollDataLoading) return <p>Loading...</p>;
   if (pollDataError) return <p>Error :(</p>;
 
-  const { polls } = pollData;
+  // const { polls } = pollData;
 
   return (
     <main
