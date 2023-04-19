@@ -72,6 +72,11 @@ const Coordinator: NextPage = () => {
     router.push('/');
   };
 
+  const generatePollId = () => {
+    const newPollId = BigNumber.from(Math.floor(Math.random() * 10000) + 1);
+    setPollId(newPollId);
+  };
+
   const convertVotingOptions = (optionsString: string) => {
     const optionsArray = optionsString
       .split(',')
@@ -83,12 +88,6 @@ const Coordinator: NextPage = () => {
     // You can also add more validation rules depending on your requirements
     return value.trim() !== '';
   }
-
-  const handlePollIdChange = (e) => {
-    const value = e.target.value;
-    setInputErrors((prev) => ({ ...prev, pollId: !isValidInput(value) }));
-    setPollId(BigNumber.from(value));
-  };
 
   const handleMerkleTreeDepthChange = (e) => {
     const value = e.target.value;
@@ -140,6 +139,7 @@ const Coordinator: NextPage = () => {
     setCreateButtonPressed(true);
 
     try {
+      generatePollId();
       await createBallot();
       setSuccessfulAlert(true);
       setTimeout(() => {
@@ -187,14 +187,6 @@ const Coordinator: NextPage = () => {
           <Heading size="xl" mb="10">
             Create a Ballot
           </Heading>
-          <Input
-            placeholder="Set Ballot Id (do not use the same one)"
-            type="number"
-            onChange={handlePollIdChange}
-            errorBorderColor="red.300"
-            mb="4"
-            isInvalid={inputErrors.pollId}
-          />
           <Input
             placeholder="Set Merkle Tree Depth"
             type="number"

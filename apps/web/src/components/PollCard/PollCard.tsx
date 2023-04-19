@@ -63,7 +63,7 @@ export const PollCard: React.FC<PollCardProps> = ({
   const [readyToVote, setReadyToVote] = useState(false);
   const [joinedBallot, setJoinedBallot] = useState(false);
   const [voteProofLoading, setVoteProofLoading] = useState(false);
-  const [setShowVoteButton] = useState(false);
+  const [showVoteButton, setShowVoteButton] = useState(false);
   const [voteButtonPressed, setVoteButtonPressed] = useState(false);
   const [joinButtonPressed, setJoinButtonPressed] = useState(false);
   const [startButtonPressed, setStartButtonPressed] = useState(false);
@@ -75,9 +75,12 @@ export const PollCard: React.FC<PollCardProps> = ({
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [groups, setGroups] = useState<{ [key: string]: Group }>({});
 
-  const { loading, data, refetch } = useQuery(GET_VOTE_COUNTS_BY_POLL_ID, {
-    variables: { pollId },
-  });
+  const { loading, error, data, refetch } = useQuery(
+    GET_VOTE_COUNTS_BY_POLL_ID,
+    {
+      variables: { pollId },
+    }
+  );
 
   const { refetch: pollDataRefetch } = useQuery(POLLS_QUERY);
 
