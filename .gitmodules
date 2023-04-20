@@ -4,6 +4,6 @@
 [submodule "libs/ds-test"]
 	path = libs/ds-test
 	url = https://github.com/dapphub/ds-test
-[submodule "apps/subgraph/zkVote"]
-	path = apps/subgraph/zkVote
+[submodule "apps/subgraph/zkvotely"]
+	path = apps/subgraph/zkvotely
 	url = https://github.com/graphprotocol/graph-node
