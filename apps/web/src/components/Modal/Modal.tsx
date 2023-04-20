@@ -23,7 +23,7 @@ export const Modal: React.FC<ModalProps> = ({
   onClose,
   content,
 }) => {
-  const [scrollBehavior] = useState(() => 'inside');
+  const [scrollBehavior] = useState('inside');
 
   const btnRef = useRef(null);
 
