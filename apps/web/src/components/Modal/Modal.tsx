@@ -23,8 +23,6 @@ export const Modal: React.FC<ModalProps> = ({
   onClose,
   content,
 }) => {
-  const [scrollBehavior] = useState('inside');
-
   const btnRef = useRef(null);
 
   return (
@@ -32,7 +30,7 @@ export const Modal: React.FC<ModalProps> = ({
       onClose={onClose}
       finalFocusRef={btnRef}
       isOpen={isOpen}
-      scrollBehavior={scrollBehavior}
+      scrollBehavior="inside"
     >
       <ModalOverlay />
       <ModalContent>
