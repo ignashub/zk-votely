@@ -7,7 +7,7 @@ import {
 } from '@chakra-ui/react';
 import { FaGithub } from 'react-icons/fa';
 
-export const Footer: React.FC<> = () => {
+export const Footer: React.FC = () => {
   return (
     <Box
       as="footer"
