@@ -53,6 +53,7 @@
     "@chakra-ui/react": "^2.4.3",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
+    "@ethersproject/abi": "^5.7.0",
     "@semaphore-protocol/group": "^3.0.0",
     "@semaphore-protocol/identity": "^3.4.0",
     "@semaphore-protocol/proof": "^3.0.0",

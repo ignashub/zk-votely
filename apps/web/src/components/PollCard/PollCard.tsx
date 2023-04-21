@@ -33,13 +33,17 @@ import { Identity } from '@semaphore-protocol/identity';
 interface PollCardProps {
   title: string;
   description: string;
-  votingOptions: string[];
+  votingOptions: Array<{ id: number; value: string; voteCounts: number }>;
   pollId: string;
-  identity: Identity;
+  identity?: Identity;
   merkleTreeDepth: string;
   state: string;
   userType: 'voter' | 'coordinator';
-  // coordinator: string;
+}
+
+interface VoteCount {
+  option: string;
+  count: number;
 }
 
 export const PollCard: React.FC<PollCardProps> = ({
@@ -51,7 +55,6 @@ export const PollCard: React.FC<PollCardProps> = ({
   merkleTreeDepth,
   state,
   userType,
-  // coordinator,
 }) => {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [group, setGroup] = useState<Group | undefined>();
@@ -102,7 +105,7 @@ export const PollCard: React.FC<PollCardProps> = ({
   const makeVoteProof = async () => {
     console.log('making vote proof');
     setVoteProofLoading(true);
-    group?.addMember(identity.commitment);
+    group?.addMember(identity?.commitment ?? '');
 
     if (!group) {
       console.log('group is undefined');
@@ -110,16 +113,26 @@ export const PollCard: React.FC<PollCardProps> = ({
       return;
     }
 
-    const proof = await generateProof(identity, group, pollId, selectedOption);
-    console.log('proof:', proof);
-    console.log('proof:', proof.proof);
+    if (selectedOption !== null) {
+      const proof = await generateProof(
+        identity!,
+        group,
+        pollId,
+        selectedOption
+      );
+      console.log('proof:', proof);
+      console.log('proof:', proof.proof);
+      setFullProof(proof);
+      const proofArray: BigNumber[] = proof.proof.map((value) =>
+        BigNumber.from(value)
+      );
+      setProofArray(proofArray);
 
-    setFullProof(proof);
-    setProofArray(proof.proof);
-
-    console.log('proof was created');
-    setVoteProofLoading(false);
-    // setShowVoteButton(true);
+      console.log('proof was created');
+      setVoteProofLoading(false);
+    } else {
+      console.log('error');
+    }
   };
 
   const handleChange = (value: string) => {
@@ -193,7 +206,7 @@ export const PollCard: React.FC<PollCardProps> = ({
   }, [selectedOption]);
 
   const handleJoinBallot = async () => {
-    console.log(pollId, identity.commitment);
+    console.log(pollId, identity?.commitment);
 
     if (joinBallotLoading) return;
 
@@ -230,10 +243,10 @@ export const PollCard: React.FC<PollCardProps> = ({
     setVoteButtonPressed(true);
 
     console.log(selectedOption);
-    console.log(fullProof.nullifierHash.toString());
+    // console.log(fullProof.nullifierHash.toString());
     console.log(pollId);
     console.log(proofArray);
-    console.log(group.root.toString());
+    // console.log(group.root.toString());
 
     try {
       await voteBallot();
@@ -387,11 +400,7 @@ export const PollCard: React.FC<PollCardProps> = ({
             View Description
           </Button>
           <Modal
-            title={
-              <Text fontSize="2xl" fontWeight="bold">
-                {title}
-              </Text>
-            }
+            title={title}
             isOpen={isOpen}
             onClose={onClose}
             content={description}
@@ -411,17 +420,18 @@ export const PollCard: React.FC<PollCardProps> = ({
                     mb={['4', 4]}
                   >
                     {votingOptions.map((option, index) => {
-                      const voteCount = data.voteCounts.find(
-                        (voteCount) => parseInt(voteCount.option) === index
-                      )?.count;
+                      const voteCount: VoteCount | undefined =
+                        data.voteCounts.find(
+                          (voteCount: VoteCount) =>
+                            parseInt(voteCount.option) === index
+                        );
+                      const count = voteCount?.count || 0;
                       return (
                         <div key={index}>
                           <Radio value={index.toString()} mr={2}>
-                            {option}
+                            {option.value}
                           </Radio>
-                          <Tag borderRadius="full">
-                            {parseInt(voteCount) || 0}
-                          </Tag>
+                          <Tag borderRadius="full">{count}</Tag>
                         </div>
                       );
                     })}
@@ -465,16 +475,19 @@ export const PollCard: React.FC<PollCardProps> = ({
                       Voting Options
                     </Text>
                     {votingOptions.map((option, index) => {
-                      const voteCount = data.voteCounts.find(
-                        (voteCount) => parseInt(voteCount.option) === index
-                      )?.count;
+                      const voteCount: VoteCount | undefined =
+                        data.voteCounts.find(
+                          (voteCount: VoteCount) =>
+                            parseInt(voteCount.option) === index
+                        );
+                      const count = voteCount?.count || 0;
                       return (
-                        <Flex key={index} alignItems="start">
-                          <Text mr={2}>{option}</Text>
-                          <Tag borderRadius="full">
-                            {parseInt(voteCount) || 0}
-                          </Tag>
-                        </Flex>
+                        <div key={index}>
+                          <Radio value={index.toString()} mr={2}>
+                            {option.value}
+                          </Radio>
+                          <Tag borderRadius="full">{count}</Tag>
+                        </div>
                       );
                     })}
                   </Box>

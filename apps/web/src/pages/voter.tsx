@@ -10,7 +10,7 @@ import {
   SimpleGrid,
   useDisclosure,
 } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSigner } from 'wagmi';
 import { Identity } from '@semaphore-protocol/identity';
 import { PollCard } from '../components/PollCard';
@@ -18,16 +18,32 @@ import { Modal } from '../components/Modal';
 import { POLLS_QUERY } from '../queries/polls';
 import { BigNumber } from 'ethers';
 
+interface Poll {
+  id: string;
+  title: string;
+  description: string;
+  votingOptions: string[];
+  merkleTreeDepth: number;
+  state: string;
+}
+
 const Voter: NextPage = () => {
   const router = useRouter();
   const [identity, setIdentity] = useState<Identity>();
   const { data: pollData, loading, error } = useQuery(POLLS_QUERY);
   const { data: signer } = useSigner();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [pollsList, setPollsList] = useState<Poll[]>([]);
 
   const goToHomePage = () => {
     router.push('/');
   };
+
+  useEffect(() => {
+    if (pollData) {
+      setPollsList(pollData.polls);
+    }
+  }, [pollData]);
 
   const createIdentity = async () => {
     console.log(BigNumber.from(123456789));
@@ -43,8 +59,6 @@ const Voter: NextPage = () => {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
-
-  const { polls } = pollData;
 
   return (
     <>
@@ -126,23 +140,30 @@ const Voter: NextPage = () => {
           Ballots to vote on
         </Heading>
         <SimpleGrid columns={[1, 2, 3]} spacing="8">
-          {polls.map(
-            (poll) =>
-              identity && (
-                <PollCard
-                  key={poll.id}
-                  title={poll.title}
-                  description={poll.description}
-                  votingOptions={poll.votingOptions}
-                  pollId={poll.id}
-                  identity={identity}
-                  merkleTreeDepth={poll.merkleTreeDepth}
-                  state={poll.state}
-                  userType="voter"
-                />
-              )
-          )}
+          {pollsList.map((poll) => {
+            const modifiedVotingOptions = poll.votingOptions.map(
+              (option, index) => ({
+                id: index,
+                value: option,
+                voteCounts: 0, // Set the initial vote count to 0 or fetch the actual vote counts from your data source
+              })
+            );
+            return (
+              <PollCard
+                key={poll.id}
+                title={poll.title}
+                description={poll.description}
+                votingOptions={modifiedVotingOptions}
+                pollId={poll.id}
+                identity={identity}
+                merkleTreeDepth={poll.merkleTreeDepth.toString()}
+                state={poll.state}
+                userType="voter"
+              />
+            );
+          })}
         </SimpleGrid>
+        ;
       </main>
     </>
   );

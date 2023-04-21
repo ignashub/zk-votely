@@ -14,12 +14,21 @@ import {
   Textarea,
   SimpleGrid,
 } from '@chakra-ui/react';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import { BigNumber } from 'ethers';
 import { useCreateBallot } from '../hooks/useCreateBallot';
 import { PollCard } from '../components/PollCard';
 import { useSigner } from 'wagmi';
 import { POLLS_QUERY } from '../queries/polls';
+
+interface Poll {
+  id: string;
+  title: string;
+  description: string;
+  votingOptions: string[];
+  merkleTreeDepth: number;
+  state: string;
+}
 
 const Coordinator: NextPage = () => {
   const router = useRouter();
@@ -27,11 +36,11 @@ const Coordinator: NextPage = () => {
     BigNumber.from(0)
   );
   const [merkleTreeDepth] = useState<BigNumber | undefined>(BigNumber.from(20));
-  const [title, setTitle] = useState<string | undefined>();
-  const [description, setDescription] = useState<string | undefined>();
+  const [title, setTitle] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
   const [votingOptions, setVotingOptions] = useState<string[]>([]);
   const [createButtonPressed, setCreateButtonPressed] = useState(false);
-  const [pollsList, setPollsList] = useState([]);
+  const [pollsList, setPollsList] = useState<Poll[]>([]);
 
   const {
     data: pollData,
@@ -93,24 +102,23 @@ const Coordinator: NextPage = () => {
     return optionsArray;
   };
 
-  function isValidInput(value) {
-    // You can also add more validation rules depending on your requirements
+  function isValidInput(value: string) {
     return value.trim() !== '';
   }
 
-  const handleTitleChange = (e) => {
+  const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setInputErrors((prev) => ({ ...prev, title: !isValidInput(value) }));
     setTitle(value);
   };
 
-  const handleDescriptionChange = (e) => {
+  const handleDescriptionChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
     setInputErrors((prev) => ({ ...prev, description: !isValidInput(value) }));
     setDescription(value);
   };
 
-  const handleVotingOptionsChange = (e) => {
+  const handleVotingOptionsChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     const optionsArray = convertVotingOptions(value);
     setInputErrors((prev) => ({
@@ -121,8 +129,10 @@ const Coordinator: NextPage = () => {
   };
 
   const { createBallot, loading: createBallotLoading } = useCreateBallot(
-    pollId.toString(),
-    signerAddress,
+    (pollId ?? BigNumber.from(0)).toString(),
+    signerAddress
+      ? `0x${signerAddress}`
+      : '0x0000000000000000000000000000000000000000',
     merkleTreeDepth,
     title,
     description,
@@ -166,8 +176,6 @@ const Coordinator: NextPage = () => {
 
   if (pollDataLoading) return <p>Loading...</p>;
   if (pollDataError) return <p>Error :(</p>;
-
-  // const { polls } = pollData;
 
   return (
     <main
@@ -246,19 +254,28 @@ const Coordinator: NextPage = () => {
         </Flex>
       </Box>
       <SimpleGrid columns={[1, 2, 3]} spacing="8">
-        {pollsList.map((poll) => (
-          <PollCard
-            key={poll.id}
-            title={poll.title}
-            description={poll.description}
-            votingOptions={poll.votingOptions}
-            pollId={poll.id}
-            identity=""
-            merkleTreeDepth={poll.merkleTreeDepth}
-            state={poll.state}
-            userType="coordinator"
-          />
-        ))}
+        {pollsList.map((poll) => {
+          const modifiedVotingOptions = poll.votingOptions.map(
+            (option, index) => ({
+              id: index,
+              value: option,
+              voteCounts: 0, // Set the initial vote count to 0 or fetch the actual vote counts from your data source
+            })
+          );
+          return (
+            <PollCard
+              key={poll.id}
+              title={poll.title}
+              description={poll.description}
+              votingOptions={modifiedVotingOptions}
+              pollId={poll.id}
+              identity={undefined}
+              merkleTreeDepth={poll.merkleTreeDepth.toString()}
+              state={poll.state}
+              userType="coordinator"
+            />
+          );
+        })}
       </SimpleGrid>
     </main>
   );
