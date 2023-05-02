@@ -1,14 +1,15 @@
-import { usePrepareContractWrite } from 'wagmi';
+import { usePrepareContractWrite, useSigner } from 'wagmi';
 import { useState } from 'react';
 import { SemaphoreVotingAbi } from '../abis/SemaphoreVoting';
-import { useSigner } from 'wagmi';
 import { ethers, BigNumber, ContractInterface } from 'ethers';
 import { TransactionRequest } from '@ethersproject/abstract-provider';
+
+type ArgsType = [BigNumber, `0x${string}`, BigNumber, string, string, string[]];
 
 interface ConfigType {
   abi: ContractInterface;
   address: string;
-  args?: [BigNumber, `0x${string}`, BigNumber, string, string, string[]];
+  args: ArgsType;
   functionName: string;
   mode: string;
   overrides?: TransactionRequest;
@@ -28,30 +29,24 @@ export const useCreateBallot = (
   const [hookError, setHookError] = useState<Error | null>(null);
   const { data: signer } = useSigner();
 
-  // const abi = new Interface(SemaphoreVotingAbi);
-  // const data = {
-  //   data: abi.encodeFunctionData('createPoll', [
-  //     BigNumber.from(pollId),
-  //     coordinator,
-  //     BigNumber.from(merkleTreeDepth),
-  //     title,
-  //     description,
-  //     votingOptions,
-  //   ]),
-  // };
+  const args:
+    | [BigNumber, `0x${string}`, BigNumber, string, string, string[]]
+    | undefined = merkleTreeDepth
+    ? [
+        BigNumber.from(pollId),
+        coordinator,
+        BigNumber.from(merkleTreeDepth),
+        title,
+        description,
+        votingOptions,
+      ]
+    : undefined;
 
   const { data: resultConfig } = usePrepareContractWrite({
     address: '0x4F3CB2EEBE4648d314F40d2Ec8BfE7243326a71E',
     abi: SemaphoreVotingAbi,
     functionName: 'createPoll',
-    args: [
-      BigNumber.from(pollId),
-      coordinator,
-      BigNumber.from(merkleTreeDepth),
-      title,
-      description,
-      votingOptions,
-    ],
+    args,
   });
 
   const config = resultConfig as ConfigType;

@@ -21,7 +21,7 @@ export const useVoteBallot = (
     abi: SemaphoreVotingAbi,
     functionName: 'castVote',
     args: [vote, nullifierHash, pollId, proofArray, merkleTreeRoot],
-    gasLimit: BigNumber.from(10000000),
+    // gasLimit: BigNumber.from(10000000),
   });
 
   const voteBallot = async () => {

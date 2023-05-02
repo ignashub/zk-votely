@@ -15,7 +15,7 @@ export const useStartBallot = (pollId, encryptionKey) => {
     abi: SemaphoreVotingAbi,
     functionName: 'startPoll',
     args: [pollId, encryptionKey],
-    gasLimit: BigNumber.from(5000000),
+    // gasLimit: BigNumber.from(5000000),
   });
 
   const startBallot = async () => {

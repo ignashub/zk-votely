@@ -9,6 +9,26 @@ export const GET_VOTE_COUNTS_BY_POLL_ID = gql`
   }
 `;
 
+// export const POLLS_QUERY = gql`
+//   query GetAllPolls {
+//     polls {
+//       id
+//       title
+//       description
+//       merkleTreeDepth
+//       votingOptions {
+//         id
+//         value
+//         voteCounts {
+//           id
+//           count
+//         }
+//       }
+//       state
+//     }
+//   }
+// `;
+
 export const POLLS_QUERY = gql`
   query GetAllPolls {
     polls {
@@ -16,13 +36,11 @@ export const POLLS_QUERY = gql`
       title
       description
       merkleTreeDepth
-      votingOptions {
+      votingOptions
+      voteCounts {
         id
-        value
-        voteCounts {
-          id
-          count
-        }
+        option
+        count
       }
       state
     }

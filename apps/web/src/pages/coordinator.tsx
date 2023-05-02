@@ -103,6 +103,7 @@ const Coordinator: NextPage = () => {
   };
 
   function isValidInput(value: string) {
+    // You can also add more validation rules depending on your requirements
     return value.trim() !== '';
   }
 
@@ -254,28 +255,19 @@ const Coordinator: NextPage = () => {
         </Flex>
       </Box>
       <SimpleGrid columns={[1, 2, 3]} spacing="8">
-        {pollsList.map((poll) => {
-          const modifiedVotingOptions = poll.votingOptions.map(
-            (option, index) => ({
-              id: index,
-              value: option,
-              voteCounts: 0, // Set the initial vote count to 0 or fetch the actual vote counts from your data source
-            })
-          );
-          return (
-            <PollCard
-              key={poll.id}
-              title={poll.title}
-              description={poll.description}
-              votingOptions={modifiedVotingOptions}
-              pollId={poll.id}
-              identity={undefined}
-              merkleTreeDepth={poll.merkleTreeDepth.toString()}
-              state={poll.state}
-              userType="coordinator"
-            />
-          );
-        })}
+        {pollsList.map((poll) => (
+          <PollCard
+            key={poll.id}
+            title={poll.title}
+            description={poll.description}
+            votingOptions={poll.votingOptions}
+            pollId={poll.id}
+            identity={undefined}
+            merkleTreeDepth={poll.merkleTreeDepth.toString()}
+            state={poll.state}
+            userType="coordinator"
+          />
+        ))}
       </SimpleGrid>
     </main>
   );
