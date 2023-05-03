@@ -20,6 +20,7 @@ import { useCreateBallot } from '../hooks/useCreateBallot';
 import { PollCard } from '../components/PollCard';
 import { useSigner } from 'wagmi';
 import { POLLS_QUERY } from '../queries/polls';
+import { HexAddress } from '../types/types';
 
 interface Poll {
   id: string;
@@ -61,7 +62,8 @@ const Coordinator: NextPage = () => {
   const [successfulAlert, setSuccessfulAlert] = useState(false);
   const [errorAlert, setErrorAlert] = useState(false);
   const [loadingAlert] = useState(false);
-  const [signerAddress, setSignerAddress] = useState<string | undefined>();
+  const [signerAddress, setSignerAddress] = useState<HexAddress | undefined>();
+
   //Signer
   const { data: signer, isError, isLoading } = useSigner();
 
@@ -69,7 +71,9 @@ const Coordinator: NextPage = () => {
     const updateSignerAddress = async () => {
       if (signer) {
         const address = await signer.getAddress();
-        setSignerAddress(address);
+        const slicedAdress = address.slice(2);
+        const hexAddress: HexAddress = `0x${slicedAdress}`;
+        setSignerAddress(hexAddress);
       }
     };
 
@@ -131,9 +135,7 @@ const Coordinator: NextPage = () => {
 
   const { createBallot, loading: createBallotLoading } = useCreateBallot(
     (pollId ?? BigNumber.from(0)).toString(),
-    signerAddress
-      ? `0x${signerAddress}`
-      : '0x0000000000000000000000000000000000000000',
+    signerAddress || '0x0000000000000000000000000000000000000000',
     merkleTreeDepth,
     title,
     description,
@@ -141,6 +143,17 @@ const Coordinator: NextPage = () => {
   );
 
   const handleCreateBallot = async () => {
+    if (
+      !pollId ||
+      !signerAddress ||
+      !merkleTreeDepth ||
+      !title ||
+      !description ||
+      votingOptions.length === 0
+    ) {
+      console.error('Some input data is missing'); // Log the error
+      return;
+    }
     if (!signer) {
       console.error('Signer is not available');
       return;
@@ -155,6 +168,7 @@ const Coordinator: NextPage = () => {
     if (createBallotLoading) return;
 
     try {
+      console.log('Calling createBallot'); // Add this line
       await createBallot();
       setSuccessfulAlert(true); // set the successful alert only if the transaction was successful
       setTimeout(() => {

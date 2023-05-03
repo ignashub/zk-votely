@@ -29,43 +29,25 @@ export const useCreateBallot = (
   const [hookError, setHookError] = useState<Error | null>(null);
   const { data: signer } = useSigner();
 
-  const args:
-    | [BigNumber, `0x${string}`, BigNumber, string, string, string[]]
-    | undefined = merkleTreeDepth
-    ? [
-        BigNumber.from(pollId),
-        coordinator,
-        BigNumber.from(merkleTreeDepth),
-        title,
-        description,
-        votingOptions,
-      ]
-    : undefined;
-
-  const { data: resultConfig } = usePrepareContractWrite({
-    address: '0x4F3CB2EEBE4648d314F40d2Ec8BfE7243326a71E',
-    abi: SemaphoreVotingAbi,
-    functionName: 'createPoll',
-    args,
+  const { config } = usePrepareContractWrite({
+    address: '0x4F3CB2EEBE4648d314F40d2Ec8BfE7243326a71E', // Smart contract address
+    abi: SemaphoreVotingAbi, // Smart contract ABI
+    functionName: 'createPoll', // Smart contract function name
+    args: [
+      BigNumber.from(pollId),
+      coordinator,
+      BigNumber.from(merkleTreeDepth),
+      title,
+      description,
+      votingOptions,
+    ],
   });
+  // console.log('resultConfig:', resultConfig); // Add this log
 
-  const config = resultConfig as ConfigType;
+  // const config = resultConfig as ConfigType;
 
   const createBallot = async () => {
-    if (
-      !pollId ||
-      !coordinator ||
-      !merkleTreeDepth ||
-      !title ||
-      !description ||
-      votingOptions.length === 0
-    ) {
-      console.error('Some input data is missing');
-      return;
-    }
-    if (!signer || !config) {
-      return null;
-    }
+    console.log('Inside createBallot function'); // Add this log
 
     setLoading(true);
     setHookError(null);
@@ -73,9 +55,12 @@ export const useCreateBallot = (
     try {
       console.log('config:', config);
       const contract = new ethers.Contract(config.address, config.abi, signer);
+      console.log('contract:', contract); // Log the contract object
       console.log('config.args:', config.args);
       const transaction = await contract[config.functionName](...config.args);
+      console.log('transaction:', transaction); // Log the transaction object
       await transaction.wait();
+      console.log('Transaction completed'); // Log a message after the transaction is awaited
       setLoading(false);
     } catch (error) {
       const typedError = error as Error | null;
